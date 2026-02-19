@@ -1,0 +1,152 @@
+/* Dashboard Styles */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+.stat-card.blue .stat-icon {
+    background: rgba(33, 150, 243, 0.1);
+    color: #2196F3;
+}
+
+.stat-card.green .stat-icon {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+}
+
+.stat-card.orange .stat-icon {
+    background: rgba(255, 152, 0, 0.1);
+    color: #FF9800;
+}
+
+.stat-card.purple .stat-icon {
+    background: rgba(156, 39, 176, 0.1);
+    color: #9C27B0;
+}
+
+.stat-card.red .stat-icon {
+    background: rgba(225, 37, 83, 0.1);
+    color: #E12553;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--primary-black);
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--grey);
+    font-weight: 500;
+}
+
+/* Student Specific Dashboard */
+.student-welcome-card {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-red) 100%);
+    color: white;
+    padding: 32px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.student-welcome-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 200px;
+    background: url('data:image/svg+xml;base64,PHN2Zy4uLi52Zz4=') no-repeat right center;
+    /* Placeholder for pattern */
+    opacity: 0.1;
+}
+
+.student-welcome-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.student-welcome-subtitle {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.qr-code-section {
+    grid-column: span 1;
+}
+
+.schedule-list {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-card);
+}
+
+.schedule-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--light-grey);
+}
+
+.schedule-item:last-child {
+    border-bottom: none;
+}
+
+.schedule-time {
+    font-weight: 700;
+    color: var(--primary-purple);
+    width: 60px;
+}
+
+.schedule-info h4 {
+    margin-bottom: 4px;
+    font-size: 16px;
+}
+
+.schedule-info p {
+    font-size: 14px;
+    color: var(--grey);
+}
+
+@media (min-width: 1024px) {
+    .qr-code-section {
+        grid-column: span 1;
+    }
+}

@@ -1,0 +1,19 @@
+function loadActiveCafeteriaTab() {
+    const activeTab = document.querySelector('.tab-btn.active');
+    if (activeTab) {
+        const tabName = activeTab.dataset.tab;
+        
+        if (tabName === 'serve') {
+            // Вкладка "Выдача питания" для оператора
+            if (typeof initCafeteriaOperator === 'function') {
+                initCafeteriaOperator();
+            }
+        } else if (tabName === 'categories') {
+            loadCategories();
+        } else if (tabName === 'assignments') {
+            loadAssignments();
+        } else if (tabName === 'history') {
+            loadHistory();
+        }
+    }
+}

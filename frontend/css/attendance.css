@@ -1,0 +1,164 @@
+/* Модуль Посещаемости - CSS стили */
+
+/* QR-дисплей для преподавателя */
+.qr-display-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    margin: 20px 0;
+}
+
+.qr-display-wrapper canvas {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.qr-timer {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.qr-timer span {
+    font-size: 2rem;
+    color: #ffd700;
+    font-weight: 700;
+}
+
+/* Fullscreen QR Modal */
+.qr-fullscreen-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.qr-fullscreen-modal[hidden] {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content-qr {
+    position: relative;
+    text-align: center;
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.qr-fullscreen-modal canvas {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(255, 255, 255, 0.2);
+}
+
+.close-btn {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    font-size: 3rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: rotate(90deg);
+}
+
+.qr-timer-large {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-top: 40px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.qr-timer-large span {
+    color: #ffd700;
+    font-size: 3.5rem;
+}
+
+/* Сканер для студента */
+#studentQrScanner {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#studentScanVideo {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .qr-display-wrapper canvas {
+        max-width: 250px;
+    }
+
+    .qr-fullscreen-modal canvas {
+        max-width: 90vw;
+        padding: 20px;
+    }
+
+    .qr-timer-large {
+        font-size: 1.8rem;
+    }
+
+    .qr-timer-large span {
+        font-size: 2.5rem;
+    }
+
+    .close-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 2.5rem;
+        top: -60px;
+    }
+}

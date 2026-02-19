@@ -1,0 +1,41 @@
+        <!-- ==================== GRADES SECTION ==================== -->
+        <section id="grades" class="content-section">
+            <header class="section-header">
+                <h2>Журнал оценок</h2>
+                <p>Просмотр и управление оценками студентов</p>
+            </header>
+
+            <!-- Action Header (для преподавателей и админов) -->
+            <div class="card" style="margin-bottom: 20px;" id="gradesActionHeader">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3><i class='bx bx-book-content'></i> Управление оценками</h3>
+                    <button class="btn btn-primary" id="addGradeBtn" style="display: none;">
+                        <i class='bx bx-plus'></i> Выставить оценку
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grades Table -->
+            <div class="card">
+                <div class="card-body">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Студент</th>
+                                <th>Предмет</th>
+                                <th>Оценка</th>
+                                <th>Тип</th>
+                                <th>Дата</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gradesTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center;">Загрузка...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+

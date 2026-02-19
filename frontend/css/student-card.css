@@ -1,0 +1,167 @@
+/* Стили для карты студента (Моя карта питания) */
+
+/* Container */
+.my-card-container {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+/* QR Card */
+.qr-card {
+    background: linear-gradient(135deg, var(--primary-purple), var(--primary-red));
+    color: white;
+    padding: 32px;
+    border-radius: var(--radius-xl);
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+}
+
+.qr-card-header {
+    margin-bottom: 24px;
+}
+
+.qr-card-header i {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.qr-card-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.qr-code-wrapper {
+    background: white;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    display: inline-block;
+    margin-bottom: 16px;
+}
+
+.qr-code-wrapper canvas {
+    display: block;
+}
+
+.qr-instruction {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* Student Info Blocks */
+.student-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info-block {
+    background: var(--light-grey);
+    padding: 16px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.info-block i {
+    font-size: 32px;
+    color: var(--primary-purple);
+}
+
+.info-block>div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    font-size: 12px;
+    color: var(--grey);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.info-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-black);
+}
+
+/* My Limits */
+.my-limits {
+    background: var(--light-grey);
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 32px;
+}
+
+.my-limits h4 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.my-limits h4 i {
+    color: var(--primary-red);
+}
+
+/* My History */
+.my-history h4 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.my-history h4 i {
+    color: var(--primary-red);
+}
+
+/* Mobile адаптация */
+@media (max-width: 768px) {
+    .my-card-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .qr-card {
+        padding: 24px;
+    }
+
+    .qr-card-header i {
+        font-size: 36px;
+    }
+
+    .qr-code-wrapper {
+        padding: 16px;
+    }
+
+    .qr-code-wrapper canvas {
+        max-width: 200px;
+        height: auto;
+    }
+
+    .info-block {
+        padding: 12px;
+    }
+
+    .info-block i {
+        font-size: 24px;
+    }
+
+    .my-limits,
+    .my-history {
+        padding: 16px;
+    }
+}

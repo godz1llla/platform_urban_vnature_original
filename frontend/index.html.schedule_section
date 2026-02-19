@@ -1,0 +1,25 @@
+
+        <!-- Schedule Section -->
+        <section id="schedule" class="content-section">
+            <header class="section-header">
+                <h2>Расписание занятий</h2>
+                <p>Просмотр и управление расписанием</p>
+            </header>
+
+            <!-- Action Header (только для админа) -->
+            <div class="card" style="margin-bottom: 20px;" data-admin-only>
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3><i class='bx bx-calendar'></i> Управление расписанием</h3>
+                    <button class="btn btn-primary" id="createLessonBtn">
+                        <i class='bx bx-plus'></i> Добавить урок
+                    </button>
+                </div>
+            </div>
+
+            <!-- Schedule Display -->
+            <div class="card">
+                <div id="scheduleGrid">
+                    <!-- Динамически загружается через JS -->
+                </div>
+            </div>
+        </section>

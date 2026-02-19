@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>URBAN COLLEGE PLATFORM</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/cafeteria.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/attendance.css">
+    <link rel="stylesheet" href="css/student-card.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+
+<body>
+    <!-- Hamburger Menu Button (вне sidebar для мобильных) -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class='bx bx-menu'></i>
+    </button>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1 class="logo">URBAN<span>COLLEGE</span></h1>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                <i class='bx bx-home-alt'></i>
+                <span>Дашборд</span>
+            </a>
+            <a href="#my-card" class="nav-item" data-section="my-card">
+                <i class='bx bx-id-card'></i>
+                <span>Моя карта питания</span>
+            </a>
+            <a href="#cafeteria" class="nav-item" data-section="cafeteria">
+                <i class='bx bx-restaurant'></i>
+                <span>Столовая</span>
+            </a>
+            <a href="#attendance" class="nav-item" data-section="attendance">
+                <i class='bx bx-qr-scan'></i>
+                <span>Посещаемость</span>
+            </a>
+            <a href="#grades" class="nav-item" data-section="grades">
+                <i class='bx bx-book-content'></i>
+                <span>Журнал</span>
+            </a>
+            <a href="#schedule" class="nav-item" data-section="schedule">
+                <i class='bx bx-calendar'></i>
+                <span>Расписание</span>
+            </a>
+            <a href="#homework" class="nav-item" data-section="homework">
+                <i class='bx bx-task'></i>
+                <span>Домашние задания</span>
+            </a>
+            <a href="#users" class="nav-item" data-section="users">
+                <i class='bx bx-user-plus'></i>
+                <span>Пользователи</span>
+            </a>
+            <a href="#groups" class="nav-item" data-section="groups">
+                <i class='bx bx-group'></i>
+                <span>Группы</span>
+            </a>
+            <a href="#subjects" class="nav-item" data-section="subjects">
+                <i class='bx bx-book'></i>
+                <span>Предметы</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info" id="userInfo">
+                <i class='bx bx-user-circle'></i>
+                <div class="user-details">
+                    <span class="user-name">Загрузка...</span>
+                    <span class="user-role">...</span>
+                </div>
+            </div>
+            <button class="btn-logout" id="logoutBtn">
+                <i class='bx bx-log-out'></i>
+                <span>Выход</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <header class="section-header">
+                <h2>Обзор системы</h2>
+                <p>Добро пожаловать в SAGE Portal</p>
+            </header>
+
+            <div id="dashboardContent">
+                <!-- Контент загружается через JS -->
+                <div class="loader-container">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cafeteria Section -->
+        <section id="cafeteria" class="content-section">
+            <header class="section-header">
+                <h2>Система льготного питания</h2>
+                <p>Управление категориями и выдача питания</p>
+            </header>
+
+            <!-- Tabs -->
+            <div class="tabs" id="cafeteriaTabs">
+                <button class="tab-btn active" data-tab="serve">Выдача питания</button>
+                <button class="tab-btn" data-tab="categories">Категории</button>
+                <button class="tab-btn" data-tab="assignments">Назначения</button>
+                <button class="tab-btn" data-tab="history">История</button>
+            </div>
+
+            <!-- Tab: Serve Meal -->
+            <div class="tab-content active" id="tab-serve">
+                <!-- QR-код оператора -->
+                <div class="card">
+                    <h3><i class='bx bx-qr'></i> QR-код для студентов</h3>
+                    <p>Покажите этот QR-код студентам для получения порций</p>
+
+                    <div class="qr-display-wrapper"
+                        style="text-align: center; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; margin: 20px 0;">
+                        <canvas id="operatorQrCode"
+                            style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.2);"></canvas>
+                    </div>
+                </div>
+
+                <!-- Список транзакций сегодня -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class='bx bx-list-ul'></i> Выданные порции сегодня</h3>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Время</th>
+                                    <th>Студент</th>
+                                    <th>Группа</th>
+                                    <th>Категория</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayTransactionsTableBody">
+                                <!-- Динамически загружается через JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Categories -->
+            <div class="tab-content" id="tab-categories">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class='bx bx-category'></i> Категории льготного питания</h3>
+                        <button class="btn btn-primary" id="addCategoryBtn">
+                            <i class='bx bx-plus'></i> Добавить категорию
+                        </button>
+                    </div>
+
+                    <div class="categories-grid" id="categoriesGrid">
+                        <!-- Динамически загружается через JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Assignments -->
+            <div class="tab-content" id="tab-assignments">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class='bx bx-user-check'></i> Назначенные студенты</h3>
+                        <button class="btn btn-primary" id="assignStudentBtn">
+                            <i class='bx bx-user-plus'></i> Назначить студента
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table" id="assignmentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Код студента</th>
+                                    <th>ФИО</th>
+                                    <th>Группа</th>
+                                    <th>Категория</th>
+                                    <th>Дата назначения</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assignmentsTableBody">
+                                <!-- Динамически загружается через JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: History -->
+            <div class="tab-content" id="tab-history">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class='bx bx-history'></i> История выдач</h3>
+                        <button class="btn btn-secondary" id="exportHistoryBtn">
+                            <i class='bx bx-download'></i> Экспорт CSV
+                        </button>
+                    </div>
+
+                    <div class="filters">
+                        <input type="date" id="filterFrom" class="input">
+                        <input type="date" id="filterTo" class="input">
+                        <button class="btn btn-primary" id="applyFiltersBtn">
+                            <i class='bx bx-filter'></i> Применить
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table" id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Студент</th>
+                                    <th>Категория</th>
+                                    <th>Оператор</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <!-- Динамически загружается через JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- My Card Section (Student Only) -->
+        <section id="my-card" class="content-section">
+            <header class="section-header">
+                <h2>Моя карта питания</h2>
+                <p>Отсканируйте QR-код у оператора столовой</p>
+            </header>
+
+            <div class="card">
+                <div class="my-card-container">
+                    <!-- QR Code Display -->
+                    <div class="qr-card">
+                        <div class="qr-card-header">
+                            <i class='bx bx-qr-scan'></i>
+                            <h3>Ваш QR-код</h3>
+                        </div>
+                        <div class="qr-code-wrapper">
+                            <canvas id="studentQRCode"></canvas>
+                        </div>
+                        <p class="qr-instruction">Покажите этот QR-код оператору столовой</p>
+                    </div>
+
+                    <!-- Student Info -->
+                    <div class="student-card-info">
+                        <div class="info-block">
+                            <i class='bx bx-user'></i>
+                            <div>
+                                <span class="info-label">ФИО</span>
+                                <span class="info-value" id="myFullName">-</span>
+                            </div>
+                        </div>
+
+                        <div class="info-block">
+                            <i class='bx bx-id-card'></i>
+                            <div>
+                                <span class="info-label">Код студента</span>
+                                <span class="info-value" id="myStudentCode">-</span>
+                            </div>
+                        </div>
+
+                        <div class="info-block">
+                            <i class='bx bx-group'></i>
+                            <div>
+                                <span class="info-label">Группа</span>
+                                <span class="info-value" id="myGroup">-</span>
+                            </div>
+                        </div>
+
+                        <div class="info-block">
+                            <i class='bx bx-category'></i>
+                            <div>
+                                <span class="info-label">Категория питания</span>
+                                <span class="info-value" id="myCategory">Не назначена</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Кнопка получения порции -->
+                <div class="card" style="text-align: center;">
+                    <h4><i class='bx bx-restaurant'></i> Получить порцию</h4>
+                    <p>Отсканируйте QR-код оператора столовой</p>
+
+                    <button class="btn btn-primary btn-lg" id="scanCafeteriaQrBtn" onclick="scanOperatorQR()"
+                        style="margin: 20px 0;">
+                        <i class='bx bx-qr-scan'></i> Сканировать QR
+                    </button>
+
+                    <!-- Сканер (скрыт по умолчанию) -->
+                    <div id="cafeteriaScannerStudent" hidden style="margin-top: 20px;">
+                        <video id="cafeteriaVideo" autoplay playsinline
+                            style="width: 100%; max-width: 500px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"></video>
+                        <canvas id="cafeteriaCanvas" hidden></canvas>
+                        <br>
+                        <button class="btn btn-secondary" id="stopCafeteriaScanBtn" onclick="stopCafeteriaScanning()"
+                            style="margin-top: 10px;">
+                            <i class='bx bx-x'></i> Закрыть
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Limits Info -->
+                <div class="my-limits" id="myLimitsBlock" style="display: none;">
+                    <h4><i class='bx bx-bar-chart'></i> Остаток лимитов</h4>
+                    <div class="limits-grid">
+                        <div class="limit-item">
+                            <span class="limit-label">Сегодня</span>
+                            <span class="limit-value" id="myDailyRemaining">-</span>
+                        </div>
+                        <div class="limit-item">
+                            <span class="limit-label">На неделю</span>
+                            <span class="limit-value" id="myWeeklyRemaining">-</span>
+                        </div>
+                        <div class="limit-item">
+                            <span class="limit-label">На месяц</span>
+                            <span class="limit-value" id="myMonthlyRemaining">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History for student -->
+                <div class="my-history">
+                    <h4><i class='bx bx-history'></i> Последние получения</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Время</th>
+                                    <th>Оператор</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myHistoryTableBody">
+                                <!-- Динамически загружается через JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Attendance Section -->
+        <section id="attendance" class="content-section">
+            <header class="section-header">
+                <h2>Посещаемость</h2>
+                <p>Отметка присутствия и статистика</p>
+            </header>
+
+            <!-- Для преподавателя/админа -->
+            <div id="attendanceTeacher" style="display: none;">
+                <div class="card">
+                    <h3><i class='bx bx-qr'></i> QR-код для отметки</h3>
+                    <p>Покажите этот QR-код студентам для самостоятельной отметки</p>
+
+                    <div class="qr-display-wrapper" id="teacherQrWrapper">
+                        <canvas id="teacherQrCode"></canvas>
+                        <div class="qr-timer">Обновление через: <span id="qrTimer">8</span>с</div>
+                    </div>
+
+                    <button class="btn btn-primary btn-lg" id="fullscreenQrBtn">
+                        <i class='bx bx-fullscreen'></i> Открыть на весь экран
+                    </button>
+                </div>
+
+                <!-- История за сегодня -->
+                <div class="card">
+                    <h3><i class='bx bx-list-ul'></i> Отметившиеся студенты</h3>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Время</th>
+                                    <th>Студент</th>
+                                    <th>Группа</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayAttendanceTableBody">
+                                <!-- JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Для студента -->
+            <div id="attendanceStudent" style="display: none;">
+                <div class="card">
+                    <h3><i class='bx bx-qr-scan'></i> Отметиться на занятии</h3>
+                    <p>Отсканируйте QR-код преподавателя</p>
+
+                    <button class="btn btn-primary btn-lg" id="scanTeacherQrBtn">
+                        <i class='bx bx-qr-scan'></i> Сканировать QR
+                    </button>
+
+                    <div id="studentQrScanner" hidden>
+                        <video id="studentScanVideo" autoplay playsinline></video>
+                        <canvas id="studentScanCanvas" hidden></canvas>
+                        <button class="btn btn-secondary" id="stopScanBtn">Закрыть сканер</button>
+                    </div>
+                </div>
+
+                <!-- Статистика -->
+                <div class="card">
+                    <h3><i class='bx bx-stats'></i> Моя посещаемость</h3>
+
+                    <div class="dashboard-grid">
+                        <div class="stat-card blue">
+                            <div class="stat-icon"><i class='bx bx-calendar'></i></div>
+                            <div class="stat-value" id="myTotalDays">0</div>
+                            <div class="stat-label">Всего рабочих дней</div>
+                        </div>
+
+                        <div class="stat-card green">
+                            <div class="stat-icon"><i class='bx bx-check'></i></div>
+                            <div class="stat-value" id="myPresentDays">0</div>
+                            <div class="stat-label">Дней присутствия</div>
+                        </div>
+
+                        <div class="stat-card orange">
+                            <div class="stat-icon"><i class='bx bx-time'></i></div>
+                            <div class="stat-value" id="myLateCount">0</div>
+                            <div class="stat-label">Опозданий</div>
+                        </div>
+
+                        <div class="stat-card purple">
+                            <div class="stat-icon"><i class='bx bx-trending-up'></i></div>
+                            <div class="stat-value" id="myPercentage">0%</div>
+                            <div class="stat-label">Процент посещаемости</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fullscreen QR Modal -->
+        <div class="qr-fullscreen-modal" id="qrFullscreenModal" hidden>
+            <div class="modal-content-qr">
+                <button class="close-btn" id="closeFullscreenBtn">&times;</button>
+                <canvas id="fullscreenQrCode"></canvas>
+                <div class="qr-timer-large">Обновление через: <span id="qrTimerLarge">8</span>с</div>
+            </div>
+        </div>
+
+        <!-- Other sections (placeholder) -->
+
+        <!-- Users Section (Admin Only) -->
+        <section id="users" class="content-section">
+            <header class="section-header">
+                <h2>Управление пользователями</h2>
+                <p>Создание и редактирование аккаунтов студентов, преподавателей и операторов</p>
+            </header>
+
+            <!-- Action Header -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <input type="text" id="usersSearchInput" class="input" placeholder="Поиск по ФИО или email..."
+                        style="max-width: 400px;">
+                    <button class="btn btn-primary" id="createUserBtn">
+                        <i class='bx bx-plus'></i> Добавить пользователя
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-users-tab="students">Студенты</button>
+                <button class="tab-btn" data-users-tab="instructors">Преподаватели</button>
+                <button class="tab-btn" data-users-tab="operators">Операторы столовой</button>
+            </div>
+
+            <!-- Users Table -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ФИО</th>
+                                <th>Email</th>
+                                <th>Код</th>
+                                <th>Группа</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Динамически загружается через JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Users Section (Admin Only) -->
+        <section id="users" class="content-section">
+            <header class="section-header">
+                <h2>Управление пользователями</h2>
+                <p>Создание и редактирование аккаунтов студентов, преподавателей и операторов</p>
+            </header>
+
+            <!-- Action Header -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <input type="text" id="usersSearchInput" class="input" placeholder="Поиск по ФИО или email..."
+                        style="max-width: 400px;">
+                    <button class="btn btn-primary" id="createUserBtn">
+                        <i class='bx bx-plus'></i> Добавить пользователя
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-users-tab="students">Студенты</button>
+                <button class="tab-btn" data-users-tab="instructors">Преподаватели</button>
+                <button class="tab-btn" data-users-tab="operators">Операторы столовой</button>
+            </div>
+
+            <!-- Users Table -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ФИО</th>
+                                <th>Email</th>
+                                <th>Код</th>
+                                <th>Группа</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Динамически загружается через JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Groups Section (Admin Only) -->
+        <section id="groups" class="content-section">
+            <header class="section-header">
+                <h2>Управление группами</h2>
+                <p>Создание групп и распределение студентов</p>
+            </header>
+
+            <!-- Action Header -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3><i class='bx bx-group'></i> Список групп</h3>
+                    <button class="btn btn-primary" id="createGroupBtn" onclick="openCreateGroupModal()">
+                        <i class='bx bx-plus'></i> Создать группу
+                    </button>
+                </div>
+            </div>
+
+            <!-- Groups Table -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Курс</th>
+                                <th>Студентов</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="groupsTableBody">
+                            <!-- Динамически загружается через JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Subjects Section (Admin Only) -->
+        <section id="subjects" class="content-section">
+            <header class="section-header">
+                <h2>Управление предметами</h2>
+                <p>Создание предметов и назначение преподавателей</p>
+            </header>
+
+            <!-- Action Header -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3><i class='bx bx-book'></i> Список предметов</h3>
+                    <button class="btn btn-primary" id="createSubjectBtn">
+                        <i class='bx bx-plus'></i> Создать предмет
+                    </button>
+                </div>
+            </div>
+
+            <!-- Subjects Table -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Описание</th>
+                                <th>Преподавателей</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subjectsTableBody">
+                            <!-- Динамически загружается через JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schedule Section -->
+        <section id="schedule" class="content-section">
+            <header class="section-header">
+                <h2>Расписание занятий</h2>
+                <p>Просмотр и управление расписанием</p>
+            </header>
+
+            <!-- Action Header (только для админа) -->
+            <div class="card" style="margin-bottom: 20px;" data-admin-only>
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3><i class='bx bx-calendar'></i> Управление расписанием</h3>
+                    <button class="btn btn-primary" id="createLessonBtn">
+                        <i class='bx bx-plus'></i> Добавить урок
+                    </button>
+                </div>
+            </div>
+
+            <!-- Schedule Display -->
+            <div class="card">
+                <div id="scheduleGrid">
+                    <!-- Динамически загружается через JS -->
+                </div>
+            </div>
+        </section>
+        <!-- ==================== GRADES SECTION ==================== -->
+        <section id="grades" class="content-section">
+            <header class="section-header">
+                <h2>Журнал оценок</h2>
+                <p>Просмотр и управление оценками студентов</p>
+            </header>
+
+            <!-- Action Header (для преподавателей и админов) -->
+            <div class="card" style="margin-bottom: 20px;" id="gradesActionHeader">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3><i class='bx bx-book-content'></i> Управление оценками</h3>
+                    <button class="btn btn-primary" id="addGradeBtn" style="display: none;">
+                        <i class='bx bx-plus'></i> Выставить оценку
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grades Table -->
+            <div class="card">
+                <div class="card-body">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Студент</th>
+                                <th>Предмет</th>
+                                <th>Оценка</th>
+                                <th>Тип</th>
+                                <th>Дата</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gradesTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center;">Загрузка...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Modal: Add/Edit Category -->
+    <div class="modal hidden" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="categoryModalTitle">Добавить категорию</h3>
+                <button class="modal-close" id="closeCategoryModal">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <form id="categoryForm">
+                <div class="form-group">
+                    <label for="categoryName">Название категории</label>
+                    <input type="text" id="categoryName" class="input" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dailyLimit">Суточный лимит</label>
+                        <input type="number" id="dailyLimit" class="input" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="weeklyLimit">Недельный лимит</label>
+                        <input type="number" id="weeklyLimit" class="input" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="monthlyLimit">Месячный лимит</label>
+                        <input type="number" id="monthlyLimit" class="input" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" id="cancelCategoryBtn">Отмена</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Modal: Assign Student -->
+        <div class="modal hidden" id="assignStudentModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Назначить студента на категорию</h3>
+                    <button class="modal-close" id="closeAssignmentModal">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+                <form id="assignmentForm">
+                    <div class="form-group">
+                        <label for="assignStudentId">Студент</label>
+                        <select id="assignStudentId" class="input" required>
+                            <option value="">Выберите студента...</option>
+                            <!-- Динамически загружается через JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="assignCategoryId">Категория</label>
+                        <select id="assignCategoryId" class="input" required>
+                            <option value="">Выберите категорию...</option>
+                            <!-- Динамически загружается через JS -->
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary">Назначить</button>
+                        <button type="button" class="btn btn-secondary" id="cancelAssignmentBtn">Отмена</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Modal: Create/Edit User -->
+        <div class="modal hidden" id="createUserModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Добавить пользователя</h3>
+                    <button class="modal-close" onclick="closeCreateUserModal()">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+                <form id="createUserForm" onsubmit="createUser(event)">
+                    <div class="form-group">
+                        <label for="userFullName">ФИО *</label>
+                        <input type="text" id="userFullName" class="input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userEmail">Email *</label>
+                        <input type="email" id="userEmail" class="input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userPassword">Пароль *</label>
+                        <input type="password" id="userPassword" class="input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userRole">Роль *</label>
+                        <select id="userRole" class="input" required>
+                            <option value="student">Студент</option>
+                            <option value="instructor">Преподаватель</option>
+                            <option value="cafeteria_operator">Оператор столовой</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="userGroupField">
+                        <label for="userGroupId">Группа (опционально)</label>
+                        <select id="userGroupId" class="input">
+                            <option value="">Не назначена</option>
+                            <!-- Динамически загружаются группы -->
+                        </select>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeCreateUserModal()">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Создать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal: Create/Edit Group -->
+        <div class="modal hidden" id="createGroupModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="groupModalTitle">Создать группу</h3>
+                    <button class="modal-close" onclick="closeGroupModal()">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+                <form id="createGroupForm" onsubmit="createGroup(event)">
+                    <div class="form-group">
+                        <label for="groupName">Название группы *</label>
+                        <input type="text" id="groupName" class="input" required placeholder="ІС-21">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="groupCourse">Курс *</label>
+                        <select id="groupCourse" class="input" required>
+                            <option value="1">1 курс</option>
+                            <option value="2">2 курс</option>
+                            <option value="3">3 курс</option>
+                            <option value="4">4 курс</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeGroupModal()">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal: Group Students -->
+        <div class="modal hidden" id="groupStudentsModal">
+            <div class="modal-content" style="max-width: 800px;">
+                <div class="modal-header">
+                    <h3 id="groupStudentsTitle">Студенты группы</h3>
+                    <button class="modal-close" onclick="closeGroupStudentsModal()">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Добавить студента -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h4><i class='bx bx-user-plus'></i> Добавить студента</h4>
+                        <div style="display: flex; gap: 10px; align-items: flex-end;">
+                            <div class="form-group" style="flex: 1; margin: 0;">
+                                <label for="addStudentSelect">Выберите студента</label>
+                                <select id="addStudentSelect" class="input">
+                                    <option value="">Выберите...</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="addStudentToGroup()">
+                                <i class='bx bx-plus'></i> Добавить
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Список студентов -->
+                    <div class="card">
+                        <h4><i class='bx bx-group'></i> Студенты в группе</h4>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ФИО</th>
+                                        <th>Код студента</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groupStudentsTableBody">
+                                    <!-- Динамически загружается -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeGroupStudentsModal()">Закрыть</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Create/Edit Subject -->
+        <div class="modal hidden" id="createSubjectModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="subjectModalTitle">Создать предмет</h3>
+                    <button class="modal-close" onclick="closeSubjectModal()">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+                <form id="createSubjectForm" onsubmit="createSubject(event)">
+                    <div class="form-group">
+                        <label for="subjectName">Название предмета *</label>
+                        <input type="text" id="subjectName" class="input" required placeholder="Математический анализ">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subjectDescription">Описание</label>
+                        <textarea id="subjectDescription" class="input" rows="3"
+                            placeholder="Линейная алгебра, матрицы, интегралы..."></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeSubjectModal()">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal: Subject Instructors -->
+        <div class="modal hidden" id="subjectInstructorsModal">
+            <div class="modal-content" style="max-width: 800px;">
+                <div class="modal-header">
+                    <h3 id="subjectInstructorsTitle">Преподаватели предмета</h3>
+                    <button class="modal-close" onclick="closeSubjectInstructorsModal()">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Назначить преподавателя -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h4><i class='bx bx-user-plus'></i> Назначить преподавателя</h4>
+                        <div style="display: flex; gap: 10px; align-items: flex-end;">
+                            <div class="form-group" style="flex: 1; margin: 0;">
+                                <label for="addInstructorSelect">Выберите преподавателя</label>
+                                <select id="addInstructorSelect" class="input">
+                                    <option value="">Выберите...</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="assignInstructor()">
+                                <i class='bx bx-plus'></i> Назначить
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Список преподавателей -->
+                    <div class="card">
+                        <h4><i class='bx bx-user-check'></i> Назначенные преподаватели</h4>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ФИО</th>
+                                        <th>Email</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subjectInstructorsTableBody">
+                                    <!-- Динамически загружается -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeSubjectInstructorsModal()">Закрыть</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Create Lesson -->
+        <div class="modal hidden" id="createLessonModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Добавить урок в расписание</h3>
+                    <button class="modal-close" onclick="closeLessonModal()">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+                <form id="createLessonForm" onsubmit="createLesson(event)">
+                    <div class="form-group">
+                        <label for="lessonGroupId">Группа *</label>
+                        <select id="lessonGroupId" class="input" required>
+                            <option value="">Выберите...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonSubjectId">Предмет *</label>
+                        <select id="lessonSubjectId" class="input" required>
+                            <option value="">Выберите...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonInstructorId">Преподаватель *</label>
+                        <select id="lessonInstructorId" class="input" required>
+                            <option value="">Выберите...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonDayOfWeek">День недели *</label>
+                        <select id="lessonDayOfWeek" class="input" required>
+                            <option value="monday">Понедельник</option>
+                            <option value="tuesday">Вторник</option>
+                            <option value="wednesday">Среда</option>
+                            <option value="thursday">Четверг</option>
+                            <option value="friday">Пятница</option>
+                            <option value="saturday">Суббота</option>
+                        </select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="lessonStartTime">Начало *</label>
+                            <input type="time" id="lessonStartTime" class="input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonEndTime">Конец *</label>
+                            <input type="time" id="lessonEndTime" class="input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonRoom">Аудитория</label>
+                        <input type="text" id="lessonRoom" class="input" placeholder="205">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeLessonModal()">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Создать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Scripts -->
+        <script src="js/utils.js"></script>
+        <script src="js/auth.js"></script>
+        <script src="js/cafeteria.js"></script>
+        <script src="js/attendance.js"></script>
+        <script src="js/qr-scanner.js"></script>
+        <!-- Добавляем ?v=2 чтобы сбросить кеш на телефоне -->
+        <script src="js/student-card.js?v=2"></script>
+        <script src="js/users.js?v=2"></script>
+        <script src="js/groups.js?v=2"></script>
+        <script src="js/subjects.js"></script>
+        <script src="js/grades.js"></script>
+        <script src="js/schedule-student.js"></script>
+        <script src="js/schedule-instructor.js"></script>
+        <script src="js/main.js"></script>
+</body>
+
+</html>

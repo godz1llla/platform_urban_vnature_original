@@ -1,0 +1,86 @@
+
+    <!-- Modal: Create/Edit Group -->
+    <div class="modal" id="createGroupModal" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="groupModalTitle">Создать группу</h3>
+                <button class="modal-close" onclick="closeGroupModal()">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <form id="createGroupForm" onsubmit="createGroup(event)">
+                <div class="form-group">
+                    <label for="groupName">Название группы *</label>
+                    <input type="text" id="groupName" class="input" required placeholder="ІС-21">
+                </div>
+                
+                <div class="form-group">
+                    <label for="groupCourse">Курс *</label>
+                    <select id="groupCourse" class="input" required>
+                        <option value="1">1 курс</option>
+                        <option value="2">2 курс</option>
+                        <option value="3">3 курс</option>
+                        <option value="4">4 курс</option>
+                    </select>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeGroupModal()">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Group Students -->
+    <div class="modal" id="groupStudentsModal" hidden>
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 id="groupStudentsTitle">Студенты группы</h3>
+                <button class="modal-close" onclick="closeGroupStudentsModal()">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Добавить студента -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <h4><i class='bx bx-user-plus'></i> Добавить студента</h4>
+                    <div style="display: flex; gap: 10px; align-items: flex-end;">
+                        <div class="form-group" style="flex: 1; margin: 0;">
+                            <label for="addStudentSelect">Выберите студента</label>
+                            <select id="addStudentSelect" class="input">
+                                <option value="">Выберите...</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="addStudentToGroup()">
+                            <i class='bx bx-plus'></i> Добавить
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Список студентов -->
+                <div class="card">
+                    <h4><i class='bx bx-group'></i> Студенты в группе</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ФИО</th>
+                                    <th>Код студента</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="groupStudentsTableBody">
+                                <!-- Динамически загружается -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeGroupStudentsModal()">Закрыть</button>
+            </div>
+        </div>
+    </div>

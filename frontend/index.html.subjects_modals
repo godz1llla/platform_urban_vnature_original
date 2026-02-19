@@ -1,0 +1,81 @@
+
+    <!-- Modal: Create/Edit Subject -->
+    <div class="modal" id="createSubjectModal" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="subjectModalTitle">Создать предмет</h3>
+                <button class="modal-close" onclick="closeSubjectModal()">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <form id="createSubjectForm" onsubmit="createSubject(event)">
+                <div class="form-group">
+                    <label for="subjectName">Название предмета *</label>
+                    <input type="text" id="subjectName" class="input" required placeholder="Математический анализ">
+                </div>
+                
+                <div class="form-group">
+                    <label for="subjectDescription">Описание</label>
+                    <textarea id="subjectDescription" class="input" rows="3" placeholder="Линейная алгебра, матрицы, интегралы..."></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeSubjectModal()">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Subject Instructors -->
+    <div class="modal" id="subjectInstructorsModal" hidden>
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 id="subjectInstructorsTitle">Преподаватели предмета</h3>
+                <button class="modal-close" onclick="closeSubjectInstructorsModal()">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Назначить преподавателя -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <h4><i class='bx bx-user-plus'></i> Назначить преподавателя</h4>
+                    <div style="display: flex; gap: 10px; align-items: flex-end;">
+                        <div class="form-group" style="flex: 1; margin: 0;">
+                            <label for="addInstructorSelect">Выберите преподавателя</label>
+                            <select id="addInstructorSelect" class="input">
+                                <option value="">Выберите...</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="assignInstructor()">
+                            <i class='bx bx-plus'></i> Назначить
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Список преподавателей -->
+                <div class="card">
+                    <h4><i class='bx bx-user-check'></i> Назначенные преподаватели</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ФИО</th>
+                                    <th>Email</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subjectInstructorsTableBody">
+                                <!-- Динамически загружается -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeSubjectInstructorsModal()">Закрыть</button>
+            </div>
+        </div>
+    </div>

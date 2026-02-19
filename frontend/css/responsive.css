@@ -1,0 +1,410 @@
+/* Mobile-First подход: адаптивные стили */
+
+/* Mobile (до 768px) - базовые стили */
+@media (max-width: 768px) {
+    :root {
+        --sidebar-width: 100%;
+    }
+
+    /* Sidebar как overlay */
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    .sidebar-toggle {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1001;
+        background: white;
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+        cursor: pointer;
+        color: var(--primary-purple);
+        font-size: 24px;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-toggle:hover {
+        background: var(--light-grey);
+        transform: scale(1.05);
+    }
+
+    .sidebar-toggle i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Main content на всю ширину */
+    .main-content {
+        margin-left: 0;
+        padding: 80px 16px 16px 16px;
+        /* Отступ сверху для hamburger */
+    }
+
+    .section-header {
+        margin-top: 24px;
+        /* Уменьшил с 64px */
+        margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+        font-size: 22px;
+    }
+
+    /* Card */
+    .card {
+        padding: 16px;
+        border-radius: var(--radius-md);
+        overflow-x: hidden;
+        /* Чтобы контент не рвал карточку */
+    }
+
+    .card h3 {
+        font-size: 18px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .card-header .btn {
+        width: 100%;
+    }
+
+    /* Serve Container - вертикальный layout */
+    .serve-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .qr-scanner-wrapper {
+        aspect-ratio: 1/1;
+    }
+
+    /* Limits Grid */
+    .limits-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .limit-item {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 8px;
+        background: white;
+        border-radius: var(--radius-sm);
+    }
+
+    .limit-label {
+        text-align: left;
+    }
+
+    /* Categories Grid - одна колонка */
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Category Limits */
+    .category-limits {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .category-limit-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+    }
+
+    .category-limit-item .label {
+        margin-bottom: 0;
+    }
+
+    /* Tabs - скроллируемые */
+    .tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        white-space: nowrap;
+        /* Важно */
+        padding-bottom: 5px;
+        /* Чтобы скролл не закрывал бордер */
+    }
+
+    .tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+        flex-shrink: 0;
+        /* Не сжимать кнопки */
+    }
+
+    /* Form Row - одна колонка */
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    /* =========================================
+       ТАБЛИЦА-КАРТОЧКИ (MOBILE TABLE FIX)
+       ========================================= */
+
+    .table-responsive {
+        overflow: visible;
+    }
+
+    .table {
+        display: block;
+        width: 100%;
+    }
+
+    .table thead {
+        display: none;
+    }
+
+    .table tbody,
+    .table tbody tr,
+    .table tbody td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tbody tr {
+        background: white;
+        border: 1px solid var(--light-grey);
+        border-radius: var(--radius-md);
+        margin-bottom: 12px;
+        padding: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .table td {
+        display: flex;
+        /* Флекс для строки метка-значение */
+        flex-wrap: wrap;
+        /* Разрешаем перенос */
+        justify-content: space-between;
+        /* По краям */
+        align-items: flex-start;
+        /* Прижимаем к верху */
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        text-align: right;
+        /* Значение справа */
+        gap: 10px;
+        /* Отступ между меткой и текстом */
+    }
+
+    .table td:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+        justify-content: flex-end;
+        /* Кнопки справа */
+        flex-direction: row;
+        /* Кнопки в ряд */
+    }
+
+    /* Метка поля (data-label) */
+    .table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: var(--grey);
+        font-size: 12px;
+        text-transform: uppercase;
+        flex-basis: 30%;
+        /* Метка занимает 30% ширины минимум */
+        flex-shrink: 0;
+        /* Не сжимается */
+        text-align: left;
+    }
+
+    /* Само содержимое ячейки (правая часть) */
+    .table td>* {
+        text-align: right;
+    }
+
+    /* Исправление длинного текста */
+    .table td {
+        word-break: break-word;
+        /* Ломать длинные слова */
+        overflow-wrap: break-word;
+    }
+
+    /* Toast - меньше */
+    .toast-container {
+        left: 10px;
+        right: 10px;
+        top: 10px;
+    }
+
+    .toast {
+        min-width: auto;
+        width: 100%;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 10px;
+        max-height: 95vh;
+        padding: 15px;
+        /* Чуть меньше паддинги */
+    }
+
+    .modal form {
+        padding: 15px !important;
+    }
+
+    /* Filters */
+    .filters {
+        flex-direction: column;
+    }
+
+    .filters .input {
+        width: 100%;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .btn i {
+        font-size: 18px;
+    }
+
+    /* Serve Actions */
+    .serve-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .serve-actions .btn {
+        width: 100%;
+    }
+
+    /* Кнопка ручного ввода - под камерой на мобильных */
+    #manualInputBtn {
+        margin-top: 12px;
+        width: 100%;
+    }
+}
+
+/* Tablet (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    :root {
+        --sidebar-width: var(--sidebar-collapsed);
+    }
+
+    /* Collapsed Sidebar - только иконки */
+    .sidebar .nav-item span,
+    .sidebar .user-details,
+    .sidebar .btn-logout span,
+    .sidebar .logo {
+        display: none;
+    }
+
+    .sidebar .nav-item {
+        justify-content: center;
+        padding: 14px;
+    }
+
+    .sidebar-header {
+        justify-content: center;
+    }
+
+    .user-info {
+        justify-content: center;
+    }
+
+    /* Main content сдвиг */
+    .main-content {
+        margin-left: var(--sidebar-collapsed);
+        padding: 24px;
+    }
+
+    /* Categories - 2 колонки */
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Serve Container - 2 колонки */
+    .serve-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Desktop (больше 1024px) */
+@media (min-width: 1024px) {
+
+    /* Full Sidebar */
+    .sidebar {
+        width: var(--sidebar-width);
+    }
+
+    .main-content {
+        margin-left: var(--sidebar-width);
+    }
+
+    /* Categories - 3 колонки */
+    .categories-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+/* Touch-friendly элементы */
+@media (hover: none) and (pointer: coarse) {
+
+    /* Увеличиваем размеры кликабельных элементов */
+    .btn,
+    .nav-item,
+    .tab-btn,
+    .icon-btn {
+        min-height: 44px;
+        min-width: 44px;
+        touch-action: manipulation;
+        /* Улучшает реакцию на тап */
+    }
+
+    /* Убираем hover эффекты */
+    .btn:hover,
+    .nav-item:hover,
+    .icon-btn:hover {
+        transform: none;
+    }
+
+    /* Active состояния */
+    .btn:active {
+        transform: scale(0.95);
+    }
+}
+
+/* Landscape mode на мобильных */
+@media (max-width: 768px) and (orientation: landscape) {
+    .qr-scanner-wrapper {
+        aspect-ratio: 16/9;
+    }
+
+    .serve-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}

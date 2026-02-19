@@ -1,0 +1,98 @@
+<!-- Dashboard Schedule Widget (вставить в Dashboard секцию) -->
+
+<!-- Для студентов -->
+<div class="widget" data-role="student">
+    <h3><i class='bx bx-calendar'></i> Моё расписание на сегодня</h3>
+    <div id="todayScheduleWidget" class="widget-content">
+        Загрузка...
+    </div>
+</div>
+
+<!-- Для преподавателей -->
+<div class="widget" data-role="instructor">
+    <h3><i class='bx bx-calendar'></i> Мои занятия сегодня</h3>
+    <div id="todayScheduleWidget" class="widget-content">
+        Загрузка...
+    </div>
+</div>
+
+<!-- CSS для виджета -->
+<style>
+.widget {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.widget h3 {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.widget-content {
+    font-size: 14px;
+}
+
+.widget-item {
+    padding: 10px;
+    border-left: 3px solid var(--primary-color);
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.schedule-day h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.schedule-item {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.schedule-time {
+    font-weight: bold;
+    color: var(--primary-color);
+    min-width: 100px;
+}
+
+.schedule-details {
+    flex: 1;
+}
+
+.schedule-details strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.schedule-details .room {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.schedule-actions {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+</style>

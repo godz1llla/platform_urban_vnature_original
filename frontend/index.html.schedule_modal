@@ -1,0 +1,68 @@
+
+    <!-- Modal: Create Lesson -->
+    <div class="modal" id="createLessonModal" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Добавить урок в расписание</h3>
+                <button class="modal-close" onclick="closeLessonModal()">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <form id="createLessonForm" onsubmit="createLesson(event)">
+                <div class="form-group">
+                    <label for="lessonGroupId">Группа *</label>
+                    <select id="lessonGroupId" class="input" required>
+                        <option value="">Выберите...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lessonSubjectId">Предмет *</label>
+                    <select id="lessonSubjectId" class="input" required>
+                        <option value="">Выберите...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lessonInstructorId">Преподаватель *</label>
+                    <select id="lessonInstructorId" class="input" required>
+                        <option value="">Выберите...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lessonDayOfWeek">День недели *</label>
+                    <select id="lessonDayOfWeek" class="input" required>
+                        <option value="monday">Понедельник</option>
+                        <option value="tuesday">Вторник</option>
+                        <option value="wednesday">Среда</option>
+                        <option value="thursday">Четверг</option>
+                        <option value="friday">Пятница</option>
+                        <option value="saturday">Суббота</option>
+                    </select>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="lessonStartTime">Начало *</label>
+                        <input type="time" id="lessonStartTime" class="input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lessonEndTime">Конец *</label>
+                        <input type="time" id="lessonEndTime" class="input" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lessonRoom">Аудитория</label>
+                    <input type="text" id="lessonRoom" class="input" placeholder="205">
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeLessonModal()">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Создать</button>
+                </div>
+            </form>
+        </div>
+    </div>
