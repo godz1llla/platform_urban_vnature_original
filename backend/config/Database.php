@@ -12,8 +12,8 @@ class Database
     // Настройки подключения
     private $host = 'localhost';
     private $database = 'urban_college';
-    private $username = 'root';
-    private $password = 'root';
+    private $username = 'urban_user';
+    private $password = 'urban_pass';
     private $charset = 'utf8mb4';
 
     /**

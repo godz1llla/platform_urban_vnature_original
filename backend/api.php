@@ -146,6 +146,20 @@ try {
         }
     }
 
+    // === STUDENTS ROUTES ===
+    elseif ($pathParts[0] === 'students') {
+        require_once __DIR__ . '/controllers/StudentController.php';
+        $controller = new StudentController();
+
+        if ($method === 'GET') {
+            if (isset($pathParts[1]) && $pathParts[1] === 'my-info') {
+                $controller->getMyInfo();
+            } else {
+                $controller->getAllStudents();
+            }
+        }
+    }
+
     // === GROUPS ROUTES ===
     elseif ($pathParts[0] === 'groups') {
         require_once __DIR__ . '/controllers/GroupsController.php';

@@ -74,10 +74,39 @@ class DashboardController
         $stmt->execute([$student['id'], $today]);
         $usedToday = $stmt->fetch()['count'];
 
+        // 4. Получение названия группы
+        $stmt = $this->db->prepare("SELECT name FROM `groups` WHERE id = ?");
+        $stmt->execute([$student['group_id']]);
+        $groupName = $stmt->fetchColumn();
+
+        // 5. Получение расписания на сегодня
+        $todayDayOfWeek = strtolower(date('l')); // monday, tuesday...
+        $schedule = [];
+
+        if ($student['group_id']) {
+            $query = "
+                SELECT 
+                    l.start_time, 
+                    l.room, 
+                    s.name as subject_name,
+                    u.full_name as instructor_name
+                FROM lessons l
+                JOIN subjects s ON l.subject_id = s.id
+                LEFT JOIN users u ON l.instructor_user_id = u.id
+                WHERE l.group_id = ? AND l.day_of_week = ?
+                ORDER BY l.start_time ASC
+            ";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([$student['group_id'], $todayDayOfWeek]);
+            $schedule = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
         return [
             'role' => 'student',
             'student_id' => $student['id'],
             'student_code' => $student['student_code'],
+            'group_name' => $groupName, // Добавлено поле группы
+            'schedule' => $schedule,    // Добавлено расписание
             'cafeteria' => [
                 'has_assignment' => (bool) $assignment,
                 'category_name' => $assignment ? $assignment['name'] : null,

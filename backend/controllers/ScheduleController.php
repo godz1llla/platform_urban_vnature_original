@@ -263,22 +263,23 @@ class ScheduleController
 
         $query = "
             SELECT 
-                s.id,
-                s.day_of_week,
-                s.pair_number,
-                s.time_start,
-                s.time_end,
-                s.audience,
-                subj.name_ru as subject_name_ru,
-                subj.name_kz as subject_name_kz,
-                CONCAT(u.last_name, ' ', u.first_name, '.', SUBSTRING(u.patronymic, 1, 1), '.') as instructor_name
-            FROM schedule s
-            JOIN subjects subj ON s.subject_id = subj.id
-            LEFT JOIN users u ON s.instructor_id = u.id
-            WHERE s.group_id = ?
+                l.id,
+                l.day_of_week,
+                l.pair_number,
+                l.start_time,
+                l.end_time,
+                l.room,
+                s.name as subject_name_ru, -- Using `name` as `name_ru` was not found in previous checks, assuming `name` contains the subject name
+                s.name as subject_name_kz,
+                u.full_name as instructor_name
+            FROM lessons l
+            JOIN subjects s ON l.subject_id = s.id
+            LEFT JOIN users u ON l.instructor_user_id = u.id
+            WHERE l.group_id = ?
             ORDER BY 
-                FIELD(s.day_of_week, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'),
-                s.pair_number ASC
+                FIELD(l.day_of_week, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'),
+                l.pair_number ASC
+
         ";
 
         $stmt = $this->db->prepare($query);
@@ -300,22 +301,23 @@ class ScheduleController
 
         $query = "
             SELECT 
-                s.id,
-                s.day_of_week,
-                s.pair_number,
-                s.time_start,
-                s.time_end,
-                s.audience,
+                l.id,
+                l.day_of_week,
+                l.pair_number,
+                l.start_time,
+                l.end_time,
+                l.room,
                 g.name as group_name,
-                subj.name_ru as subject_name_ru,
-                subj.name_kz as subject_name_kz
-            FROM schedule s
-            JOIN `groups` g ON s.group_id = g.id
-            JOIN subjects subj ON s.subject_id = subj.id
-            WHERE s.instructor_id = ?
+                s.name as subject_name_ru,
+                s.name as subject_name_kz
+            FROM lessons l
+            JOIN `groups` g ON l.group_id = g.id
+            JOIN subjects s ON l.subject_id = s.id
+            WHERE l.instructor_user_id = ?
             ORDER BY 
-                FIELD(s.day_of_week, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'),
-                s.pair_number ASC
+                FIELD(l.day_of_week, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'),
+                l.pair_number ASC
+
         ";
 
         $stmt = $this->db->prepare($query);

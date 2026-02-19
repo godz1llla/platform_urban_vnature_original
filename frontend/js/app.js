@@ -182,7 +182,7 @@ function renderDashboard(data) {
         html = `
             <div class="student-welcome-card">
                 <h3 class="student-welcome-title">Привет, ${data.student_code}! 👋</h3>
-                <p class="student-welcome-subtitle">Хорошего дня в колледже</p>
+                <p class="student-welcome-subtitle">Группа: ${data.group_name || 'Не назначена'} • Хорошего дня в колледже</p>
             </div>
 
             <div class="dashboard-grid">
@@ -216,24 +216,19 @@ function renderDashboard(data) {
                     <div class="stat-label">Статус сегодня</div>
                 </div>
 
-                <!-- Расписание (Заглушка) -->
+                <!-- Расписание -->
                 <div class="schedule-list">
-                    <h4 style="margin-bottom: 16px;">Ближайшие занятия</h4>
+                    <h4 style="margin-bottom: 16px;">Расписание на сегодня</h4>
                     
+                    ${data.schedule && data.schedule.length > 0 ? data.schedule.map(lesson => `
                     <div class="schedule-item">
-                        <div class="schedule-time">09:00</div>
+                        <div class="schedule-time">${lesson.start_time ? lesson.start_time.substring(0, 5) : ''}</div>
                         <div class="schedule-info">
-                            <h4>Математика</h4>
-                            <p>Кабинет 302 • Иванов И.И.</p>
+                            <h4>${lesson.subject_name}</h4>
+                            <p>Кабинет ${lesson.room || 'Не указан'} • ${lesson.instructor_name || 'Не назначен'}</p>
                         </div>
                     </div>
-                    <div class="schedule-item">
-                        <div class="schedule-time">10:40</div>
-                        <div class="schedule-info">
-                            <h4>История Казахстана</h4>
-                            <p>Кабинет 205 • Петров П.П.</p>
-                        </div>
-                    </div>
+                    `).join('') : '<p style="color: var(--grey); font-size: 14px; text-align: center; padding: 20px;">Занятий сегодня нет</p>'}
                 </div>
             </div>
         `;

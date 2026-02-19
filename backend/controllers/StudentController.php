@@ -92,7 +92,7 @@ class StudentController
                 g.course
             FROM students s
             JOIN users u ON s.user_id = u.id
-            JOIN groups g ON s.group_id = g.id
+            JOIN `groups` g ON s.group_id = g.id
             WHERE s.user_id = ?
         ");
         $stmt->execute([$user['user_id']]);

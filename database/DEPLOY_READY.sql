@@ -1,10 +1,3 @@
--- URBAN COLLEGE PLATFORM DEPLOYMENT SCRIPT
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
-DROP DATABASE IF EXISTS urban_college;
-CREATE DATABASE urban_college CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE urban_college;
-
 -- =================================================================
 -- UNIFIED DATABASE PLATFORM - MONOLITHIC INSTALLATION SCRIPT
 -- Version: 2.1
@@ -35,8 +28,8 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `specialties` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `code` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Код специальности (4S06120102)',
-  `name_kz` VARCHAR(255) NOT NULL COMMENT 'Название на казахском',
-  `name_ru` VARCHAR(255) NULL COMMENT 'Название на русском',
+  `name_kz` VARCHAR(255) NOT NULL UNIQUE COMMENT 'Название на казахском',
+  `name_ru` VARCHAR(255) NULL UNIQUE COMMENT 'Название на русском',
   `duration_months` TINYINT UNSIGNED NULL COMMENT 'Срок обучения в месяцах',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -70,7 +63,7 @@ CREATE TABLE `users` (
 -- ========================================
 CREATE TABLE `subjects` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL UNIQUE,
   `code` VARCHAR(50) NULL COMMENT 'Код предмета',
   `description` TEXT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -83,7 +76,7 @@ CREATE TABLE `subjects` (
 -- ========================================
 CREATE TABLE `groups` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(100) NOT NULL,
+  `name` VARCHAR(100) NOT NULL UNIQUE,
   `course` TINYINT UNSIGNED NOT NULL COMMENT 'Курс обучения (1-4)',
   `curator_id` INT UNSIGNED NULL COMMENT 'Куратор группы (преподаватель)',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -271,122 +264,6 @@ CREATE TABLE `schedule` (
     INDEX `idx_schedule_group` (`group_id`, `day_of_week`),
     INDEX `idx_schedule_instructor` (`instructor_id`, `day_of_week`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Расписание занятий';
--- ========================================
--- PRE-INSERT missing groups, subjects and instructors
--- ========================================
-INSERT IGNORE INTO `groups` (name, course) VALUES
-('STC-2501', 1),
-('SГБ-2401', 2),
-('SГБ-2402', 2),
-('SГБ-2501', 1),
-('SГБ-2502', 1),
-('SТС-230', 3),
-('SТС-2301', 3),
-('SЭЛ-2301', 3),
-('SЭЛ-240', 2),
-('SЭЛ-2401', 2),
-('SЭЛ-2402', 2),
-('SЭЛ-2501', 1),
-('SЭЛ-2502', 1),
-('ВТИиС-2302', 3),
-('ВТИиС-2401', 2),
-('ВТиИС-2202', 4),
-('ВТиИС-2501', 1),
-('ГБ-2202', 4),
-('ГБ-2301', 3),
-('ГБ-2302', 3),
-('ГБ-2302/1', 3),
-('ГБ-2401', 2),
-('ГБ-2402', 2),
-('ГБ-2501', 1),
-('ГБ-2502', 1),
-('ГБР-250', 1),
-('ГБР-2502', 1),
-('ПО-2401', 2),
-('ПО-2402', 2),
-('ПО-2501', 1),
-('ПО-2502', 1),
-('ТС-2201', 4),
-('ТС-230', 3),
-('ТС-2301', 3),
-('ТС-2302', 3),
-('ТС-2402', 2),
-('ЭЛ-2201', 4),
-('ЭЛ-2301', 3),
-('ЭЛ-2302', 3),
-('ЭЛ-2401', 2),
-('ЭЛ-2402', 2),
-('ЭЛ-2501', 1),
-('ЭЛ-2502', 1),
-('иИС-250', 1);
-
-INSERT IGNORE INTO subjects (name) VALUES
-('Алғашқы әскери және технологиялық дайындық'),
-('Английский язык'),
-('Ағылшын тілі'),
-('БМ 1'),
-('БМ 2'),
-('Биология'),
-('География'),
-('География Ағылшын тілі'),
-('Графика және жобалау'),
-('Дене тәрбиесі'),
-('Дүниежүзі тарихы'),
-('ЖММ-1'),
-('ЖММ-3'),
-('ЖММ-4'),
-('Информатика'),
-('КМ 4 Желдететін техникаға жоспарлы техникалық қызмет көрсетту жұмыстарын орындау'),
-('КМ-3 Электр монтаждау жұмыстарын жүргізу және аяқтау'),
-('КМ-4 Желілік құрылғылар мен бағдарламалық жасақтаманы конфигурациялау процесін басқару'),
-('КМ-4 Тестілеу'),
-('КМ-5 Ұйымның серверлік жабдықтарын жинақтау, монтаждау, баптау және қызмет көрсету'),
-('Кураторлық сағат'),
-('Кураторский час'),
-('Математика'),
-('Математика Дүниежүзі тарихы'),
-('ООМ 1'),
-('ООМ 2'),
-('ООМ-1'),
-('ПМ -7 Настройка и ослуживание серверного оборудования организации'),
-('ПМ-3 Администрирование процесса установки сетевых устройств инфокоммуникационных систем'),
-('ПМ-4 Администрирование процесса конфигурирования сетевых устройств и программного обеспечения'),
-('ПМ-8 Обеспечение работоспособности IT устройств'),
-('ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet'),
-('Русская литература'),
-('Русский язык'),
-('Физика'),
-('Физическая культура'),
-('Химия'),
-('Қазақ тілі'),
-('Қазақ тілі Қазақ әдебиеті'),
-('Қазақ әдебиеті'),
-('№ 202');
-
-INSERT IGNORE INTO users (full_name, email, password_hash, role) VALUES ('Не указано', 'unknown_instructor@example.com', 'none', 'instructor');
-INSERT IGNORE INTO users (full_name, email, password_hash, role) VALUES
-('Байболатов', 'missing_байболатов@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor'),
-('Жарманов', 'missing_жарманов@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor'),
-('Жұмаканов', 'missing_жұмаканов@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor'),
-('Сатубалдина', 'missing_сатубалдина@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor'),
-('Шадаев', 'missing_шадаев@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor'),
-('Қасымова', 'missing_қасымова@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor');
-
-
--- Ensure name split for all instructors
-UPDATE users SET 
-    last_name = SUBSTRING_INDEX(full_name, ' ', 1),
-    first_name = CASE 
-        WHEN full_name LIKE '% % %' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(full_name, ' ', 2), ' ', -1)
-        WHEN full_name LIKE '% %' THEN SUBSTRING_INDEX(full_name, ' ', -1)
-        ELSE ''
-    END,
-    middle_name = CASE 
-        WHEN full_name LIKE '% % %' THEN SUBSTRING_INDEX(full_name, ' ', -1)
-        ELSE ''
-    END
-WHERE last_name IS NULL OR last_name = '';
-
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -423,53 +300,54 @@ INSERT INTO `specialties` (`code`, `name_kz`, `name_ru`, `duration_months`) VALU
 
 
 -- Пароль для всех: password123
--- Hash: $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
+-- Hash: $2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie
 
 INSERT INTO `users` (`full_name`, `email`, `password_hash`, `role`, `position`) VALUES
+('Не указано', 'not_specified@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Системный аккаунт'),
 -- Администрация
-('Алмаходжаева Юлдузхон Бахтыбаевна', 'almakhodjaeva@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Директор'),
-('Олжабаева Баян Оразбековна', 'olzhabaeva@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Директордың оқу-әдістемелік жұмысы жөніндегі орынбасары'),
-('Енкенов Бауржан Болатханович', 'enkenov@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Директордың ғылыми-әдістемелік жұмыс жөніндегі орынбасары'),
-('Жарманов Ербол Рамазанович', 'zharmanov@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Меңгерушінің шаруашылық бөлім жөніндегі орынбасары'),
+('Алмаходжаева Юлдузхон Бахтыбаевна', 'almakhodjaeva@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'admin', 'Директор'),
+('Олжабаева Баян Оразбековна', 'olzhabaeva@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'admin', 'Директордың оқу-әдістемелік жұмысы жөніндегі орынбасары'),
+('Енкенов Бауржан Болатханович', 'enkenov@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'admin', 'Директордың ғылыми-әдістемелік жұмыс жөніндегі орынбасары'),
+('Жарманов Ербол Рамазанович', 'zharmanov@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'admin', 'Меңгерушінің шаруашылық бөлім жөніндегі орынбасары'),
 
 -- Преподаватели (общеобразовательные предметы)
-('Уатхан Кульжан', 'uatkhan@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
-('Мусалаева Оксана Григорьевна', 'musalayeva@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
-('Хамитова Мархамат Мансуровна', 'khamitova@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
-('Төребаева Аружан Қадырқызы', 'torebayeva@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
-('Раймбаева Жанерке Еркасымовна', 'raimbayeva@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
-('Байдильдина Камилла Ермековна', 'baidildina@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
-('Садувакас Шынар Бауыржанқызы', 'saduvakas@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
+('Уатхан Кульжан', 'uatkhan@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
+('Мусалаева Оксана Григорьевна', 'musalayeva@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
+('Хамитова Мархамат Мансуровна', 'khamitova@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
+('Төребаева Аружан Қадырқызы', 'torebayeva@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
+('Раймбаева Жанерке Еркасымовна', 'raimbayeva@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
+('Байдильдина Камилла Ермековна', 'baidildina@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
+('Садувакас Шынар Бауыржанқызы', 'saduvakas@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы білім беру пәндері бойынша оқытушы'),
 
 -- Преподаватели (профессиональные предметы)
-('Баден Ақмаржан', 'baden@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы кәсіптік және арнайы пәндер бойынша оқытушы'),
-('Кокенов Ахмаджан Абдирасулович', 'kokenov@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы кәсіптік және арнайы пәндер бойынша оқытушы'),
-('Есимханов Куаныш Бекежанович', 'yessimkhanov@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы кәсіптік және арнайы пәндер бойынша оқытушы'),
-('Валиев Сагинбай Тлекович', 'valiyev@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы кәсіптік және арнайы пәндер бойынша оқытушы'),
-('Абильмажинов Руслан Бекзатович', 'abilmazhinov@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Жалпы кәсіптік және арнайы пәндер бойынша оқытушы'),
+('Баден Ақмаржан', 'baden@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы кәсіптік және арнайы пәндер бойынша оқытушы'),
+('Кокенов Ахмаджан Абдирасулович', 'kokenov@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы кәсіптік және арнайы пәндер бойынша оқытушы'),
+('Есимханов Куаныш Бекежанович', 'yessimkhanov@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы кәсіптік және арнайы пәндер бойынша оқытушы'),
+('Валиев Сагинбай Тлекович', 'valiyev@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы кәсіптік және арнайы пәндер бойынша оқытушы'),
+('Абильмажинов Руслан Бекзатович', 'abilmazhinov@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Жалпы кәсіптік және арнайы пәндер бойынша оқытушы'),
 
 -- Преподаватели (общие)
-('Амангельдиев Алихан Нуркасымович', 'amangeldi@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Оқытушы'),
-('Махин Азамат Сабиржанович', 'makhin@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Оқытушы'),
-('Орынбасар Жұлдыз Арманқызы', 'orynbasar@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Оқытушы'),
-('Нұржанұлы Нұрбол', 'nurbol@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Оқытушы'),
-('Жумаканов Айдос Ертаргынович', 'zhumakanov@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Оқытушы'),
+('Амангельдиев Алихан Нуркасымович', 'amangeldi@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Оқытушы'),
+('Махин Азамат Сабиржанович', 'makhin@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Оқытушы'),
+('Орынбасар Жұлдыз Арманқызы', 'orynbasar@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Оқытушы'),
+('Нұржанұлы Нұрбол', 'nurbol@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Оқытушы'),
+('Жумаканов Айдос Ертаргынович', 'zhumakanov@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Оқытушы'),
 
 -- Кураторы
-('Құрымова Мейрамгүл Кенжетайқызы', 'kurymova@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Педагог-ұйымдастырушы куратор'),
-('Ельчубаева Линура Маратовна', 'yelchubayeva@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'instructor', 'Педагог-ұйымдастырушы куратор'),
+('Құрымова Мейрамгүл Кенжетайқызы', 'kurymova@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Педагог-ұйымдастырушы куратор'),
+('Ельчубаева Линура Маратовна', 'yelchubayeva@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Педагог-ұйымдастырушы куратор'),
 
 -- Прочий персонал
-('Сейткасимова Айнур Габдыгапаровна', 'seitkassimova@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Басшы'),
-('Қарсақбаева Таңшолпан Серікқалиқызы', 'karsakbayeva@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Офис-тіркеуші'),
-('Касымова Асемгүл Серікқызы', 'kassymova@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Әлеуметтік педагог'),
-('Тұрарұлы Жандос', 'zhandos@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Жүйелік әкімші'),
-('Кобалова Жадыра Еркиновна', 'kobalova@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Архивариус'),
-('Журавлева Ольга Викторовна', 'zhuravleva@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Психолог');
+('Сейткасимова Айнур Габдыгапаровна', 'seitkassimova@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'admin', 'Басшы'),
+('Қарсақбаева Таңшолпан Серікқалиқызы', 'karsakbayeva@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'admin', 'Офис-тіркеуші'),
+('Касымова Асемгүл Серікқызы', 'kassymova@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'admin', 'Әлеуметтік педагог'),
+('Тұрарұлы Жандос', 'zhandos@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'admin', 'Жүйелік әкімші'),
+('Кобалова Жадыра Еркиновна', 'kobalova@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'admin', 'Архивариус'),
+('Журавлева Ольга Викторовна', 'zhuravleva@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'admin', 'Психолог');
 
 -- Оператор столовой (добавляем роль)
 INSERT INTO `users` (`full_name`, `email`, `password_hash`, `role`, `position`) VALUES
-('Оператор Столовой', 'cafeteria@urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'cafeteria_operator', 'Оператор столовой');
+('Оператор Столовой', 'cafeteria@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'cafeteria_operator', 'Оператор столовой');
 
 -- ======================================================================
 -- IMPORT: Students (681 студентов)
@@ -481,686 +359,798 @@ INSERT INTO `users` (`full_name`, `email`, `password_hash`, `role`, `position`) 
 
 -- Insert users (students)
 INSERT INTO `users` (`id`, `full_name`, `email`, `password_hash`, `role`) VALUES
-(100, 'Әбдірәсіл Нұрсұлтан Қайратұлы', 'nursultan1526@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(101, 'Шимпф Виолета Владимировна', 'violeta1416@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(102, 'Суфянов Данияр Бауыржанулы', 'daniyar1060@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(103, 'Байназар Алихан Ержанұлы', 'alikhan1777@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(104, 'Кучербаев Ильяс Русланұлы', 'ilyas1589@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(105, 'Баймуканов Алихан Бауржанұлы', 'alikhan2028@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(106, 'Жүсіп Алишер Санатұлы', 'alisher1243@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(107, 'Жақсылық Айәділ Ардақұлы', 'ayadil1445@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(108, 'Абдрахман Бекмағамбет Серікұлы', 'bekmagambet0456@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(109, 'Темір Ернар Батырбекұлы', 'ernar1477@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(110, 'Бисембай Рахим Қайратұлы', 'rakhim0443@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(111, 'Кауан Науан Даниярұлы', 'nauan1873@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(112, 'Ержанов Эльдар Муратбекұлы', 'eldar1341@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(113, 'Сеитов Рахат Талгатович', 'rakhat1265@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(114, 'Қалдыбек Ернар Ғалымбекұлы', 'ernar1417@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(115, 'Қыдырбай Рамазан', 'ramazan1728@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(116, 'Бахатбек Санжар', 'sanzhar1020@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(117, 'Бәкіш Әділ Қанатұлы', 'adil0574@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(118, 'Алибеков Диас Бауржанович', 'dias0132@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(119, 'Абдуллаев Темирлан Русланович', 'temirlan1182@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(120, 'Алфёров Рамиль Александрович', 'ramil1397@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(121, 'Абишева Медина Жанболатқызы', 'medina1927@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(122, 'Самыков Абзал', 'abzal2121@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(123, 'Пожаров Данил Александрович', 'danil0953@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(124, 'Оспанов Батырхан Женисович', 'batyrkhan1557@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(125, 'Бақытов Даниал Бексұлтанұлы', 'danial1454@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(126, 'Макашев Дамир Кайратович', 'damir1522@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(127, 'Махшат Досымжан Сүйіншіұлы', 'dosymzhan4184@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(128, 'Муханбеткали Дастан Құрманұлы', 'dastan1749@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(129, 'Қалаубек Заңғар Еркінбекулы', 'zangar3938@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(130, 'Аймахан Әйгерім Мұхтарқызы', 'aygerim0356@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(131, 'Нусратов Эльяр Кахраманұлы', 'elyar0171@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(132, 'Жусипханова Айғаным Бегежанқызы', 'ayganym1179@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(133, 'Мукашев Рустам Эрмекович', 'rustam3469@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(134, 'Едельбаев Дамир Асылбекович', 'damir2142@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(135, 'Абдрахманов Ален Алмасович', 'alen0471@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(136, 'Чалкаров Алижан Тахирович', 'alizhan3440@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(137, 'Зайцев Роман Алексеевич', 'roman3558@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(138, 'Софронов Владимир Степанович', 'vladimir0103@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(139, 'Хикмаджанов Абдуллах Кудратович', 'abdullakh4199@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(140, 'Абдіжаппар Саян Абдрахманұлы', 'sayan0357@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(141, 'Төлеген Бекзат Нұрланұлы', 'bekzat2244@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(142, 'Балтобай Мейржан Бауржанұлы', 'meyrzhan1256@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(143, 'Абилханов Рамазан Аскарович', 'ramazan4191@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(144, 'Ислам Райиан Расулұлы', 'rayian4590@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(145, 'Мұрат Дархан Асқарұлы', 'darkhan1052@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(146, 'Сейткамал Ақарыс Абайұлы', 'akarys4063@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(147, 'Аманбай Ернұр Нұрланұлы', 'ernur1272@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(148, 'Федоровский Артур Михайлович', 'artur2584@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(149, 'Кирисханұлы Нұрдәулет', 'nurdaulet1827@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(150, 'Шамидин Оспан Маратұлы', 'ospan0875@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(151, 'Мұқтарұлы Айқын', 'aykyn0491@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(152, 'Сәбден Әли Мәдиұлы', 'ali3648@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(153, 'Дегтева Евгения Викторовна', 'evgeniya0344@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(154, 'Амантаева Томирис Жанатовна', 'tomiris0283@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(155, 'Сафиуллина Умигулсум Найловна', 'umigulsum1936@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(156, 'Галымжанова Риза Бауыржановна', 'riza4908@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(157, 'Қанағат Айман Бақытжанқызы', 'ayman5387@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(158, 'Шаймахамбет Айсұлу Қайратқызы', 'aysulu0590@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(159, 'Дадабаева Мукаддас Файзуллаевна', 'mukaddas0845@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(160, 'Козыбаева Лашын Ренатовна', 'lashyn0578@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(161, 'Акишева Мира Ахтановна', 'mira1120@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(162, 'Абдикаримов Рустем Каиболлович', 'rustem0898@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(163, 'Жарасбаева Гүлмира Айнабекқызы', 'gulmira0971@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(164, 'Шамурова Жанна Жайковна', 'zhanna0842@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(165, 'Сыдыков Мейіржан Мейрамұлы', 'meyirzhan0935@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(166, 'Мырзахметова Нагима Ерлановна', 'nagima1404@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(167, 'Алиасқар Диана Бахытқызы', 'diana0257@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(168, 'Изатуллаева Феруза Рахматуллақызы', 'feruza0069@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(169, 'Жаңабай Ерасыл Арыстанғалиұлы', 'erasyl3580@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(170, 'Идрисова Жансұлу Берікқызы', 'zhansulu0024@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(171, 'Еркинов Алишер Канатович', 'alisher4584@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(172, 'Бауэр Роман Юрьевич', 'roman4133@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(173, 'Ермек Мұса Нариманұлы', 'musa1600@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(174, 'Кобей Дурия Кыдыралиқызы', 'duriya1205@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(175, 'Маутбаева Томирис Назымбекқызы', 'tomiris0287@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(176, 'Применко Диана Алижоновна', 'diana1187@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(177, 'Тауфикова Камила Сериковна', 'kamila0492@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(178, 'Хуснутдинов Искандэр Талгатович', 'iskander4504@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(179, 'Эйснер Габриэль Владимировна', 'gabriel1619@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(180, 'Булаенко Дарья Витальевна', 'darya2115@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(181, 'Жинбай Ақбаян Маратханқызы', 'akbayan1260@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(182, 'Хуснутдинова Альмира Азатовна', 'almira0631@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(183, 'Абухба Анастасия Сергеевна', 'anastasiya1149@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(184, 'Садвокасова Амина Маратовна', 'amina2275@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(185, 'Жолдасова Сабина Кайратовна', 'sabina0883@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(186, 'Лю Дэыджион', 'deydzhion2469@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(187, 'Дархан Абай Ерғалиұлы', 'abay1069@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(188, 'Балицкий Евгении Вячеславович', 'evgenii5203@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(189, 'Бисимбетова Аиша Қалиярқызы', 'aisha0946@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(190, 'Акбаева Айдана Кайратовна', 'aydana1058@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(191, 'Идрисова Рабига Болатовна', 'rabiga1659@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(192, 'Саинова Саида Саиновна', 'saida0227@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(193, 'Абдикаримова Камила Еркиновна', 'kamila0052@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(194, 'Женіс Жанат Талғатұлы', 'zhanat1728@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(195, 'Нурсадыкова Самал Мерекеевна', 'samal0896@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(196, 'Шаймаханбет Айгерім Қайратқызы', 'aygerim1363@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(197, 'Амирханова Диана Асетовна', 'diana0449@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(198, 'Ахмедина Жадыра Бейсебаевна', 'zhadyra0217@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(199, 'Абдикаримова Асель Сакеновна', 'asel1280@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(200, 'Ақбаева Диана Қайратқызы', 'diana0436@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(201, 'Акишев Куаныш Адилович', 'kuanysh0746@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(202, 'Меняйлова Ольга Витальевна', 'olga1240@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(203, 'Клюкова Сабина Асхаткызы', 'sabina1569@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(204, 'Абдикаримова Риза Ашимовна', 'riza0327@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(205, 'Еслямова Әсемгүл Қанатқызы', 'asemgul1150@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(206, 'Мусабекова Мира Муратовна', 'mira2450@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(207, 'Тлеубаева Шынар Амангельдиновна', 'shynar0226@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(208, 'Сәдібекова Гүлсая Қайратқызы', 'gulsaya0811@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(209, 'Тарыца Анжела Тодоровна', 'anzhela1595@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(210, 'Жамединова Нургул Калдыкараевна', 'nurgul1844@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(211, 'Джусупова Лаззат Борамбаевна', 'lazzat0339@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(212, 'Ахметжанова Регина Фларисовна', 'regina0311@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(213, 'Бияхина Жулдызай Бейсебаевна', 'zhuldyzay1114@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(214, 'Аскерова Роя Алвангызы', 'roya0057@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(215, 'Османов Исмаил Бахтиярович', 'ismail1451@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(216, 'Сапаров Баян Жанабаевич', 'bayan4716@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(217, 'Садман Ақжол Жалғасбекұлы', 'akzhol4161@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(218, 'Кенжетаев Арман Егенбаевич', 'arman3818@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(219, 'Әбдіхалық Айгерім Насырханқызы', 'aygerim0313@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(220, 'Жәмединова Гүлдана Төлегенқызы', 'guldana0860@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(221, 'Серикмурат Тойбахыт', 'toybakhyt1052@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(222, 'Нурболат Елдос', 'eldos0820@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(223, 'Байтұрсын Ақылбек Қалмұратұлы', 'akylbek1210@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(224, 'Есболат Актилек', 'aktilek0620@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(225, 'Қабидолла Ансар Аянұлы', 'ansar2391@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(226, 'Сейтпенбетов Ербол Хажмуханович', 'erbol0862@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(227, 'Нурсеитова Сандугаш Бейбутовна', 'sandugash0035@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(228, 'Тлеккайрова Сағыныш Сәкенқызы', 'sagynysh0402@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(229, 'Сулейменов Нурсултан Жанайдарович', 'nursultan0254@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(230, 'Абдрахман Кәмила Дулатқызы', 'kamila0901@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(231, 'Аман Октябрь', 'oktyabr1011@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(232, 'Изекеев Бауыржан', 'bauyrzhan1413@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(233, 'Сагынган Рысжан', 'ryszhan0231@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(234, 'Жунусов Медет Мусланбекович', 'medet0228@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(235, 'Әкімият Әкпар', 'akpar0131@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(236, 'Карина Динара Кайралаповна', 'dinara0763@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(237, 'Бияхина Карлыгаш Еркиновна', 'karlygash0423@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(238, 'Клименков Илья Алексеевич', 'ilya1600@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(239, 'Айтмашова Назерке Ермаганбетовна', 'nazerke0805@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(240, 'Ахатов Али Еркинович', 'ali1358@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(241, 'Бияхин Жалгас Мерекеевич', 'zhalgas0966@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(242, 'Дауытов Айтбай Магзамович', 'aytbay1049@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(243, 'Муканов Адыльбек Назымбекович', 'adylbek0348@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(244, 'Сағатов Ерқанат Берікұлы', 'erkanat0550@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(245, 'Рахымжан Темірлан Серікұлы', 'temirlan1490@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(246, 'Жунусов Алан Зюадденович', 'alan0179@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(247, 'Касимов Адильжан Саматович', 'adilzhan1692@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(248, 'Кобелев Владислав Артемович', 'vladislav3264@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(249, 'Сайлаубеков Мейірім Нүркенұлы', 'meyirim0662@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(250, 'Хасенов Өркен Ермекұлы', 'orken0158@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(251, 'Елкелдыев Ернар Нұрланұлы', 'ernar0990@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(252, 'Саракешов Ануар Салыкович', 'anuar0757@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(253, 'Колчин Виталий Николаевич', 'vitaliy0667@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(254, 'Сембаев Мадияр Жумабаевич', 'madiyar1678@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(255, 'Шуренов Дастан Ерданович', 'dastan1961@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(256, 'Гимадеев Владимир Русланович', 'vladimir1344@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(257, 'Гимадеев Александр Русланович', 'aleksandr1354@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(258, 'Тусупбаев Алдияр Даниярович', 'aldiyar0386@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(259, 'Касымбеков Бауыржан Аскарұлы', 'bauyrzhan1390@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(260, 'Сагынган Нурбат', 'nurbat0083@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(261, 'Ерден Ермұрат Ерболұлы', 'ermurat1662@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(262, 'Мамышев Нуркен Сайлаубекович', 'nurken0582@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(263, 'Молдаш Сабит Қайратұлы', 'sabit0278@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(264, 'Баймуратов Мейржан Уланович', 'meyrzhan2628@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(265, 'Ахметжанов Куаныш Армиянович', 'kuanysh0227@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(266, 'Калиев Ильяс Жумашұлы', 'ilyas0622@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(267, 'Батырбек Сұлтан Болатұлы', 'sultan3913@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(268, 'Қасым Қуандық Жарқынбекұлы', 'kuandyk4463@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(269, 'Рысхан Дастан Бекзатұлы', 'dastan1476@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(270, 'Абдрахман Мұқан Ғабитұлы', 'mukan0405@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(271, 'Эсенжел Жанканат', 'zhankanat0941@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(272, 'Умир Айдос', 'aydos1588@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(273, 'Аманжол Сапар Батырханұлы', 'sapar0795@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(274, 'Мухамедов Диас Сагиндыкович', 'dias0710@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(275, 'Амзе Ақан Ардақұлы', 'akan0544@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(276, 'Ашимбеков Әділхан Маратұлы', 'adilkhan1050@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(277, 'Волченко Максим Юрьевич', 'maksim0969@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(278, 'Жакупов Думан Болатович', 'duman1459@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(279, 'Жунусбеков Асан Мухтарович', 'asan0077@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(280, 'Темирбаева Кымбат Каировна', 'kymbat0701@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(281, 'Тилек Нуржан', 'nurzhan0740@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(282, 'Ямлиханов Артем Юрьевич', 'artem2724@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(283, 'Мустафанов Рахметтолла Юрийұлы', 'rakhmettolla0325@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(284, 'Загоруйко Алина Николаевна', 'alina1442@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(285, 'Дәулетбек Әділбек Нұрбекұлы', 'adilbek0501@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(286, 'Бердихан Аманбек', 'amanbek0337@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(287, 'Бекмагамбетов Даурен Серикович', 'dauren0260@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(288, 'Ахметжан Азат Қуанышұлы', 'azat0893@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(289, 'Уатхан Толенбай', 'tolenbay0658@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(290, 'Серік Нариман Қуанышұлы', 'nariman0395@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(291, 'Жукенов Адильхан Маратович', 'adilkhan0541@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(292, 'Сұраншиев Қуаныш Өмірханұлы', 'kuanysh0279@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(293, 'Өмірзақ Асан Ғалымжанұлы', 'asan2616@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(294, 'Узакбаев Аян Сабыржанович', 'ayan3495@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(295, 'Мамыров Рамазан Шектибайұлы', 'ramazan0178@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(296, 'Орынхан Жасұлан Бақтығалиұлы', 'zhasulan1105@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(297, 'Тусенбеков Даниахмет Махсутович', 'daniakhmet0768@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(298, 'Төлебай Саят Ұланұлы', 'sayat1713@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(299, 'Смагулов Медет Муратулы', 'medet0842@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(300, 'Молшылык Ержанат', 'erzhanat1657@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(301, 'Мұхамет Ербол', 'erbol3822@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(302, 'Ақұн Нұрсұлтан Нұрлыбекұлы', 'nursultan4884@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(303, 'Дамасқызы Алмагүл', 'almagul1858@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(304, 'Бахытбек Жалғас Бахтиярұлы', 'zhalgas1359@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(305, 'Мамур Бағлан Талгарұлы', 'baglan2417@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(306, 'Русланұлы Алдияр', 'aldiyar0201@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(307, 'Токтар Мустафа Нұрланұлы', 'mustafa0455@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(308, 'Берген Абдуәзім Алмазұлы', 'abduazim0291@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(309, 'Кулюкбаева Аида Талғатқызы', 'aida1309@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(310, 'Смаилова Зарина Фларисовна', 'zarina1152@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(311, 'Жунусова Жайнагуль Мусланбековна', 'zhaynagul1109@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(312, 'Маралова Асель Енбекшиловна', 'asel0703@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(313, 'Сабит Ансар Жанабайұлы', 'ansar2677@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(314, 'Жамбалулы Ерназ', 'ernaz1738@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(315, 'Араш Ансат Жұмағалиұлы', 'ansat3666@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(316, 'Жылқайдар Қайрат Нұргалиұлы', 'kayrat1075@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(317, 'Смаилов Бейбитбек Дауренбекович', 'beybitbek0714@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(318, 'Суиндиков Сайын', 'sayyn2226@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(319, 'Рахметова Адина Талгатқызы', 'adina1768@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(320, 'Багненко Дмитрий Максимович', 'dmitriy2587@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(321, 'Шаяхметов Руслан Азаматович', 'ruslan1445@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(322, 'Бештоева Лида Адамовна', 'lida5577@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(323, 'Ковалевский Егор Юрьевич', 'egor0998@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(324, 'Зейнелқабиденова Гүлнұр Анварбекқызы', 'gulnur0245@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(325, 'Смагулов Арман Бериктасович', 'arman1957@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(326, 'Сагындыков Рахымжан Есимович', 'rakhymzhan5354@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(327, 'Сактаганов Диас Кусаинович', 'dias2916@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(328, 'Лазарев Владимир Владимирович', 'vladimir1002@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(329, 'Искакова Айша Мухтаровна', 'aysha0225@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(330, 'Олейник Владимир Александрович', 'vladimir2368@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(331, 'Нағашманов Мақсат Бақытбекұлы', 'maksat0580@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(332, 'Жоламанова Диана Ерлановна', 'diana2160@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(333, 'Шик Анна Владимировна', 'anna1708@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(334, 'Алпысова Алсу Сунгатовна', 'alsu1060@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(335, 'Радченко Наталья Андреевна', 'natalya1170@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(336, 'Кайратова Махаббат Жаслановна', 'makhabbat1103@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(337, 'Рахметова Маржан Асанқызы', 'marzhan0264@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(338, 'Горшенкова Вероника Владимировна', 'veronika1376@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(339, 'Мәді Айбек Бақытұлы', 'aybek0100@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(340, 'Жапар Дания Мейрамовна', 'daniya1420@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(341, 'Сәулебек Арман Ахметжанұлы', 'arman0913@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(342, 'Тастенов Жамбыл Жантелеевич', 'zhambyl0487@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(343, 'Тастенова Индира Темирбековна', 'indira0907@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(344, 'Жапар Жаннұр Ерікжанұлы', 'zhannur0786@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(345, 'Султанова Дана Канатовна', 'dana0257@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(346, 'Капбасова Айжан Советовна', 'ayzhan1209@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(347, 'Капбасова Маржан Советовна', 'marzhan1136@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(348, 'Коптлеуова Альбина Аблаевна', 'albina2299@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(349, 'Амангельды Акмарал', 'akmaral1030@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(350, 'Кусаинова Сания Ерболатовна', 'saniya1600@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(351, 'Жапаралиев Ааламбек', 'aalambek0242@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(352, 'Айтқұл Қыпшақ Қадыралыұлы', 'kypshak1186@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(353, 'Бакибаев Марат Талгатович', 'marat0555@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(354, 'Маматбек Уулу Сабырбек', 'uulu0900@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(355, 'Сатаев Азамат Сержанұлы', 'azamat0876@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(356, 'Скрипка Игорь Александрович', 'igor0913@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(357, 'Быков Дмитрий Алексеевич', 'dmitriy0577@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(358, 'Зигангиров Юрий Русланович', 'yuriy0106@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(359, 'Сарсенбинов Сулукхан Темирбулатұлы', 'sulukkhan0985@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(360, 'Топанов Кобланды Амангельдинович', 'koblandy0585@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(361, 'Бродовская Аделина Валентиновна', 'adelina0330@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(362, 'Құрманғалі Мади Ғалимжанұлы', 'madi0315@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(363, 'Бродовский Александр Сергеевич', 'aleksandr1267@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(364, 'Шкрябова Тамара Александровна', 'tamara4443@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(365, 'Боревич Александра Денисовна', 'aleksandra0518@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(366, 'Матасов Максим Эдикжанович', 'maksim4040@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(367, 'Кобец Ярослав Александрович', 'yaroslav1970@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(368, 'Джалилова Сабрина Ренатовна', 'sabrina1792@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(369, 'Сарипов Ерлан Кмартаевич', 'erlan0913@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(370, 'Вегнер Евгения Витальевна', 'evgeniya5532@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(371, 'Халимова Альбина Ринатовна', 'albina0991@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(372, 'Малышева София Максимовна', 'sofiya4626@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(373, 'Қабдуали Сұңғат Абубатырұлы', 'sungat0367@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(374, 'Хамлова Ангелина Николаевна', 'angelina2180@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(375, 'Шогелбай Арсен Дастанұлы', 'arsen0243@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(376, 'Тодоренко Роман Андреевич', 'roman1180@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(377, 'Хасенова Аягуль Нұркенқызы', 'ayagul1176@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(378, 'Шартон Патриций Эгонович', 'patritsiy0158@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(379, 'Альмурзиев Иса Мухамедович', 'isa1044@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(380, 'Исаков Карим Канатович', 'karim5479@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(381, 'Жақаев Диас Елікұлы', 'dias1183@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(382, 'Жақаев Данияр Елікұлы', 'daniyar1004@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(383, 'Әлиқан Арыстан Қобланұлы', 'arystan1739@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(384, 'Жумабеков Данияр Кудайбергенович', 'daniyar0427@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(385, 'Сыздық Қылышбек Ермекұлы', 'kylyshbek0806@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(386, 'Тагай Гүлназ Ержанқызы', 'gulnaz1501@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(387, 'Джумабаев Дауренбек Еркинович', 'daurenbek0200@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(388, 'Шабишов Нұрмухаммед Досболұлы', 'nurmukhammed0168@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(389, 'Потапенко Данила Максимович', 'danila0297@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(390, 'Мәнәтай Наріман Арманүлы', 'nariman1539@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(391, 'Аскеров Аскер Алваноглы', 'asker0166@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(392, 'Базиев Бекзат Беибутович', 'bekzat1669@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(393, 'Саяфаров Игорь Андреевич', 'igor1099@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(394, 'Жүкенова Нұрай Нұрғазықызы', 'nuray1405@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(395, 'Суендиков Арман Куандыкович', 'arman1312@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(396, 'Бусыгин Павел Владимирович', 'pavel0434@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(397, 'Бусыгин Владимир Владимирович', 'vladimir0398@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(398, 'Мухиев Еркебұлан Серікқанұлы', 'erkebulan1568@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(399, 'Абдильманова Бижан', 'bizhan0169@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(400, 'Жанай Ернұр Манатұлы', 'ernur0545@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(401, 'Өтегенова Мақпал Маратқызы', 'makpal1444@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(402, 'Аманбай Елігай Бауыржанқызы', 'eligay0932@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(403, 'Өтеген Қожан Маратұлы', 'kozhan1051@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(404, 'Өтегенова Зурия Маратқызы', 'zuriya1954@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(405, 'Абдрай Ерлан Даулетұлы', 'erlan0122@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(406, 'Зиёдуллоев Бунёд Эргашович', 'bunyod2708@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(407, 'Сайлау Әсет Мақсатұлы', 'aset1299@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(408, 'Алыкеева Қарлығаш Тұрсынқызы', 'karlygash1247@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(409, 'Құдайберген Айым Кенесбекқызы', 'ayym0245@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(410, 'Оролбай Саражан', 'sarazhan0879@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(411, 'Пердебай Жәнібек Бердебекұлы', 'zhanibek0397@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(412, 'Зейнолда Мөлдір Кызырбекқызы', 'moldir3085@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(413, 'Орнынша Айдана Орныншақызы', 'aydana0794@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(414, 'Абенова Аиша Манатовна', 'aisha3877@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(415, 'Бекбай Қанжар Қайратбекұлы', 'kanzhar0690@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(416, 'Дулат Жәнібек Томорханұлы', 'zhanibek0679@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(417, 'Емилов Еркеболан Билялович', 'erkebolan1004@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(418, 'Базилов Адильбек Дастанович', 'adilbek1569@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(419, 'Кабдыкеш Ернар Каиргельдыулы', 'ernar0980@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(420, 'Матжанов Алихайдар Магауияевич', 'alikhaydar0547@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(421, 'Жадигеров Нурмухаммед Кенжебекович', 'nurmukhammed3691@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(422, 'Тойбеков Ержан Сатбекұлы', 'erzhan1521@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(423, 'Есемсейт Аян Сапарғалиұлы', 'ayan1625@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(424, 'Мухамеджанов Нураткан Сарсенбаевич', 'nuratkan0158@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(425, 'Қыстаубай Санжар Асхатұлы', 'sanzhar1977@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(426, 'Кенжебек Бекмұрат Даниярұлы', 'bekmurat2238@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(427, 'Набатова Улбосин Бауржанқизи', 'ulbosin0377@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(428, 'Серікұлы Шахин', 'shakhin4764@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(429, 'Құрал Ералы Рысбайұлы', 'eraly0044@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(430, 'Абдухаким Нишанбек Абылмирзаұлы', 'nishanbek1494@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(431, 'Сафар Бердібек Тұрсұнбекұлы', 'berdibek2094@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(432, 'Аманжолов Алихан Муслимұлы', 'alikhan0794@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(433, 'Амандық Гүлбибі Бағдатқызы', 'gulbibi1883@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(434, 'Мақсұтқызы Жансая', 'zhansaya1974@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(435, 'Сәрсенбай Болатбек Мұхтарұлы', 'bolatbek1308@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(436, 'Жалимбетов Дидар Талгатович', 'didar2377@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(437, 'Жумашев Асылзат', 'asylzat4446@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(438, 'Әбілхан Ақару Жаупбекқызы', 'akaru3782@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(439, 'Досжан Ілияс Махсатұлы', 'iliyas1091@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(440, 'Арманбекқызы Армангүл', 'armangul2809@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(441, 'Серік Ерке Ардаққызы', 'erke4428@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(442, 'Асаубаев Ерасыл Умерханович', 'erasyl5210@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(443, 'Маженов Амир Жумабаевич', 'amir0025@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(444, 'Аяз Өркен Маратұлы', 'orken3201@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(445, 'Серікбай Рауан Ерғалиұлы', 'rauan0797@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(446, 'Жұмаұлы Әсет', 'aset0233@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(447, 'Байтілес Мұхтар Сәкенұлы', 'mukhtar0551@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(448, 'Сағатова Гүлзада Сабырханқызы', 'gulzada1209@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(449, 'Ауезханқызы Жанерке', 'zhanerke0752@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(450, 'Жанатхан Амангүл', 'amangul0173@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(451, 'Хуанбек Бахатгүл', 'bakhatgul0673@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(452, 'Алжапбар Әсел Райымбекқызы', 'asel3058@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(453, 'Зиахан Ерғаңат Аманжолұлы', 'erganat3406@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(454, 'Рысбекова Улдана Батырбеккызы', 'uldana0551@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(455, 'Айекеева Назерке Амангелдіқызы', 'nazerke1406@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(456, 'Нақыпбек Аяна Есімханқызы', 'ayana0606@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(457, 'Ибраева Мерей Кабдоллақызы', 'merey1156@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(458, 'Әлім Нұрдана Рамазанқызы', 'nurdana1031@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(459, 'Сейдхан Балауса Нурболқызы', 'balausa0900@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(460, 'Қалаубек Әлфараби Еркінбекұлы', 'alfarabi5089@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(461, 'Құмарұлы Марат', 'marat0063@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(462, 'Алиакпар Алинұр Арманұлы', 'alinur1831@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(463, 'Жанбырбай Мәди Асылбекұлы', 'madi4482@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(464, 'Асламбекұлы Сұнғат', 'sungat5136@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(465, 'Дәлелхан Ерсұлтан Мұратұлы', 'ersultan1340@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(466, 'Қуаныш Арнұр Азаматұлы', 'arnur1606@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(467, 'Молшылык Осиет', 'osiet1348@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(468, 'Омирзах Шерхан Бахытжанұлы', 'sherkhan0779@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(469, 'Абдрахманов Мирас Айтбайұлы', 'miras0488@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(470, 'Санатхан Нұрлан', 'nurlan2529@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(471, 'Боранбаев Айдын Кадырович', 'aydyn1574@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(472, 'Алиманов Айдын Кайратович', 'aydyn4628@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(473, 'Құлмахан Әлихан Біржанұлы', 'alikhan1362@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(474, 'Айтбай Ұлту Канатбайқызы', 'ultu0257@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(475, 'Ардабекқызы Арайлым', 'araylym4518@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(476, 'Нағашманова Жазира Дастанқызы', 'zhazira0178@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(477, 'Пирмаханов Есбол Казмаханұлы', 'esbol1181@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(478, 'Нуртуган Шукирбек', 'shukirbek0112@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(479, 'Батиров Ихтиярхожа Баходирович', 'ikhtiyarkhozha0638@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(480, 'Қадырбек Асылжан Қадырбекұлы', 'asylzhan0086@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(481, 'Кутлимуратов Есбол Полатулы', 'esbol2441@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(482, 'Жапар Аруа Саятовна', 'arua0203@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(483, 'Жалгасов Абилмансур Женисович', 'abilmansur1915@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(484, 'Малахова Надежда Геннадьевна', 'nadezhda0519@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(485, 'Брагина Анастасия Андреевна', 'anastasiya2161@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(486, 'Жұмаш Әділ Ермекұлы', 'adil1658@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(487, 'Жалелов Олжас Берикович', 'olzhas3311@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(488, 'Байтім Жансая Думанқызы', 'zhansaya1868@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(489, 'Думан Нурғиса Сүлейменұлы', 'nurgisa1915@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(490, 'Ускенбаева Зейнеп Бахытжановна', 'zeynep1095@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(491, 'Жақып Ырысбек Тоқмағанбетұлы', 'yrysbek3771@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(492, 'Әубәкір Өркенжебике Дәуренбекқызы', 'orkenzhebike3157@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(493, 'Серік Медина Нурболқызы', 'medina3292@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(494, 'Абдилла Бекбосын Ержигитұлы', 'bekbosyn1020@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(495, 'Тажин Айдос Асетулы', 'aydos0050@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(496, 'Хохлова Наталья Евгеньевна', 'natalya0722@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(497, 'Шабунин Артур Павлович', 'artur3004@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(498, 'Камаладинов Мухтар Нажмадин Углы', 'mukhtar0012@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(499, 'Мұратов Бексұлтан Мұратұлы', 'beksultan0607@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(500, 'Садырбаев Мирас Ержанұлы', 'miras0933@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(501, 'Оспан Аружан Дауленқызы', 'aruzhan2070@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(502, 'Тұрсынбек Райымбек Маратұлы', 'rayymbek2165@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(503, 'Жанжігіт Рауан Рахимжанқызы', 'rauan3453@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(504, 'Қасқырбай Ержан Есболұлы', 'erzhan5132@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(505, 'Рүстемқызы Томирис', 'tomiris0432@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(506, 'Ахметжан Алдияр Куанышұлы', 'aldiyar2108@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(507, 'Дәулетхан Мерей Ержанқызы', 'merey0954@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(508, 'Муслимова Кәусар Борисқызы', 'kausar2380@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(509, 'Кеңес Бекарыс Әмірбекұлы', 'bekarys2245@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(510, 'Сейдагалиев Рауль Тихонович', 'raul1311@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(511, 'Кан Ксения Анатольевна', 'kseniya2790@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(512, 'Хасен Райан Русланқызы', 'rayan3607@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(513, 'Денисов Тихон Игоревич', 'tikhon0079@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(514, 'Садвакасов Дамир Бауржанович', 'damir2161@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(515, 'Петровец Анастасия Витальевна', 'anastasiya1901@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(516, 'Ли Евгений Денисович', 'evgeniy0650@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(517, 'Қылышбек Арсен Дарханұлы', 'arsen1958@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(518, 'Омаров Дамир Тимурович', 'damir4740@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(519, 'Искендерова Екатерина Игоревна', 'ekaterina0738@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(520, 'Қалдыбай Расул Бекзатұлы', 'rasul5048@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(521, 'Аман Дамир', 'damir0170@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(522, 'Ажиков Рамазан Амангелдіұлы', 'ramazan2348@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(523, 'Габилов Галиб Руфат Оглы', 'galib0086@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(524, 'Иванов Ярослав Александрович', 'yaroslav0476@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(525, 'Кадир Сүндетқали Ерланұлы', 'sundetkali0506@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(526, 'Журсенова Ясмина Алибековна', 'yasmina3803@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(527, 'Жапбаров Мақсат Берікұлы', 'maksat3133@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(528, 'Альмурзиев Хусейн Мухаммедович', 'khuseyn0792@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(529, 'Батырханұлы Көпжасар', 'kopzhasar2044@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(530, 'Муслимова Ұлдана Даниярқызы', 'uldana0338@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(531, 'Куанышева Татьяна Ивановна', 'tatyana1246@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(532, 'Каликул Олжас Мусурманкулулы', 'olzhas4683@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(533, 'Онжанов Галымжан Серикович', 'galymzhan2616@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(534, 'Исин Сұлтан Қайратұлы', 'sultan0711@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(535, 'Исин Мирас Сагандыкович', 'miras1264@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(536, 'Ахметжан Алмас Қуанышұлы', 'almas1034@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(537, 'Рысбеков Айбек Аргынович', 'aybek0556@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(538, 'Каиров Жандос Нурланович', 'zhandos0814@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(539, 'Султанов Ерлан Серикович', 'erlan0223@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(540, 'Муслимов Адильжан Шарифоллаевич', 'adilzhan1804@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(541, 'Жексекеев Аблай Талгатович', 'ablay1470@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(542, 'Закиров Асет Серикович', 'aset0430@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(543, 'Рахманов Бакдаулет Бактыбаевич', 'bakdaulet1154@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(544, 'Қапар Әділбек Кенжебекұлы', 'adilbek1130@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(545, 'Мұстафин Дәмір Қайратович', 'damir0799@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(546, 'Тиес Мұхит Сейдуллаұлы', 'mukhit1754@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(547, 'Полуткин Ратмир Денисович', 'ratmir3480@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(548, 'Раджапова Марифат Алимбековна', 'marifat0654@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(549, 'Ниязов Саид Мухтарович', 'said2396@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(550, 'Кенжегалиев Адиль Ануарович', 'adil0715@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(551, 'Клишина Камила Дамировна', 'kamila0571@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(552, 'Трофименко Ксения Андреевна', 'kseniya3173@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(553, 'Липатова Полина Сергеевна', 'polina1690@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(554, 'Буряк Юлия Сергеевна', 'yuliya0858@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(555, 'Мустафина Данара Азаматкызы', 'danara1659@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(556, 'Халық Рамазан Даниярұлы', 'ramazan4923@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(557, 'Медеркулов Султан Мусаевич', 'sultan0086@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(558, 'Темирова Аяна Асхатовна', 'ayana2058@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(559, 'Иванова Мария Алексеевна', 'mariya0155@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(560, 'Айтжанов Ернар Тәжібайұлы', 'ernar0325@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(561, 'Абдурашитова Нилюфар Акмаловна', 'nilyufar4885@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(562, 'Шнайдер Елизавета Викторовна', 'elizaveta2512@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(563, 'Еремеев Александр Владимирович', 'aleksandr2625@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(564, 'Суюмбаев Аслан Асылбекович', 'aslan2348@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(565, 'Бойко Арина Николаевна', 'arina1610@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(566, 'Гедзов Артур Сергеевич', 'artur0668@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(567, 'Қасым Дархан Саятұлы', 'darkhan0079@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(568, 'Суйчмезова Милана Вадимовна', 'milana1137@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(569, 'Быков Алексей Алексеевич', 'aleksey0846@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(570, 'Башенов Санжар Алматович', 'sanzhar0609@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(571, 'Оразбек Бекзат Алимұлы', 'bekzat1719@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(572, 'Амангельдиев Аслан Талгатович', 'aslan4437@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(573, 'Бадрисламов Альтамир Витальевич', 'altamir2911@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(574, 'Цечоев Абдуррохим Батырович', 'abdurrokhim4761@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(575, 'Богураев Влас Иванович', 'vlas1233@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(576, 'Зверев Максим Владимирович', 'maksim3656@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(577, 'Шкреба Кирилл Дмитриевич', 'kirill1263@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(578, 'Янабаева Айша Нұрланқызы', 'aysha0251@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(579, 'Янабаев Абдррашид Нұрланұлы', 'abdrrashid0204@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(580, 'Маратов Нурлыхан Сымбатұлы', 'nurlykhan1710@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(581, 'Бахытжанов Альрамир Молдагалиевич', 'alramir0964@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(582, 'Сорокина Надежда Михайловна', 'nadezhda0016@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(583, 'Садыкова Гульназ Руслановна', 'gulnaz4496@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(584, 'Грицаев Родион Викторович', 'rodion3585@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(585, 'Нурматов Нурмухаммад Алишерович', 'nurmukhammad1383@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(586, 'Далабай Даурен Дулатұлы', 'dauren3382@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(587, 'Руди Руслан Викторович', 'ruslan4960@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(588, 'Пеннер Евгений Рустемович', 'evgeniy3564@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(589, 'Мустафин Тимур Кайратулы', 'timur0490@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(590, 'Воробьева Арина Ильинична', 'arina1431@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(591, 'Романов Дамир Даниярович', 'damir3545@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(592, 'Малеев Егор Игорьевич', 'egor4299@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(593, 'Шик Виктория Владимировна', 'viktoriya3276@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(594, 'Климентьев Евгений Николаевич', 'evgeniy3683@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(595, 'Шектибаев Али Даниярұлы', 'ali2344@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(596, 'Казгельдиев Темирлан Саматович', 'temirlan0086@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(597, 'Таранюк Алексей Александрович', 'aleksey2191@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(598, 'Бойко Алина Александровна', 'alina3010@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(599, 'Калижанов Тимур Серикович', 'timur1729@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(600, 'Абенова Баянсулу Бахытжановна', 'bayansulu0260@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(601, 'Байдуллаева Жулдыз Азаматкызы', 'zhuldyz0346@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(602, 'Дүйсеней Әділет Өмірбекұлы', 'adilet1050@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(603, 'Байдуллаева Арайлым Азаматкизи', 'araylym0325@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(604, 'Бархатова Динара Досмағанбетқызы', 'dinara1501@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(605, 'Калелова Аяулым Куанышевна', 'ayaulym1147@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(606, 'Уринова Салтанат Нурбекқизи', 'saltanat1358@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(607, 'Тулигенов Азамат Мадиярулы', 'azamat0122@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(608, 'Нургалиева Айнур Болатовна', 'aynur1070@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(609, 'Муратова Нурзада Муратовна', 'nurzada0364@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(610, 'Айдаргалиева Айдана Кадирхановна', 'aydana0511@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(611, 'Агайдарова Лаззат Алиаскаровна', 'lazzat3202@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(612, 'Совет Ильяс Нурболатович', 'ilyas1463@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(613, 'Бескемпір Әсем Нұрғалиқызы', 'asem0503@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(614, 'Куспанов Арсен Еламанович', 'arsen0818@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(615, 'Сатылханова Гүлаим Мұратқызы', 'gulaim0439@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(616, 'Кәрібай Анель Серікқызы', 'anel0212@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(617, 'Кошмуратов Назарбек Жарқынбекұлы', 'nazarbek4658@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(618, 'Қапан Айым Әрімханқызы', 'ayym2550@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(619, 'Кутибай Мейрамбек Уразимбетұлы', 'meyrambek0053@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(620, 'Уали Гүлімхан Досымханқызы', 'gulimkhan3487@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(621, 'Амангелд Бүркіт', 'burkit2180@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(622, 'Рахимберды Думан Садықұлы', 'duman4194@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(623, 'Нуржан Айбибі Нуржанқызы', 'aybibi0959@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(624, 'Шукей Дамир Қуанышұлы', 'damir0165@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(625, 'Уринов Муқамеджан Нурбекуғли', 'mukamedzhan0980@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(626, 'Жапар Нуржан Ерикжанулы', 'nurzhan0392@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(627, 'Ысқақ Әділхан Жоламанұлы', 'adilkhan0525@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(628, 'Жақыпов Айдос Жәнібекұлы', 'aydos1839@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(629, 'Абдикулов Даут Нуранұлы', 'daut1965@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(630, 'Рахимжанов Ерболат Сексенбиевич', 'erbolat1339@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(631, 'Баден Жанболат', 'zhanbolat0247@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(632, 'Эгамбердиев Инамжан Бахтиярұлы', 'inamzhan1524@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(633, 'Мадешов Ербол Ержанулы', 'erbol1977@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(634, 'Дауытов Алишер Магзамович', 'alisher0973@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(635, 'Калиев Багдат Жанбыршыевич', 'bagdat1137@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(636, 'Қылышбеков Азамат Ақтауұлы', 'azamat0422@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(637, 'Урдабой Ерасыл Джумабекұлы', 'erasyl1890@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(638, 'Урдабой Нұрасыл Джумабекұлы', 'nurasyl1880@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(639, 'Садвакасов Батырхан Бауржанович', 'batyrkhan1987@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(640, 'Ербол Елсултан', 'elsultan0848@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(641, 'Мусахан Динара Бакибайқызы', 'dinara2619@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(642, 'Молдахметова Аружан Елдосовна', 'aruzhan0729@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(643, 'Бархат Гулнур Орынханқызы', 'gulnur0456@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(644, 'Куандыков Алижан Алдамуратович', 'alizhan3468@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(645, 'Ахметжан Маулудаханым Нұржанқызы', 'mauludakhanym5036@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(646, 'Аденов Дамир Ерланович', 'damir5791@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(647, 'Садықанова Еркеназ Марғұланқызы', 'erkenaz1799@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(648, 'Турлыбаева Жания Айбековна', 'zhaniya3726@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(649, 'Шаштығали Мөлдір Бауржанқызы', 'moldir5005@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(650, 'Утебекова Назым Ахметуллаевна', 'nazym5522@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(651, 'Берікқызы Мәдина', 'madina2957@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(652, 'Құттыбек Ясмин Ерғалиқызы', 'yasmin2249@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(653, 'Нургалиев Дархан Елубайұлы', 'darkhan2227@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(654, 'Абуов Уалихан Абдраманұлы', 'ualikhan2415@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(655, 'Уринов Нурболат Нурбекович', 'nurbolat1039@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(656, 'Раимбаев Жанкожа Еркасымович', 'zhankozha1204@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(657, 'Абыхаев Рустем Талгатович', 'rustem1014@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(658, 'Сисенбаева Акерке Ерболовна', 'akerke1204@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(659, 'Шакуова Мәдина Сералықызы', 'madina1125@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(660, 'Турсунбаев Кудайберген Булатович', 'kudaybergen1631@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(661, 'Есет Алихан Жайлыбекұлы', 'alikhan4281@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(662, 'Курбанов Мадияр Ержанұлы', 'madiyar1284@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(663, 'Айдаргалиев Адлет Кадирханович', 'adlet0723@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(664, 'Деканбаев Ерали Абдурасулович', 'erali4060@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(665, 'Кошеков Кайрат Оразбаевич', 'kayrat2857@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(666, 'Есенбеков Мирас Маратович', 'miras1072@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(667, 'Жарманов Ербол Рамазанович', 'erbol0360@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(668, 'Алимбаев Амир Кайратович', 'amir3919@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(669, 'Сайдуллаев Юсуп Абдирасулұлы', 'yusup1008@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(670, 'Жұмағұл Алдияр Мадиярұлы', 'aldiyar3831@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(671, 'Төлеубек Ислам Талғатұлы', 'islam0549@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(672, 'Әділханұлы Тамирлан', 'tamirlan1049@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(673, 'Тайшыбай Таир Амангелдіұлы', 'tair2868@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(674, 'Құралбай Абылай Қуандықұлы', 'abylay4689@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(675, 'Багадгүль Аркалык', 'arkalyk0084@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(676, 'Барат Иманғали Бахбергенұлы', 'imangali1834@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(677, 'Кистаубаев Жандос Жаныбекович', 'zhandos0825@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(678, 'Айжанов Руслан Дүйсенкелдіұлы', 'ruslan1816@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(679, 'Какен Бибарс Ерболұлы', 'bibars0304@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(680, 'Сабден Рамазан Ганиұлы', 'ramazan2860@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(681, 'Жәнібекұлы Нұрсұлтан', 'nursultan3588@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(682, 'Шакуова Сандугаш Болатовна', 'sandugash1342@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(683, 'Тоғызбай Жанболат Аралбайұлы', 'zhanbolat4475@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(684, 'Рыстанова Мерей Серікжанқызы', 'merey1041@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(685, 'Төрехан Абылайхан Асқарұлы', 'abylaykhan0718@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(686, 'Жақан Аяжан Оразбайқызы', 'ayazhan3006@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(687, 'Асан Алан', 'alan0372@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(688, 'Сейітхамза Рамазан Бақытжанұлы', 'ramazan1325@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(689, 'Мейрамбай Бексұлтан Мұханбедияұлы', 'beksultan3781@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(690, 'Эмлсов Ерасыл Айбекұлы', 'erasyl2843@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(691, 'Куанышбеков Амир Динмухаммедович', 'amir2485@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(692, 'Бекмурат Нұрғиса Наурызбайұлы', 'nurgisa0547@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(693, 'Ардхан Мадияр Қанатұлы', 'madiyar4961@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(694, 'Әскер Әліби Әлібекұлы', 'alibi2249@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(695, 'Рахимжанова Гүлнұр Сералықызы', 'gulnur1191@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(696, 'Тлеуберген Қыран Санатұлы', 'kyran5710@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(697, 'Байсхан Ердаулет Ниязбекұлы', 'erdaulet2372@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(698, 'Амантаев Аслан Арманулы', 'aslan0578@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(699, 'Сұлтансеит Алдияр Алтынбекұлы', 'aldiyar0152@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(700, 'Жылқайдар Бану Қанатбекқызы', 'banu5137@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(701, 'Ерзатұлы Марқұлан', 'markulan4899@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(702, 'Асембек Айша', 'aysha1247@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(703, 'Жиембек Диас Дәулетұлы', 'dias0288@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(704, 'Ахмедов Нұрдаулет Ғалымжанұлы', 'nurdaulet5230@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(705, 'Азамат Әмина', 'amina4050@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(706, 'Школбек Бексұлтан Қуанышұлы', 'beksultan2630@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(707, 'Саттемек Жалғас', 'zhalgas4098@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(708, 'Шайхслям Серхан Мейірханұлы', 'serkhan4978@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(709, 'Нәби Райымбек Қайроллаұлы', 'rayymbek0353@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(710, 'Құтан Арайлым Қабылқызы', 'araylym2803@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(711, 'Шымбай Нұркелді Ерланұлы', 'nurkeldi2500@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(712, 'Унеров Бекарыс Ербол Угли', 'bekarys0174@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(713, 'Жамбыл Дастан Ұланұлы', 'dastan0660@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(714, 'Умаралиев Ислам Батырбекович', 'islam3241@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(715, 'Мағауянов Әбілмансұр Талғатұлы', 'abilmansur2694@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(716, 'Алматұлы Әлішер', 'alisher1618@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(717, 'Армия Алмас Женісұлы', 'almas0760@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(718, 'Әбді Нұрдәулет Асқарбекұлы', 'nurdaulet0209@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(719, 'Есжан Әділет Қайратұлы', 'adilet4348@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(720, 'Есмаханов Аспандияр Талғатұлы', 'aspandiyar0130@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(721, 'Сәрсенбай Фатима Мұхтарқызы', 'fatima3405@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(722, 'Акимбеков Абзал Бахытұлы', 'abzal1469@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(723, 'Абдулхамидов Жасур Адилжонович', 'zhasur2716@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(724, 'Еркелді Мұқан Еркелдіұлы', 'mukan3935@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(725, 'Тастан Гулзана Нуржанқызы', 'gulzana0561@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(726, 'Калмурза Оразкелді Нурланұлы', 'orazkeldi1187@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(727, 'Әлім Ислам Мақсатұлы', 'islam0673@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(728, 'Куспанов Даниал Куандыкович', 'danial4069@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(729, 'Қойанбай Мирас Дәулетұлы', 'miras3125@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(730, 'Сағындық Диас Думанұлы', 'dias3305@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(731, 'Арсенов Данил Николаевич', 'danil0377@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(732, 'Ескинеев Амаль Галимжанұлы', 'amal2454@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(733, 'Грицаев Кирилл Викторович', 'kirill0277@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(734, 'Базиев Саттарбек Бейбутович', 'sattarbek1134@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(735, 'Ануарбек Темірхан Төлегенұлы', 'temirkhan1868@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(736, 'Тлеген Қарақат Булатқызы', 'karakat4503@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(737, 'Храпа Анатолий Александрович', 'anatoliy5117@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(738, 'Байзаков Оразбек Кайратулы', 'orazbek0297@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(739, 'Досымбек Санжар Берікұлы', 'sanzhar1873@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(740, 'Сулейменов Нурислам Ермекулы', 'nurislam1463@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(741, 'Жәнібек Мейірбек Арқабайұлы', 'meyirbek1881@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(742, 'Даулетбеков Жигер Маратович', 'zhiger1120@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(743, 'Нұрмағамбетов Ақылжан Айсұлтанұлы', 'akylzhan0805@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(744, 'Жабаев Жамбыл Ашимович', 'zhambyl0974@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(745, 'Турдыбаев Берик Еркинугли', 'berik0035@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(746, 'Төлеухан Еркебұлан Ұланұлы', 'erkebulan0529@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(747, 'Рахманкулов Санжарбек Юсанұлы', 'sanzharbek1731@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(748, 'Ергенбай Ілияс Жанболатұлы', 'iliyas2095@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(749, 'Аскаров Элдос', 'eldos0189@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(750, 'Елубаев Алдияр Жарылкасынович', 'aldiyar1567@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(751, 'Катранова Алина Болатовна', 'alina4412@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(752, 'Марғұланұлы Әділет', 'adilet4581@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(753, 'Төлеген Әдия Жәнібекқызы', 'adiya3563@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(754, 'Антипов Денис Вячеславович', 'denis1732@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(755, 'Абрамов Даниил Викторович', 'daniil3447@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(756, 'Адольф Вадим Валерьевич', 'vadim1126@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(757, 'Абдурашитов Ахмадали Акмалович', 'akhmadali5351@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(758, 'Алдабергенова Лаура Муратовна', 'laura2772@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(759, 'Аристова Виктория Аркадьевна', 'viktoriya2972@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(760, 'Аскаров Нургиса Аманжолович', 'nurgisa0576@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(761, 'Кенесов Руслан Гумарович', 'ruslan0641@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(762, 'Кучербаев Алишер Сапарович', 'alisher0209@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(763, 'Жансұлтан Бейбарыс Бахытжанұлы', 'beybarys2199@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(764, 'Айдынгалиев Алан Арманович', 'alan0795@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(765, 'Ибрагимов Мұстафа Табарікұлы', 'mustafa1984@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(766, 'Жолдасов Асет Кайратович', 'aset1080@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(767, 'Даниял Дархан Алтынбекұлы', 'darkhan1306@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(768, 'Анарбек Аяжан Ержанқызы', 'ayazhan2237@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(769, 'Майбасар Тансулу Назымхановна', 'tansulu1219@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(770, 'Омирзаков Аскар Алимжанұлы', 'askar2301@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(771, 'Русланқызы Рауан', 'rauan1864@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(772, 'Сагатов Ернұр Берікұлы', 'ernur0675@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(773, 'Яхияев Нұрсұлтан Элмуродұлы', 'nursultan0879@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(774, 'Бисенғалиев Артур Жасұланұлы', 'artur0427@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(775, 'Дәулетбеков Ернияз Маратұлы', 'erniyaz0754@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(776, 'Әзім Нұрсаят Қанатұлы', 'nursayat1153@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(777, 'Махаури Эси Махмудович', 'esi0126@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-(778, 'Нұрбақытұлы Қажымұрат', 'kazhymurat0487@student.urbancollege.kz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student');
+(100, 'Әбдірәсіл Нұрсұлтан Қайратұлы', 'nursultan1526@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(101, 'Шимпф Виолета Владимировна', 'violeta1416@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(102, 'Суфянов Данияр Бауыржанулы', 'daniyar1060@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(103, 'Байназар Алихан Ержанұлы', 'alikhan1777@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(104, 'Кучербаев Ильяс Русланұлы', 'ilyas1589@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(105, 'Баймуканов Алихан Бауржанұлы', 'alikhan2028@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(106, 'Жүсіп Алишер Санатұлы', 'alisher1243@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(107, 'Жақсылық Айәділ Ардақұлы', 'ayadil1445@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(108, 'Абдрахман Бекмағамбет Серікұлы', 'bekmagambet0456@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(109, 'Темір Ернар Батырбекұлы', 'ernar1477@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(110, 'Бисембай Рахим Қайратұлы', 'rakhim0443@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(111, 'Кауан Науан Даниярұлы', 'nauan1873@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(112, 'Ержанов Эльдар Муратбекұлы', 'eldar1341@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(113, 'Сеитов Рахат Талгатович', 'rakhat1265@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(114, 'Қалдыбек Ернар Ғалымбекұлы', 'ernar1417@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(115, 'Қыдырбай Рамазан', 'ramazan1728@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(116, 'Бахатбек Санжар', 'sanzhar1020@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(117, 'Бәкіш Әділ Қанатұлы', 'adil0574@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(118, 'Алибеков Диас Бауржанович', 'dias0132@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(119, 'Абдуллаев Темирлан Русланович', 'temirlan1182@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(120, 'Алфёров Рамиль Александрович', 'ramil1397@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(121, 'Абишева Медина Жанболатқызы', 'medina1927@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(122, 'Самыков Абзал', 'abzal2121@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(123, 'Пожаров Данил Александрович', 'danil0953@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(124, 'Оспанов Батырхан Женисович', 'batyrkhan1557@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(125, 'Бақытов Даниал Бексұлтанұлы', 'danial1454@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(126, 'Макашев Дамир Кайратович', 'damir1522@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(127, 'Махшат Досымжан Сүйіншіұлы', 'dosymzhan4184@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(128, 'Муханбеткали Дастан Құрманұлы', 'dastan1749@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(129, 'Қалаубек Заңғар Еркінбекулы', 'zangar3938@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(130, 'Аймахан Әйгерім Мұхтарқызы', 'aygerim0356@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(131, 'Нусратов Эльяр Кахраманұлы', 'elyar0171@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(132, 'Жусипханова Айғаным Бегежанқызы', 'ayganym1179@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(133, 'Мукашев Рустам Эрмекович', 'rustam3469@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(134, 'Едельбаев Дамир Асылбекович', 'damir2142@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(135, 'Абдрахманов Ален Алмасович', 'alen0471@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(136, 'Чалкаров Алижан Тахирович', 'alizhan3440@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(137, 'Зайцев Роман Алексеевич', 'roman3558@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(138, 'Софронов Владимир Степанович', 'vladimir0103@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(139, 'Хикмаджанов Абдуллах Кудратович', 'abdullakh4199@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(140, 'Абдіжаппар Саян Абдрахманұлы', 'sayan0357@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(141, 'Төлеген Бекзат Нұрланұлы', 'bekzat2244@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(142, 'Балтобай Мейржан Бауржанұлы', 'meyrzhan1256@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(143, 'Абилханов Рамазан Аскарович', 'ramazan4191@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(144, 'Ислам Райиан Расулұлы', 'rayian4590@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(145, 'Мұрат Дархан Асқарұлы', 'darkhan1052@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(146, 'Сейткамал Ақарыс Абайұлы', 'akarys4063@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(147, 'Аманбай Ернұр Нұрланұлы', 'ernur1272@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(148, 'Федоровский Артур Михайлович', 'artur2584@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(149, 'Кирисханұлы Нұрдәулет', 'nurdaulet1827@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(150, 'Шамидин Оспан Маратұлы', 'ospan0875@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(151, 'Мұқтарұлы Айқын', 'aykyn0491@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(152, 'Сәбден Әли Мәдиұлы', 'ali3648@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(153, 'Дегтева Евгения Викторовна', 'evgeniya0344@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(154, 'Амантаева Томирис Жанатовна', 'tomiris0283@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(155, 'Сафиуллина Умигулсум Найловна', 'umigulsum1936@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(156, 'Галымжанова Риза Бауыржановна', 'riza4908@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(157, 'Қанағат Айман Бақытжанқызы', 'ayman5387@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(158, 'Шаймахамбет Айсұлу Қайратқызы', 'aysulu0590@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(159, 'Дадабаева Мукаддас Файзуллаевна', 'mukaddas0845@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(160, 'Козыбаева Лашын Ренатовна', 'lashyn0578@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(161, 'Акишева Мира Ахтановна', 'mira1120@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(162, 'Абдикаримов Рустем Каиболлович', 'rustem0898@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(163, 'Жарасбаева Гүлмира Айнабекқызы', 'gulmira0971@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(164, 'Шамурова Жанна Жайковна', 'zhanna0842@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(165, 'Сыдыков Мейіржан Мейрамұлы', 'meyirzhan0935@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(166, 'Мырзахметова Нагима Ерлановна', 'nagima1404@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(167, 'Алиасқар Диана Бахытқызы', 'diana0257@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(168, 'Изатуллаева Феруза Рахматуллақызы', 'feruza0069@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(169, 'Жаңабай Ерасыл Арыстанғалиұлы', 'erasyl3580@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(170, 'Идрисова Жансұлу Берікқызы', 'zhansulu0024@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(171, 'Еркинов Алишер Канатович', 'alisher4584@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(172, 'Бауэр Роман Юрьевич', 'roman4133@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(173, 'Ермек Мұса Нариманұлы', 'musa1600@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(174, 'Кобей Дурия Кыдыралиқызы', 'duriya1205@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(175, 'Маутбаева Томирис Назымбекқызы', 'tomiris0287@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(176, 'Применко Диана Алижоновна', 'diana1187@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(177, 'Тауфикова Камила Сериковна', 'kamila0492@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(178, 'Хуснутдинов Искандэр Талгатович', 'iskander4504@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(179, 'Эйснер Габриэль Владимировна', 'gabriel1619@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(180, 'Булаенко Дарья Витальевна', 'darya2115@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(181, 'Жинбай Ақбаян Маратханқызы', 'akbayan1260@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(182, 'Хуснутдинова Альмира Азатовна', 'almira0631@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(183, 'Абухба Анастасия Сергеевна', 'anastasiya1149@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(184, 'Садвокасова Амина Маратовна', 'amina2275@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(185, 'Жолдасова Сабина Кайратовна', 'sabina0883@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(186, 'Лю Дэыджион', 'deydzhion2469@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(187, 'Дархан Абай Ерғалиұлы', 'abay1069@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(188, 'Балицкий Евгении Вячеславович', 'evgenii5203@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(189, 'Бисимбетова Аиша Қалиярқызы', 'aisha0946@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(190, 'Акбаева Айдана Кайратовна', 'aydana1058@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(191, 'Идрисова Рабига Болатовна', 'rabiga1659@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(192, 'Саинова Саида Саиновна', 'saida0227@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(193, 'Абдикаримова Камила Еркиновна', 'kamila0052@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(194, 'Женіс Жанат Талғатұлы', 'zhanat1728@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(195, 'Нурсадыкова Самал Мерекеевна', 'samal0896@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(196, 'Шаймаханбет Айгерім Қайратқызы', 'aygerim1363@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(197, 'Амирханова Диана Асетовна', 'diana0449@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(198, 'Ахмедина Жадыра Бейсебаевна', 'zhadyra0217@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(199, 'Абдикаримова Асель Сакеновна', 'asel1280@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(200, 'Ақбаева Диана Қайратқызы', 'diana0436@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(201, 'Акишев Куаныш Адилович', 'kuanysh0746@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(202, 'Меняйлова Ольга Витальевна', 'olga1240@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(203, 'Клюкова Сабина Асхаткызы', 'sabina1569@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(204, 'Абдикаримова Риза Ашимовна', 'riza0327@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(205, 'Еслямова Әсемгүл Қанатқызы', 'asemgul1150@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(206, 'Мусабекова Мира Муратовна', 'mira2450@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(207, 'Тлеубаева Шынар Амангельдиновна', 'shynar0226@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(208, 'Сәдібекова Гүлсая Қайратқызы', 'gulsaya0811@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(209, 'Тарыца Анжела Тодоровна', 'anzhela1595@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(210, 'Жамединова Нургул Калдыкараевна', 'nurgul1844@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(211, 'Джусупова Лаззат Борамбаевна', 'lazzat0339@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(212, 'Ахметжанова Регина Фларисовна', 'regina0311@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(213, 'Бияхина Жулдызай Бейсебаевна', 'zhuldyzay1114@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(214, 'Аскерова Роя Алвангызы', 'roya0057@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(215, 'Османов Исмаил Бахтиярович', 'ismail1451@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(216, 'Сапаров Баян Жанабаевич', 'bayan4716@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(217, 'Садман Ақжол Жалғасбекұлы', 'akzhol4161@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(218, 'Кенжетаев Арман Егенбаевич', 'arman3818@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(219, 'Әбдіхалық Айгерім Насырханқызы', 'aygerim0313@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(220, 'Жәмединова Гүлдана Төлегенқызы', 'guldana0860@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(221, 'Серикмурат Тойбахыт', 'toybakhyt1052@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(222, 'Нурболат Елдос', 'eldos0820@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(223, 'Байтұрсын Ақылбек Қалмұратұлы', 'akylbek1210@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(224, 'Есболат Актилек', 'aktilek0620@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(225, 'Қабидолла Ансар Аянұлы', 'ansar2391@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(226, 'Сейтпенбетов Ербол Хажмуханович', 'erbol0862@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(227, 'Нурсеитова Сандугаш Бейбутовна', 'sandugash0035@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(228, 'Тлеккайрова Сағыныш Сәкенқызы', 'sagynysh0402@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(229, 'Сулейменов Нурсултан Жанайдарович', 'nursultan0254@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(230, 'Абдрахман Кәмила Дулатқызы', 'kamila0901@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(231, 'Аман Октябрь', 'oktyabr1011@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(232, 'Изекеев Бауыржан', 'bauyrzhan1413@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(233, 'Сагынган Рысжан', 'ryszhan0231@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(234, 'Жунусов Медет Мусланбекович', 'medet0228@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(235, 'Әкімият Әкпар', 'akpar0131@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(236, 'Карина Динара Кайралаповна', 'dinara0763@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(237, 'Бияхина Карлыгаш Еркиновна', 'karlygash0423@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(238, 'Клименков Илья Алексеевич', 'ilya1600@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(239, 'Айтмашова Назерке Ермаганбетовна', 'nazerke0805@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(240, 'Ахатов Али Еркинович', 'ali1358@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(241, 'Бияхин Жалгас Мерекеевич', 'zhalgas0966@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(242, 'Дауытов Айтбай Магзамович', 'aytbay1049@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(243, 'Муканов Адыльбек Назымбекович', 'adylbek0348@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(244, 'Сағатов Ерқанат Берікұлы', 'erkanat0550@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(245, 'Рахымжан Темірлан Серікұлы', 'temirlan1490@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(246, 'Жунусов Алан Зюадденович', 'alan0179@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(247, 'Касимов Адильжан Саматович', 'adilzhan1692@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(248, 'Кобелев Владислав Артемович', 'vladislav3264@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(249, 'Сайлаубеков Мейірім Нүркенұлы', 'meyirim0662@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(250, 'Хасенов Өркен Ермекұлы', 'orken0158@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(251, 'Елкелдыев Ернар Нұрланұлы', 'ernar0990@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(252, 'Саракешов Ануар Салыкович', 'anuar0757@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(253, 'Колчин Виталий Николаевич', 'vitaliy0667@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(254, 'Сембаев Мадияр Жумабаевич', 'madiyar1678@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(255, 'Шуренов Дастан Ерданович', 'dastan1961@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(256, 'Гимадеев Владимир Русланович', 'vladimir1344@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(257, 'Гимадеев Александр Русланович', 'aleksandr1354@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(258, 'Тусупбаев Алдияр Даниярович', 'aldiyar0386@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(259, 'Касымбеков Бауыржан Аскарұлы', 'bauyrzhan1390@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(260, 'Сагынган Нурбат', 'nurbat0083@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(261, 'Ерден Ермұрат Ерболұлы', 'ermurat1662@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(262, 'Мамышев Нуркен Сайлаубекович', 'nurken0582@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(263, 'Молдаш Сабит Қайратұлы', 'sabit0278@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(264, 'Баймуратов Мейржан Уланович', 'meyrzhan2628@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(265, 'Ахметжанов Куаныш Армиянович', 'kuanysh0227@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(266, 'Калиев Ильяс Жумашұлы', 'ilyas0622@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(267, 'Батырбек Сұлтан Болатұлы', 'sultan3913@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(268, 'Қасым Қуандық Жарқынбекұлы', 'kuandyk4463@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(269, 'Рысхан Дастан Бекзатұлы', 'dastan1476@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(270, 'Абдрахман Мұқан Ғабитұлы', 'mukan0405@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(271, 'Эсенжел Жанканат', 'zhankanat0941@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(272, 'Умир Айдос', 'aydos1588@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(273, 'Аманжол Сапар Батырханұлы', 'sapar0795@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(274, 'Мухамедов Диас Сагиндыкович', 'dias0710@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(275, 'Амзе Ақан Ардақұлы', 'akan0544@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(276, 'Ашимбеков Әділхан Маратұлы', 'adilkhan1050@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(277, 'Волченко Максим Юрьевич', 'maksim0969@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(278, 'Жакупов Думан Болатович', 'duman1459@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(279, 'Жунусбеков Асан Мухтарович', 'asan0077@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(280, 'Темирбаева Кымбат Каировна', 'kymbat0701@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(281, 'Тилек Нуржан', 'nurzhan0740@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(282, 'Ямлиханов Артем Юрьевич', 'artem2724@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(283, 'Мустафанов Рахметтолла Юрийұлы', 'rakhmettolla0325@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(284, 'Загоруйко Алина Николаевна', 'alina1442@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(285, 'Дәулетбек Әділбек Нұрбекұлы', 'adilbek0501@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(286, 'Бердихан Аманбек', 'amanbek0337@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(287, 'Бекмагамбетов Даурен Серикович', 'dauren0260@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(288, 'Ахметжан Азат Қуанышұлы', 'azat0893@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(289, 'Уатхан Толенбай', 'tolenbay0658@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(290, 'Серік Нариман Қуанышұлы', 'nariman0395@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(291, 'Жукенов Адильхан Маратович', 'adilkhan0541@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(292, 'Сұраншиев Қуаныш Өмірханұлы', 'kuanysh0279@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(293, 'Өмірзақ Асан Ғалымжанұлы', 'asan2616@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(294, 'Узакбаев Аян Сабыржанович', 'ayan3495@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(295, 'Мамыров Рамазан Шектибайұлы', 'ramazan0178@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(296, 'Орынхан Жасұлан Бақтығалиұлы', 'zhasulan1105@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(297, 'Тусенбеков Даниахмет Махсутович', 'daniakhmet0768@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(298, 'Төлебай Саят Ұланұлы', 'sayat1713@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(299, 'Смагулов Медет Муратулы', 'medet0842@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(300, 'Молшылык Ержанат', 'erzhanat1657@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(301, 'Мұхамет Ербол', 'erbol3822@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(302, 'Ақұн Нұрсұлтан Нұрлыбекұлы', 'nursultan4884@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(303, 'Дамасқызы Алмагүл', 'almagul1858@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(304, 'Бахытбек Жалғас Бахтиярұлы', 'zhalgas1359@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(305, 'Мамур Бағлан Талгарұлы', 'baglan2417@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(306, 'Русланұлы Алдияр', 'aldiyar0201@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(307, 'Токтар Мустафа Нұрланұлы', 'mustafa0455@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(308, 'Берген Абдуәзім Алмазұлы', 'abduazim0291@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(309, 'Кулюкбаева Аида Талғатқызы', 'aida1309@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(310, 'Смаилова Зарина Фларисовна', 'zarina1152@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(311, 'Жунусова Жайнагуль Мусланбековна', 'zhaynagul1109@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(312, 'Маралова Асель Енбекшиловна', 'asel0703@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(313, 'Сабит Ансар Жанабайұлы', 'ansar2677@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(314, 'Жамбалулы Ерназ', 'ernaz1738@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(315, 'Араш Ансат Жұмағалиұлы', 'ansat3666@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(316, 'Жылқайдар Қайрат Нұргалиұлы', 'kayrat1075@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(317, 'Смаилов Бейбитбек Дауренбекович', 'beybitbek0714@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(318, 'Суиндиков Сайын', 'sayyn2226@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(319, 'Рахметова Адина Талгатқызы', 'adina1768@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(320, 'Багненко Дмитрий Максимович', 'dmitriy2587@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(321, 'Шаяхметов Руслан Азаматович', 'ruslan1445@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(322, 'Бештоева Лида Адамовна', 'lida5577@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(323, 'Ковалевский Егор Юрьевич', 'egor0998@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(324, 'Зейнелқабиденова Гүлнұр Анварбекқызы', 'gulnur0245@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(325, 'Смагулов Арман Бериктасович', 'arman1957@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(326, 'Сагындыков Рахымжан Есимович', 'rakhymzhan5354@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(327, 'Сактаганов Диас Кусаинович', 'dias2916@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(328, 'Лазарев Владимир Владимирович', 'vladimir1002@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(329, 'Искакова Айша Мухтаровна', 'aysha0225@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(330, 'Олейник Владимир Александрович', 'vladimir2368@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(331, 'Нағашманов Мақсат Бақытбекұлы', 'maksat0580@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(332, 'Жоламанова Диана Ерлановна', 'diana2160@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(333, 'Шик Анна Владимировна', 'anna1708@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(334, 'Алпысова Алсу Сунгатовна', 'alsu1060@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(335, 'Радченко Наталья Андреевна', 'natalya1170@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(336, 'Кайратова Махаббат Жаслановна', 'makhabbat1103@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(337, 'Рахметова Маржан Асанқызы', 'marzhan0264@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(338, 'Горшенкова Вероника Владимировна', 'veronika1376@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(339, 'Мәді Айбек Бақытұлы', 'aybek0100@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(340, 'Жапар Дания Мейрамовна', 'daniya1420@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(341, 'Сәулебек Арман Ахметжанұлы', 'arman0913@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(342, 'Тастенов Жамбыл Жантелеевич', 'zhambyl0487@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(343, 'Тастенова Индира Темирбековна', 'indira0907@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(344, 'Жапар Жаннұр Ерікжанұлы', 'zhannur0786@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(345, 'Султанова Дана Канатовна', 'dana0257@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(346, 'Капбасова Айжан Советовна', 'ayzhan1209@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(347, 'Капбасова Маржан Советовна', 'marzhan1136@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(348, 'Коптлеуова Альбина Аблаевна', 'albina2299@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(349, 'Амангельды Акмарал', 'akmaral1030@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(350, 'Кусаинова Сания Ерболатовна', 'saniya1600@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(351, 'Жапаралиев Ааламбек', 'aalambek0242@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(352, 'Айтқұл Қыпшақ Қадыралыұлы', 'kypshak1186@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(353, 'Бакибаев Марат Талгатович', 'marat0555@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(354, 'Маматбек Уулу Сабырбек', 'uulu0900@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(355, 'Сатаев Азамат Сержанұлы', 'azamat0876@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(356, 'Скрипка Игорь Александрович', 'igor0913@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(357, 'Быков Дмитрий Алексеевич', 'dmitriy0577@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(358, 'Зигангиров Юрий Русланович', 'yuriy0106@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(359, 'Сарсенбинов Сулукхан Темирбулатұлы', 'sulukkhan0985@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(360, 'Топанов Кобланды Амангельдинович', 'koblandy0585@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(361, 'Бродовская Аделина Валентиновна', 'adelina0330@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(362, 'Құрманғалі Мади Ғалимжанұлы', 'madi0315@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(363, 'Бродовский Александр Сергеевич', 'aleksandr1267@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(364, 'Шкрябова Тамара Александровна', 'tamara4443@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(365, 'Боревич Александра Денисовна', 'aleksandra0518@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(366, 'Матасов Максим Эдикжанович', 'maksim4040@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(367, 'Кобец Ярослав Александрович', 'yaroslav1970@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(368, 'Джалилова Сабрина Ренатовна', 'sabrina1792@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(369, 'Сарипов Ерлан Кмартаевич', 'erlan0913@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(370, 'Вегнер Евгения Витальевна', 'evgeniya5532@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(371, 'Халимова Альбина Ринатовна', 'albina0991@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(372, 'Малышева София Максимовна', 'sofiya4626@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(373, 'Қабдуали Сұңғат Абубатырұлы', 'sungat0367@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(374, 'Хамлова Ангелина Николаевна', 'angelina2180@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(375, 'Шогелбай Арсен Дастанұлы', 'arsen0243@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(376, 'Тодоренко Роман Андреевич', 'roman1180@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(377, 'Хасенова Аягуль Нұркенқызы', 'ayagul1176@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(378, 'Шартон Патриций Эгонович', 'patritsiy0158@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(379, 'Альмурзиев Иса Мухамедович', 'isa1044@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(380, 'Исаков Карим Канатович', 'karim5479@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(381, 'Жақаев Диас Елікұлы', 'dias1183@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(382, 'Жақаев Данияр Елікұлы', 'daniyar1004@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(383, 'Әлиқан Арыстан Қобланұлы', 'arystan1739@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(384, 'Жумабеков Данияр Кудайбергенович', 'daniyar0427@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(385, 'Сыздық Қылышбек Ермекұлы', 'kylyshbek0806@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(386, 'Тагай Гүлназ Ержанқызы', 'gulnaz1501@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(387, 'Джумабаев Дауренбек Еркинович', 'daurenbek0200@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(388, 'Шабишов Нұрмухаммед Досболұлы', 'nurmukhammed0168@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(389, 'Потапенко Данила Максимович', 'danila0297@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(390, 'Мәнәтай Наріман Арманүлы', 'nariman1539@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(391, 'Аскеров Аскер Алваноглы', 'asker0166@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(392, 'Базиев Бекзат Беибутович', 'bekzat1669@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(393, 'Саяфаров Игорь Андреевич', 'igor1099@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(394, 'Жүкенова Нұрай Нұрғазықызы', 'nuray1405@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(395, 'Суендиков Арман Куандыкович', 'arman1312@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(396, 'Бусыгин Павел Владимирович', 'pavel0434@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(397, 'Бусыгин Владимир Владимирович', 'vladimir0398@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(398, 'Мухиев Еркебұлан Серікқанұлы', 'erkebulan1568@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(399, 'Абдильманова Бижан', 'bizhan0169@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(400, 'Жанай Ернұр Манатұлы', 'ernur0545@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(401, 'Өтегенова Мақпал Маратқызы', 'makpal1444@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(402, 'Аманбай Елігай Бауыржанқызы', 'eligay0932@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(403, 'Өтеген Қожан Маратұлы', 'kozhan1051@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(404, 'Өтегенова Зурия Маратқызы', 'zuriya1954@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(405, 'Абдрай Ерлан Даулетұлы', 'erlan0122@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(406, 'Зиёдуллоев Бунёд Эргашович', 'bunyod2708@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(407, 'Сайлау Әсет Мақсатұлы', 'aset1299@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(408, 'Алыкеева Қарлығаш Тұрсынқызы', 'karlygash1247@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(409, 'Құдайберген Айым Кенесбекқызы', 'ayym0245@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(410, 'Оролбай Саражан', 'sarazhan0879@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(411, 'Пердебай Жәнібек Бердебекұлы', 'zhanibek0397@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(412, 'Зейнолда Мөлдір Кызырбекқызы', 'moldir3085@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(413, 'Орнынша Айдана Орныншақызы', 'aydana0794@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(414, 'Абенова Аиша Манатовна', 'aisha3877@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(415, 'Бекбай Қанжар Қайратбекұлы', 'kanzhar0690@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(416, 'Дулат Жәнібек Томорханұлы', 'zhanibek0679@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(417, 'Емилов Еркеболан Билялович', 'erkebolan1004@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(418, 'Базилов Адильбек Дастанович', 'adilbek1569@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(419, 'Кабдыкеш Ернар Каиргельдыулы', 'ernar0980@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(420, 'Матжанов Алихайдар Магауияевич', 'alikhaydar0547@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(421, 'Жадигеров Нурмухаммед Кенжебекович', 'nurmukhammed3691@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(422, 'Тойбеков Ержан Сатбекұлы', 'erzhan1521@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(423, 'Есемсейт Аян Сапарғалиұлы', 'ayan1625@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(424, 'Мухамеджанов Нураткан Сарсенбаевич', 'nuratkan0158@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(425, 'Қыстаубай Санжар Асхатұлы', 'sanzhar1977@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(426, 'Кенжебек Бекмұрат Даниярұлы', 'bekmurat2238@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(427, 'Набатова Улбосин Бауржанқизи', 'ulbosin0377@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(428, 'Серікұлы Шахин', 'shakhin4764@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(429, 'Құрал Ералы Рысбайұлы', 'eraly0044@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(430, 'Абдухаким Нишанбек Абылмирзаұлы', 'nishanbek1494@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(431, 'Сафар Бердібек Тұрсұнбекұлы', 'berdibek2094@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(432, 'Аманжолов Алихан Муслимұлы', 'alikhan0794@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(433, 'Амандық Гүлбибі Бағдатқызы', 'gulbibi1883@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(434, 'Мақсұтқызы Жансая', 'zhansaya1974@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(435, 'Сәрсенбай Болатбек Мұхтарұлы', 'bolatbek1308@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(436, 'Жалимбетов Дидар Талгатович', 'didar2377@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(437, 'Жумашев Асылзат', 'asylzat4446@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(438, 'Әбілхан Ақару Жаупбекқызы', 'akaru3782@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(439, 'Досжан Ілияс Махсатұлы', 'iliyas1091@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(440, 'Арманбекқызы Армангүл', 'armangul2809@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(441, 'Серік Ерке Ардаққызы', 'erke4428@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(442, 'Асаубаев Ерасыл Умерханович', 'erasyl5210@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(443, 'Маженов Амир Жумабаевич', 'amir0025@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(444, 'Аяз Өркен Маратұлы', 'orken3201@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(445, 'Серікбай Рауан Ерғалиұлы', 'rauan0797@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(446, 'Жұмаұлы Әсет', 'aset0233@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(447, 'Байтілес Мұхтар Сәкенұлы', 'mukhtar0551@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(448, 'Сағатова Гүлзада Сабырханқызы', 'gulzada1209@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(449, 'Ауезханқызы Жанерке', 'zhanerke0752@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(450, 'Жанатхан Амангүл', 'amangul0173@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(451, 'Хуанбек Бахатгүл', 'bakhatgul0673@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(452, 'Алжапбар Әсел Райымбекқызы', 'asel3058@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(453, 'Зиахан Ерғаңат Аманжолұлы', 'erganat3406@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(454, 'Рысбекова Улдана Батырбеккызы', 'uldana0551@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(455, 'Айекеева Назерке Амангелдіқызы', 'nazerke1406@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(456, 'Нақыпбек Аяна Есімханқызы', 'ayana0606@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(457, 'Ибраева Мерей Кабдоллақызы', 'merey1156@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(458, 'Әлім Нұрдана Рамазанқызы', 'nurdana1031@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(459, 'Сейдхан Балауса Нурболқызы', 'balausa0900@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(460, 'Қалаубек Әлфараби Еркінбекұлы', 'alfarabi5089@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(461, 'Құмарұлы Марат', 'marat0063@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(462, 'Алиакпар Алинұр Арманұлы', 'alinur1831@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(463, 'Жанбырбай Мәди Асылбекұлы', 'madi4482@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(464, 'Асламбекұлы Сұнғат', 'sungat5136@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(465, 'Дәлелхан Ерсұлтан Мұратұлы', 'ersultan1340@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(466, 'Қуаныш Арнұр Азаматұлы', 'arnur1606@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(467, 'Молшылык Осиет', 'osiet1348@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(468, 'Омирзах Шерхан Бахытжанұлы', 'sherkhan0779@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(469, 'Абдрахманов Мирас Айтбайұлы', 'miras0488@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(470, 'Санатхан Нұрлан', 'nurlan2529@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(471, 'Боранбаев Айдын Кадырович', 'aydyn1574@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(472, 'Алиманов Айдын Кайратович', 'aydyn4628@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(473, 'Құлмахан Әлихан Біржанұлы', 'alikhan1362@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(474, 'Айтбай Ұлту Канатбайқызы', 'ultu0257@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(475, 'Ардабекқызы Арайлым', 'araylym4518@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(476, 'Нағашманова Жазира Дастанқызы', 'zhazira0178@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(477, 'Пирмаханов Есбол Казмаханұлы', 'esbol1181@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(478, 'Нуртуган Шукирбек', 'shukirbek0112@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(479, 'Батиров Ихтиярхожа Баходирович', 'ikhtiyarkhozha0638@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(480, 'Қадырбек Асылжан Қадырбекұлы', 'asylzhan0086@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(481, 'Кутлимуратов Есбол Полатулы', 'esbol2441@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(482, 'Жапар Аруа Саятовна', 'arua0203@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(483, 'Жалгасов Абилмансур Женисович', 'abilmansur1915@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(484, 'Малахова Надежда Геннадьевна', 'nadezhda0519@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(485, 'Брагина Анастасия Андреевна', 'anastasiya2161@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(486, 'Жұмаш Әділ Ермекұлы', 'adil1658@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(487, 'Жалелов Олжас Берикович', 'olzhas3311@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(488, 'Байтім Жансая Думанқызы', 'zhansaya1868@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(489, 'Думан Нурғиса Сүлейменұлы', 'nurgisa1915@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(490, 'Ускенбаева Зейнеп Бахытжановна', 'zeynep1095@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(491, 'Жақып Ырысбек Тоқмағанбетұлы', 'yrysbek3771@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(492, 'Әубәкір Өркенжебике Дәуренбекқызы', 'orkenzhebike3157@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(493, 'Серік Медина Нурболқызы', 'medina3292@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(494, 'Абдилла Бекбосын Ержигитұлы', 'bekbosyn1020@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(495, 'Тажин Айдос Асетулы', 'aydos0050@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(496, 'Хохлова Наталья Евгеньевна', 'natalya0722@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(497, 'Шабунин Артур Павлович', 'artur3004@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(498, 'Камаладинов Мухтар Нажмадин Углы', 'mukhtar0012@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(499, 'Мұратов Бексұлтан Мұратұлы', 'beksultan0607@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(500, 'Садырбаев Мирас Ержанұлы', 'miras0933@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(501, 'Оспан Аружан Дауленқызы', 'aruzhan2070@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(502, 'Тұрсынбек Райымбек Маратұлы', 'rayymbek2165@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(503, 'Жанжігіт Рауан Рахимжанқызы', 'rauan3453@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(504, 'Қасқырбай Ержан Есболұлы', 'erzhan5132@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(505, 'Рүстемқызы Томирис', 'tomiris0432@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(506, 'Ахметжан Алдияр Куанышұлы', 'aldiyar2108@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(507, 'Дәулетхан Мерей Ержанқызы', 'merey0954@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(508, 'Муслимова Кәусар Борисқызы', 'kausar2380@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(509, 'Кеңес Бекарыс Әмірбекұлы', 'bekarys2245@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(510, 'Сейдагалиев Рауль Тихонович', 'raul1311@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(511, 'Кан Ксения Анатольевна', 'kseniya2790@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(512, 'Хасен Райан Русланқызы', 'rayan3607@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(513, 'Денисов Тихон Игоревич', 'tikhon0079@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(514, 'Садвакасов Дамир Бауржанович', 'damir2161@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(515, 'Петровец Анастасия Витальевна', 'anastasiya1901@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(516, 'Ли Евгений Денисович', 'evgeniy0650@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(517, 'Қылышбек Арсен Дарханұлы', 'arsen1958@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(518, 'Омаров Дамир Тимурович', 'damir4740@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(519, 'Искендерова Екатерина Игоревна', 'ekaterina0738@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(520, 'Қалдыбай Расул Бекзатұлы', 'rasul5048@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(521, 'Аман Дамир', 'damir0170@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(522, 'Ажиков Рамазан Амангелдіұлы', 'ramazan2348@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(523, 'Габилов Галиб Руфат Оглы', 'galib0086@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(524, 'Иванов Ярослав Александрович', 'yaroslav0476@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(525, 'Кадир Сүндетқали Ерланұлы', 'sundetkali0506@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(526, 'Журсенова Ясмина Алибековна', 'yasmina3803@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(527, 'Жапбаров Мақсат Берікұлы', 'maksat3133@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(528, 'Альмурзиев Хусейн Мухаммедович', 'khuseyn0792@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(529, 'Батырханұлы Көпжасар', 'kopzhasar2044@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(530, 'Муслимова Ұлдана Даниярқызы', 'uldana0338@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(531, 'Куанышева Татьяна Ивановна', 'tatyana1246@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(532, 'Каликул Олжас Мусурманкулулы', 'olzhas4683@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(533, 'Онжанов Галымжан Серикович', 'galymzhan2616@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(534, 'Исин Сұлтан Қайратұлы', 'sultan0711@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(535, 'Исин Мирас Сагандыкович', 'miras1264@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(536, 'Ахметжан Алмас Қуанышұлы', 'almas1034@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(537, 'Рысбеков Айбек Аргынович', 'aybek0556@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(538, 'Каиров Жандос Нурланович', 'zhandos0814@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(539, 'Султанов Ерлан Серикович', 'erlan0223@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(540, 'Муслимов Адильжан Шарифоллаевич', 'adilzhan1804@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(541, 'Жексекеев Аблай Талгатович', 'ablay1470@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(542, 'Закиров Асет Серикович', 'aset0430@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(543, 'Рахманов Бакдаулет Бактыбаевич', 'bakdaulet1154@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(544, 'Қапар Әділбек Кенжебекұлы', 'adilbek1130@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(545, 'Мұстафин Дәмір Қайратович', 'damir0799@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(546, 'Тиес Мұхит Сейдуллаұлы', 'mukhit1754@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(547, 'Полуткин Ратмир Денисович', 'ratmir3480@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(548, 'Раджапова Марифат Алимбековна', 'marifat0654@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(549, 'Ниязов Саид Мухтарович', 'said2396@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(550, 'Кенжегалиев Адиль Ануарович', 'adil0715@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(551, 'Клишина Камила Дамировна', 'kamila0571@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(552, 'Трофименко Ксения Андреевна', 'kseniya3173@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(553, 'Липатова Полина Сергеевна', 'polina1690@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(554, 'Буряк Юлия Сергеевна', 'yuliya0858@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(555, 'Мустафина Данара Азаматкызы', 'danara1659@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(556, 'Халық Рамазан Даниярұлы', 'ramazan4923@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(557, 'Медеркулов Султан Мусаевич', 'sultan0086@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(558, 'Темирова Аяна Асхатовна', 'ayana2058@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(559, 'Иванова Мария Алексеевна', 'mariya0155@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(560, 'Айтжанов Ернар Тәжібайұлы', 'ernar0325@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(561, 'Абдурашитова Нилюфар Акмаловна', 'nilyufar4885@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(562, 'Шнайдер Елизавета Викторовна', 'elizaveta2512@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(563, 'Еремеев Александр Владимирович', 'aleksandr2625@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(564, 'Суюмбаев Аслан Асылбекович', 'aslan2348@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(565, 'Бойко Арина Николаевна', 'arina1610@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(566, 'Гедзов Артур Сергеевич', 'artur0668@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(567, 'Қасым Дархан Саятұлы', 'darkhan0079@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(568, 'Суйчмезова Милана Вадимовна', 'milana1137@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(569, 'Быков Алексей Алексеевич', 'aleksey0846@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(570, 'Башенов Санжар Алматович', 'sanzhar0609@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(571, 'Оразбек Бекзат Алимұлы', 'bekzat1719@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(572, 'Амангельдиев Аслан Талгатович', 'aslan4437@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(573, 'Бадрисламов Альтамир Витальевич', 'altamir2911@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(574, 'Цечоев Абдуррохим Батырович', 'abdurrokhim4761@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(575, 'Богураев Влас Иванович', 'vlas1233@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(576, 'Зверев Максим Владимирович', 'maksim3656@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(577, 'Шкреба Кирилл Дмитриевич', 'kirill1263@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(578, 'Янабаева Айша Нұрланқызы', 'aysha0251@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(579, 'Янабаев Абдррашид Нұрланұлы', 'abdrrashid0204@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(580, 'Маратов Нурлыхан Сымбатұлы', 'nurlykhan1710@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(581, 'Бахытжанов Альрамир Молдагалиевич', 'alramir0964@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(582, 'Сорокина Надежда Михайловна', 'nadezhda0016@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(583, 'Садыкова Гульназ Руслановна', 'gulnaz4496@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(584, 'Грицаев Родион Викторович', 'rodion3585@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(585, 'Нурматов Нурмухаммад Алишерович', 'nurmukhammad1383@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(586, 'Далабай Даурен Дулатұлы', 'dauren3382@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(587, 'Руди Руслан Викторович', 'ruslan4960@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(588, 'Пеннер Евгений Рустемович', 'evgeniy3564@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(589, 'Мустафин Тимур Кайратулы', 'timur0490@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(590, 'Воробьева Арина Ильинична', 'arina1431@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(591, 'Романов Дамир Даниярович', 'damir3545@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(592, 'Малеев Егор Игорьевич', 'egor4299@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(593, 'Шик Виктория Владимировна', 'viktoriya3276@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(594, 'Климентьев Евгений Николаевич', 'evgeniy3683@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(595, 'Шектибаев Али Даниярұлы', 'ali2344@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(596, 'Казгельдиев Темирлан Саматович', 'temirlan0086@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(597, 'Таранюк Алексей Александрович', 'aleksey2191@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(598, 'Бойко Алина Александровна', 'alina3010@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(599, 'Калижанов Тимур Серикович', 'timur1729@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(600, 'Абенова Баянсулу Бахытжановна', 'bayansulu0260@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(601, 'Байдуллаева Жулдыз Азаматкызы', 'zhuldyz0346@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(602, 'Дүйсеней Әділет Өмірбекұлы', 'adilet1050@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(603, 'Байдуллаева Арайлым Азаматкизи', 'araylym0325@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(604, 'Бархатова Динара Досмағанбетқызы', 'dinara1501@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(605, 'Калелова Аяулым Куанышевна', 'ayaulym1147@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(606, 'Уринова Салтанат Нурбекқизи', 'saltanat1358@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(607, 'Тулигенов Азамат Мадиярулы', 'azamat0122@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(608, 'Нургалиева Айнур Болатовна', 'aynur1070@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(609, 'Муратова Нурзада Муратовна', 'nurzada0364@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(610, 'Айдаргалиева Айдана Кадирхановна', 'aydana0511@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(611, 'Агайдарова Лаззат Алиаскаровна', 'lazzat3202@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(612, 'Совет Ильяс Нурболатович', 'ilyas1463@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(613, 'Бескемпір Әсем Нұрғалиқызы', 'asem0503@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(614, 'Куспанов Арсен Еламанович', 'arsen0818@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(615, 'Сатылханова Гүлаим Мұратқызы', 'gulaim0439@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(616, 'Кәрібай Анель Серікқызы', 'anel0212@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(617, 'Кошмуратов Назарбек Жарқынбекұлы', 'nazarbek4658@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(618, 'Қапан Айым Әрімханқызы', 'ayym2550@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(619, 'Кутибай Мейрамбек Уразимбетұлы', 'meyrambek0053@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(620, 'Уали Гүлімхан Досымханқызы', 'gulimkhan3487@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(621, 'Амангелд Бүркіт', 'burkit2180@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(622, 'Рахимберды Думан Садықұлы', 'duman4194@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(623, 'Нуржан Айбибі Нуржанқызы', 'aybibi0959@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(624, 'Шукей Дамир Қуанышұлы', 'damir0165@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(625, 'Уринов Муқамеджан Нурбекуғли', 'mukamedzhan0980@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(626, 'Жапар Нуржан Ерикжанулы', 'nurzhan0392@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(627, 'Ысқақ Әділхан Жоламанұлы', 'adilkhan0525@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(628, 'Жақыпов Айдос Жәнібекұлы', 'aydos1839@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(629, 'Абдикулов Даут Нуранұлы', 'daut1965@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(630, 'Рахимжанов Ерболат Сексенбиевич', 'erbolat1339@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(631, 'Баден Жанболат', 'zhanbolat0247@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(632, 'Эгамбердиев Инамжан Бахтиярұлы', 'inamzhan1524@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(633, 'Мадешов Ербол Ержанулы', 'erbol1977@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(634, 'Дауытов Алишер Магзамович', 'alisher0973@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(635, 'Калиев Багдат Жанбыршыевич', 'bagdat1137@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(636, 'Қылышбеков Азамат Ақтауұлы', 'azamat0422@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(637, 'Урдабой Ерасыл Джумабекұлы', 'erasyl1890@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(638, 'Урдабой Нұрасыл Джумабекұлы', 'nurasyl1880@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(639, 'Садвакасов Батырхан Бауржанович', 'batyrkhan1987@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(640, 'Ербол Елсултан', 'elsultan0848@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(641, 'Мусахан Динара Бакибайқызы', 'dinara2619@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(642, 'Молдахметова Аружан Елдосовна', 'aruzhan0729@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(643, 'Бархат Гулнур Орынханқызы', 'gulnur0456@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(644, 'Куандыков Алижан Алдамуратович', 'alizhan3468@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(645, 'Ахметжан Маулудаханым Нұржанқызы', 'mauludakhanym5036@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(646, 'Аденов Дамир Ерланович', 'damir5791@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(647, 'Садықанова Еркеназ Марғұланқызы', 'erkenaz1799@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(648, 'Турлыбаева Жания Айбековна', 'zhaniya3726@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(649, 'Шаштығали Мөлдір Бауржанқызы', 'moldir5005@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(650, 'Утебекова Назым Ахметуллаевна', 'nazym5522@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(651, 'Берікқызы Мәдина', 'madina2957@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(652, 'Құттыбек Ясмин Ерғалиқызы', 'yasmin2249@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(653, 'Нургалиев Дархан Елубайұлы', 'darkhan2227@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(654, 'Абуов Уалихан Абдраманұлы', 'ualikhan2415@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(655, 'Уринов Нурболат Нурбекович', 'nurbolat1039@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(656, 'Раимбаев Жанкожа Еркасымович', 'zhankozha1204@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(657, 'Абыхаев Рустем Талгатович', 'rustem1014@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(658, 'Сисенбаева Акерке Ерболовна', 'akerke1204@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(659, 'Шакуова Мәдина Сералықызы', 'madina1125@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(660, 'Турсунбаев Кудайберген Булатович', 'kudaybergen1631@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(661, 'Есет Алихан Жайлыбекұлы', 'alikhan4281@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(662, 'Курбанов Мадияр Ержанұлы', 'madiyar1284@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(663, 'Айдаргалиев Адлет Кадирханович', 'adlet0723@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(664, 'Деканбаев Ерали Абдурасулович', 'erali4060@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(665, 'Кошеков Кайрат Оразбаевич', 'kayrat2857@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(666, 'Есенбеков Мирас Маратович', 'miras1072@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(667, 'Жарманов Ербол Рамазанович', 'erbol0360@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(668, 'Алимбаев Амир Кайратович', 'amir3919@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(669, 'Сайдуллаев Юсуп Абдирасулұлы', 'yusup1008@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(670, 'Жұмағұл Алдияр Мадиярұлы', 'aldiyar3831@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(671, 'Төлеубек Ислам Талғатұлы', 'islam0549@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(672, 'Әділханұлы Тамирлан', 'tamirlan1049@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(673, 'Тайшыбай Таир Амангелдіұлы', 'tair2868@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(674, 'Құралбай Абылай Қуандықұлы', 'abylay4689@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(675, 'Багадгүль Аркалык', 'arkalyk0084@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(676, 'Барат Иманғали Бахбергенұлы', 'imangali1834@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(677, 'Кистаубаев Жандос Жаныбекович', 'zhandos0825@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(678, 'Айжанов Руслан Дүйсенкелдіұлы', 'ruslan1816@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(679, 'Какен Бибарс Ерболұлы', 'bibars0304@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(680, 'Сабден Рамазан Ганиұлы', 'ramazan2860@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(681, 'Жәнібекұлы Нұрсұлтан', 'nursultan3588@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(682, 'Шакуова Сандугаш Болатовна', 'sandugash1342@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(683, 'Тоғызбай Жанболат Аралбайұлы', 'zhanbolat4475@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(684, 'Рыстанова Мерей Серікжанқызы', 'merey1041@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(685, 'Төрехан Абылайхан Асқарұлы', 'abylaykhan0718@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(686, 'Жақан Аяжан Оразбайқызы', 'ayazhan3006@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(687, 'Асан Алан', 'alan0372@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(688, 'Сейітхамза Рамазан Бақытжанұлы', 'ramazan1325@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(689, 'Мейрамбай Бексұлтан Мұханбедияұлы', 'beksultan3781@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(690, 'Эмлсов Ерасыл Айбекұлы', 'erasyl2843@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(691, 'Куанышбеков Амир Динмухаммедович', 'amir2485@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(692, 'Бекмурат Нұрғиса Наурызбайұлы', 'nurgisa0547@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(693, 'Ардхан Мадияр Қанатұлы', 'madiyar4961@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(694, 'Әскер Әліби Әлібекұлы', 'alibi2249@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(695, 'Рахимжанова Гүлнұр Сералықызы', 'gulnur1191@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(696, 'Тлеуберген Қыран Санатұлы', 'kyran5710@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(697, 'Байсхан Ердаулет Ниязбекұлы', 'erdaulet2372@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(698, 'Амантаев Аслан Арманулы', 'aslan0578@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(699, 'Сұлтансеит Алдияр Алтынбекұлы', 'aldiyar0152@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(700, 'Жылқайдар Бану Қанатбекқызы', 'banu5137@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(701, 'Ерзатұлы Марқұлан', 'markulan4899@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(702, 'Асембек Айша', 'aysha1247@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(703, 'Жиембек Диас Дәулетұлы', 'dias0288@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(704, 'Ахмедов Нұрдаулет Ғалымжанұлы', 'nurdaulet5230@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(705, 'Азамат Әмина', 'amina4050@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(706, 'Школбек Бексұлтан Қуанышұлы', 'beksultan2630@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(707, 'Саттемек Жалғас', 'zhalgas4098@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(708, 'Шайхслям Серхан Мейірханұлы', 'serkhan4978@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(709, 'Нәби Райымбек Қайроллаұлы', 'rayymbek0353@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(710, 'Құтан Арайлым Қабылқызы', 'araylym2803@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(711, 'Шымбай Нұркелді Ерланұлы', 'nurkeldi2500@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(712, 'Унеров Бекарыс Ербол Угли', 'bekarys0174@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(713, 'Жамбыл Дастан Ұланұлы', 'dastan0660@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(714, 'Умаралиев Ислам Батырбекович', 'islam3241@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(715, 'Мағауянов Әбілмансұр Талғатұлы', 'abilmansur2694@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(716, 'Алматұлы Әлішер', 'alisher1618@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(717, 'Армия Алмас Женісұлы', 'almas0760@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(718, 'Әбді Нұрдәулет Асқарбекұлы', 'nurdaulet0209@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(719, 'Есжан Әділет Қайратұлы', 'adilet4348@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(720, 'Есмаханов Аспандияр Талғатұлы', 'aspandiyar0130@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(721, 'Сәрсенбай Фатима Мұхтарқызы', 'fatima3405@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(722, 'Акимбеков Абзал Бахытұлы', 'abzal1469@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(723, 'Абдулхамидов Жасур Адилжонович', 'zhasur2716@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(724, 'Еркелді Мұқан Еркелдіұлы', 'mukan3935@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(725, 'Тастан Гулзана Нуржанқызы', 'gulzana0561@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(726, 'Калмурза Оразкелді Нурланұлы', 'orazkeldi1187@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(727, 'Әлім Ислам Мақсатұлы', 'islam0673@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(728, 'Куспанов Даниал Куандыкович', 'danial4069@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(729, 'Қойанбай Мирас Дәулетұлы', 'miras3125@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(730, 'Сағындық Диас Думанұлы', 'dias3305@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(731, 'Арсенов Данил Николаевич', 'danil0377@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(732, 'Ескинеев Амаль Галимжанұлы', 'amal2454@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(733, 'Грицаев Кирилл Викторович', 'kirill0277@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(734, 'Базиев Саттарбек Бейбутович', 'sattarbek1134@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(735, 'Ануарбек Темірхан Төлегенұлы', 'temirkhan1868@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(736, 'Тлеген Қарақат Булатқызы', 'karakat4503@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(737, 'Храпа Анатолий Александрович', 'anatoliy5117@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(738, 'Байзаков Оразбек Кайратулы', 'orazbek0297@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(739, 'Досымбек Санжар Берікұлы', 'sanzhar1873@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(740, 'Сулейменов Нурислам Ермекулы', 'nurislam1463@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(741, 'Жәнібек Мейірбек Арқабайұлы', 'meyirbek1881@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(742, 'Даулетбеков Жигер Маратович', 'zhiger1120@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(743, 'Нұрмағамбетов Ақылжан Айсұлтанұлы', 'akylzhan0805@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(744, 'Жабаев Жамбыл Ашимович', 'zhambyl0974@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(745, 'Турдыбаев Берик Еркинугли', 'berik0035@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(746, 'Төлеухан Еркебұлан Ұланұлы', 'erkebulan0529@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(747, 'Рахманкулов Санжарбек Юсанұлы', 'sanzharbek1731@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(748, 'Ергенбай Ілияс Жанболатұлы', 'iliyas2095@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(749, 'Аскаров Элдос', 'eldos0189@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(750, 'Елубаев Алдияр Жарылкасынович', 'aldiyar1567@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(751, 'Катранова Алина Болатовна', 'alina4412@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(752, 'Марғұланұлы Әділет', 'adilet4581@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(753, 'Төлеген Әдия Жәнібекқызы', 'adiya3563@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(754, 'Антипов Денис Вячеславович', 'denis1732@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(755, 'Абрамов Даниил Викторович', 'daniil3447@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(756, 'Адольф Вадим Валерьевич', 'vadim1126@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(757, 'Абдурашитов Ахмадали Акмалович', 'akhmadali5351@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(758, 'Алдабергенова Лаура Муратовна', 'laura2772@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(759, 'Аристова Виктория Аркадьевна', 'viktoriya2972@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(760, 'Аскаров Нургиса Аманжолович', 'nurgisa0576@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(761, 'Кенесов Руслан Гумарович', 'ruslan0641@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(762, 'Кучербаев Алишер Сапарович', 'alisher0209@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(763, 'Жансұлтан Бейбарыс Бахытжанұлы', 'beybarys2199@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(764, 'Айдынгалиев Алан Арманович', 'alan0795@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(765, 'Ибрагимов Мұстафа Табарікұлы', 'mustafa1984@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(766, 'Жолдасов Асет Кайратович', 'aset1080@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(767, 'Даниял Дархан Алтынбекұлы', 'darkhan1306@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(768, 'Анарбек Аяжан Ержанқызы', 'ayazhan2237@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(769, 'Майбасар Тансулу Назымхановна', 'tansulu1219@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(770, 'Омирзаков Аскар Алимжанұлы', 'askar2301@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(771, 'Русланқызы Рауан', 'rauan1864@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(772, 'Сагатов Ернұр Берікұлы', 'ernur0675@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(773, 'Яхияев Нұрсұлтан Элмуродұлы', 'nursultan0879@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(774, 'Бисенғалиев Артур Жасұланұлы', 'artur0427@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(775, 'Дәулетбеков Ернияз Маратұлы', 'erniyaz0754@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(776, 'Әзім Нұрсаят Қанатұлы', 'nursayat1153@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(777, 'Махаури Эси Махмудович', 'esi0126@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student'),
+(778, 'Нұрбақытұлы Қажымұрат', 'kazhymurat0487@student.urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'student');
 
+-- 4. Subjects
+INSERT INTO subjects (name) VALUES ('Алғашқы әскери және технологиялық дайындық');
+INSERT INTO subjects (name) VALUES ('Английский язык');
+INSERT INTO subjects (name) VALUES ('Ағылшын тілі');
+INSERT INTO subjects (name) VALUES ('БМ 1');
+INSERT INTO subjects (name) VALUES ('БМ 2');
+INSERT INTO subjects (name) VALUES ('Биология');
+INSERT INTO subjects (name) VALUES ('География');
+INSERT INTO subjects (name) VALUES ('География Ағылшын тілі');
+INSERT INTO subjects (name) VALUES ('Графика және жобалау');
+INSERT INTO subjects (name) VALUES ('Дене тәрбиесі');
+INSERT INTO subjects (name) VALUES ('Дүниежүзі тарихы');
+INSERT INTO subjects (name) VALUES ('ЖММ-1');
+INSERT INTO subjects (name) VALUES ('ЖММ-3');
+INSERT INTO subjects (name) VALUES ('ЖММ-4');
+INSERT INTO subjects (name) VALUES ('Информатика');
+INSERT INTO subjects (name) VALUES ('КМ 4 Желдететін техникаға жоспарлы техникалық қызмет көрсетту жұмыстарын орындау');
+INSERT INTO subjects (name) VALUES ('КМ-3 Электр монтаждау жұмыстарын жүргізу және аяқтау');
+INSERT INTO subjects (name) VALUES ('КМ-4 Желілік құрылғылар мен бағдарламалық жасақтаманы конфигурациялау процесін басқару');
+INSERT INTO subjects (name) VALUES ('КМ-4 Тестілеу');
+INSERT INTO subjects (name) VALUES ('КМ-5 Ұйымның серверлік жабдықтарын жинақтау, монтаждау, баптау және қызмет көрсету');
+INSERT INTO subjects (name) VALUES ('Кураторлық сағат');
+INSERT INTO subjects (name) VALUES ('Кураторский час');
+INSERT INTO subjects (name) VALUES ('Математика');
+INSERT INTO subjects (name) VALUES ('Математика Дүниежүзі тарихы');
+INSERT INTO subjects (name) VALUES ('ООМ 1');
+INSERT INTO subjects (name) VALUES ('ООМ 2');
+INSERT INTO subjects (name) VALUES ('ООМ-1');
+INSERT INTO subjects (name) VALUES ('ПМ -7 Настройка и ослуживание серверного оборудования организации');
+INSERT INTO subjects (name) VALUES ('ПМ-3 Администрирование процесса установки сетевых устройств инфокоммуникационных систем');
+INSERT INTO subjects (name) VALUES ('ПМ-4 Администрирование процесса конфигурирования сетевых устройств и программного обеспечения');
+INSERT INTO subjects (name) VALUES ('ПМ-8 Обеспечение работоспособности IT устройств');
+INSERT INTO subjects (name) VALUES ('ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet');
+INSERT INTO subjects (name) VALUES ('Русская литература');
+INSERT INTO subjects (name) VALUES ('Русский язык');
+INSERT INTO subjects (name) VALUES ('Физика');
+INSERT INTO subjects (name) VALUES ('Физическая культура');
+INSERT INTO subjects (name) VALUES ('Химия');
+INSERT INTO subjects (name) VALUES ('Қазақ тілі');
+INSERT INTO subjects (name) VALUES ('Қазақ тілі Қазақ әдебиеті');
+INSERT INTO subjects (name) VALUES ('Қазақ әдебиеті');
+INSERT INTO subjects (name) VALUES ('№ 202');
+
+-- 5. Groups
+-- =================================================================
+-- IMPORT: Groups (Группы)
+-- Source: Extracted from student and employee CSV
+-- Date: 2026-01-09
+-- =================================================================
+
+
+
+INSERT INTO `groups` (`name`, `course`) VALUES
+-- 4 курс (2021-2022 набор)
+('ВТиИС-2202', 4),
+
+-- 3 курс (2022-2023 набор)
+('ВТИиС-2302', 3),
+('ГБ-2301', 3),
+('ГБ-2302', 3),
+('ГБ-2302/1', 3),
+('ТС-2301', 3),
+('ТС-2302', 3),
+('ЭЛ-2301', 3),
+('ЭЛ-2302', 3),
+('SТС-2301', 3),
+('SЭЛ-2301', 3),
+
+-- 2 курс (2023-2024 набор)
+('ПО-2402', 2),
+('ГБ-2402', 2),
+('ЭЛ-2402', 2),
+('SГБ-2402', 2),
+('SЭЛ-2402', 2),
+('ТС-2402', 2),
+('ГБ-2401', 2),
+('ЭЛ-2401', 2),
+('ВТИиС-2401', 2),
+('ПО-2401', 2),
+('SГБ-2401', 2),
+('SЭЛ-2401', 2),
+
+-- 1 курс (2024-2025 набор)
+('ЭЛ-2501', 1),
+('SЭЛ-2501', 1),
+('ЭЛ-2502', 1),
+('SЭЛ-2502', 1),
+('STC-2501', 1),
+('ГБ-2501', 1),
+('SГБ-2501', 1),
+('ГБ-2502', 1),
+('ПО-2501', 1),
+('ПО-2502', 1),
+('ВТиИС-2501', 1),
+('ГБР-2502', 1),
+('SГБ-2502', 1);
+
+-- 6. Schedule (Must be after users, subjects, groups)
+-- ============================================================================
+-- ПОЛНЫЙ ИМПОРТ РАСПИСАНИЯ
+-- Сгенерировано: 2026-01-25 01:17:08
+-- Записей: 102
+-- ============================================================================
+
+-- Очистка существующих данных расписания
+-- Generated Schedule Import (Final Robust Version)
+SET NAMES utf8mb4;
+
+-- Ensure all groups and subjects exist
+INSERT IGNORE INTO `groups` (name, course) VALUES ('SГБ-2501/ГБ-2501', 1);
+INSERT IGNORE INTO `groups` (name, course) VALUES ('SГБ-2502', 1);
+INSERT IGNORE INTO `groups` (name, course) VALUES ('SЭЛ-2501/ЭЛ-2501', 1);
 -- Insert student records
 INSERT INTO `students` (
   `id`, `user_id`, `student_code`, `group_id`, `specialty_id`, `qr_token`,
@@ -1873,1335 +1863,1482 @@ UPDATE users SET
 WHERE full_name IS NOT NULL AND (last_name IS NULL OR last_name = '');
 
 
--- 4. Subjects
-INSERT INTO subjects (name) VALUES ('Алғашқы әскери және технологиялық дайындық');
-INSERT INTO subjects (name) VALUES ('Английский язык');
-INSERT INTO subjects (name) VALUES ('Ағылшын тілі');
-INSERT INTO subjects (name) VALUES ('БМ 1');
-INSERT INTO subjects (name) VALUES ('БМ 2');
-INSERT INTO subjects (name) VALUES ('Биология');
-INSERT INTO subjects (name) VALUES ('География');
-INSERT INTO subjects (name) VALUES ('География Ағылшын тілі');
-INSERT INTO subjects (name) VALUES ('Графика және жобалау');
-INSERT INTO subjects (name) VALUES ('Дене тәрбиесі');
-INSERT INTO subjects (name) VALUES ('Дүниежүзі тарихы');
-INSERT INTO subjects (name) VALUES ('ЖММ-1');
-INSERT INTO subjects (name) VALUES ('ЖММ-3');
-INSERT INTO subjects (name) VALUES ('ЖММ-4');
-INSERT INTO subjects (name) VALUES ('Информатика');
-INSERT INTO subjects (name) VALUES ('КМ 4 Желдететін техникаға жоспарлы техникалық қызмет көрсетту жұмыстарын орындау');
-INSERT INTO subjects (name) VALUES ('КМ-3 Электр монтаждау жұмыстарын жүргізу және аяқтау');
-INSERT INTO subjects (name) VALUES ('КМ-4 Желілік құрылғылар мен бағдарламалық жасақтаманы конфигурациялау процесін басқару');
-INSERT INTO subjects (name) VALUES ('КМ-4 Тестілеу');
-INSERT INTO subjects (name) VALUES ('КМ-5 Ұйымның серверлік жабдықтарын жинақтау, монтаждау, баптау және қызмет көрсету');
-INSERT INTO subjects (name) VALUES ('Кураторлық сағат');
-INSERT INTO subjects (name) VALUES ('Кураторский час');
-INSERT INTO subjects (name) VALUES ('Математика');
-INSERT INTO subjects (name) VALUES ('Математика Дүниежүзі тарихы');
-INSERT INTO subjects (name) VALUES ('ООМ 1');
-INSERT INTO subjects (name) VALUES ('ООМ 2');
-INSERT INTO subjects (name) VALUES ('ООМ-1');
-INSERT INTO subjects (name) VALUES ('ПМ -7 Настройка и ослуживание серверного оборудования организации');
-INSERT INTO subjects (name) VALUES ('ПМ-3 Администрирование процесса установки сетевых устройств инфокоммуникационных систем');
-INSERT INTO subjects (name) VALUES ('ПМ-4 Администрирование процесса конфигурирования сетевых устройств и программного обеспечения');
-INSERT INTO subjects (name) VALUES ('ПМ-8 Обеспечение работоспособности IT устройств');
-INSERT INTO subjects (name) VALUES ('ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet');
-INSERT INTO subjects (name) VALUES ('Русская литература');
-INSERT INTO subjects (name) VALUES ('Русский язык');
-INSERT INTO subjects (name) VALUES ('Физика');
-INSERT INTO subjects (name) VALUES ('Физическая культура');
-INSERT INTO subjects (name) VALUES ('Химия');
-INSERT INTO subjects (name) VALUES ('Қазақ тілі');
-INSERT INTO subjects (name) VALUES ('Қазақ тілі Қазақ әдебиеті');
-INSERT INTO subjects (name) VALUES ('Қазақ әдебиеті');
-INSERT INTO subjects (name) VALUES ('№ 202');
-
--- 5. Groups
--- =================================================================
--- IMPORT: Groups (Группы)
--- Source: Extracted from student and employee CSV
--- Date: 2026-01-09
--- =================================================================
-
-
-
-INSERT INTO `groups` (`name`, `course`) VALUES
--- 4 курс (2021-2022 набор)
-('ВТиИС-2202', 4),
-
--- 3 курс (2022-2023 набор)
-('ВТИиС-2302', 3),
-('ГБ-2301', 3),
-('ГБ-2302', 3),
-('ГБ-2302/1', 3),
-('ТС-2301', 3),
-('ТС-2302', 3),
-('ЭЛ-2301', 3),
-('ЭЛ-2302', 3),
-('SТС-2301', 3),
-('SЭЛ-2301', 3),
-
--- 2 курс (2023-2024 набор)
-('ПО-2402', 2),
-('ГБ-2402', 2),
-('ЭЛ-2402', 2),
-('SГБ-2402', 2),
-('SЭЛ-2402', 2),
-('ТС-2402', 2),
-('ГБ-2401', 2),
-('ЭЛ-2401', 2),
-('ВТИиС-2401', 2),
-('ПО-2401', 2),
-('SГБ-2401', 2),
-('SЭЛ-2401', 2),
-
--- 1 курс (2024-2025 набор)
-('ЭЛ-2501', 1),
-('SЭЛ-2501', 1),
-('ЭЛ-2502', 1),
-('SЭЛ-2502', 1),
-('STC-2501', 1),
-('ГБ-2501', 1),
-('SГБ-2501', 1),
-('ГБ-2502', 1),
-('ПО-2501', 1),
-('ПО-2502', 1),
-('ВТиИС-2501', 1),
-('ГБР-2502', 1),
-('SГБ-2502', 1);
-
--- 6. Schedule (Must be after users, subjects, groups)
--- ============================================================================
--- ПОЛНЫЙ ИМПОРТ РАСПИСАНИЯ
--- Сгенерировано: 2026-01-25 01:17:08
--- Записей: 102
--- ============================================================================
-
--- Очистка существующих данных расписания
-TRUNCATE TABLE schedule;
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Кураторлық сағат%' OR name LIKE '%Кураторлық сағат%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Садувакас%' AND role = 'instructor' LIMIT 1),
-    '№201',
-    'monday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Математика%' OR name LIKE '%Математика%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Мусалаева%' AND role = 'instructor' LIMIT 1),
-    '№204',
-    'friday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Биология%' OR name LIKE '%Биология%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Жұмаканов%' AND role = 'instructor' LIMIT 1),
-    '№302',
-    'friday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%География%' OR name LIKE '%География%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Төребаева%' AND role = 'instructor' LIMIT 1),
-    '№209',
-    'friday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Математика Дүниежүзі тарихы%' OR name LIKE '%Математика Дүниежүзі тарихы%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Төребаева%' AND role = 'instructor' LIMIT 1),
-    '№304',
-    'tuesday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Информатика%' OR name LIKE '%Информатика%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Амангельдиев%' AND role = 'instructor' LIMIT 1),
-    '№326',
-    'friday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%География Ағылшын тілі%' OR name LIKE '%География Ағылшын тілі%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Садувакас%' AND role = 'instructor' LIMIT 1),
-    '№201',
-    'friday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Қазақ тілі%' OR name LIKE '%Қазақ тілі%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Жарманов%' AND role = 'instructor' LIMIT 1),
-    '№301',
-    'friday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Дүниежүзі тарихы%' OR name LIKE '%Дүниежүзі тарихы%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Раймбаева%' AND role = 'instructor' LIMIT 1),
-    '№205',
-    'wednesday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Алғашқы әскери және технологиялық дайындық%' OR name LIKE '%Алғашқы әскери және технологиялық дайындық%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Мусалаева%' AND role = 'instructor' LIMIT 1),
-    '№204',
-    'friday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Қазақ әдебиеті%' OR name LIKE '%Қазақ әдебиеті%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Хамитова%' AND role = 'instructor' LIMIT 1),
-    '№301',
-    'friday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Дене тәрбиесі%' OR name LIKE '%Дене тәрбиесі%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байдильдина%' AND role = 'instructor' LIMIT 1),
-    '№209',
-    'friday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Химия%' OR name LIKE '%Химия%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Садувакас%' AND role = 'instructor' LIMIT 1),
-    '№201',
-    'thursday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Графика және жобалау%' OR name LIKE '%Графика және жобалау%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Махин%' AND role = 'instructor' LIMIT 1),
-    '№310',
-    'friday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Дене тәрбиесі%' OR name LIKE '%Дене тәрбиесі%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Жұмаканов%' AND role = 'instructor' LIMIT 1),
-    '№302',
-    'friday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Русская литература%' OR name LIKE '%Русская литература%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байдильдина%' AND role = 'instructor' LIMIT 1),
-    '№303',
-    'friday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Қазақ тілі Қазақ әдебиеті%' OR name LIKE '%Қазақ тілі Қазақ әдебиеті%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Амангельдиев%' AND role = 'instructor' LIMIT 1),
-    '№326',
-    'friday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Физика%' OR name LIKE '%Физика%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байдильдина%' AND role = 'instructor' LIMIT 1),
-    '№303',
-    'friday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Ағылшын тілі%' OR name LIKE '%Ағылшын тілі%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Жарманов%' AND role = 'instructor' LIMIT 1),
-    '№204',
-    'friday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'иИС-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Физическая культура%' OR name LIKE '%Физическая культура%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Төребаева%' AND role = 'instructor' LIMIT 1),
-    '№209',
-    'friday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Русский язык%' OR name LIKE '%Русский язык%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Мусалаева%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'monday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ООМ 2%' OR name LIKE '%ООМ 2%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Орынбасар%' AND role = 'instructor' LIMIT 1),
-    '№219',
-    'monday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ООМ 1%' OR name LIKE '%ООМ 1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Махин%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'monday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Физическая культура%' OR name LIKE '%Физическая культура%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Махин%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'monday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%География%' OR name LIKE '%География%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Жұмаканов%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'tuesday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Математика%' OR name LIKE '%Математика%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Амангельдиев%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'tuesday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Физическая культура%' OR name LIKE '%Физическая культура%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Махин%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'tuesday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Русская литература%' OR name LIKE '%Русская литература%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Мусалаева%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'wednesday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%БМ 1%' OR name LIKE '%БМ 1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'wednesday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%БМ 1%' OR name LIKE '%БМ 1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'wednesday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%БМ 1%' OR name LIKE '%БМ 1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'wednesday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%БМ 2%' OR name LIKE '%БМ 2%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'thursday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%БМ 2%' OR name LIKE '%БМ 2%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'thursday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%БМ 2%' OR name LIKE '%БМ 2%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'thursday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Кураторский час%' OR name LIKE '%Кураторский час%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Қасымова%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'thursday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%БМ 1%' OR name LIKE '%БМ 1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'friday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%БМ 1%' OR name LIKE '%БМ 1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'friday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%БМ 1%' OR name LIKE '%БМ 1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'friday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ГБР-250' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%БМ 1%' OR name LIKE '%БМ 1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№102',
-    'friday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%КМ-3 Электр монтаждау жұмыстарын жүргізу және аяқтау%' OR name LIKE '%КМ-3 Электр монтаждау жұмыстарын жүргізу және аяқтау%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Шадаев%' AND role = 'instructor' LIMIT 1),
-    '№212',
-    'monday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-4%' OR name LIKE '%ЖММ-4%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Сатубалдина%' AND role = 'instructor' LIMIT 1),
-    '№212',
-    'monday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-3%' OR name LIKE '%ЖММ-3%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байдильдина%' AND role = 'instructor' LIMIT 1),
-    '№303',
-    'monday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-3 Администрирование процесса установки сетевых устройств инфокоммуникационных систем%' OR name LIKE '%ПМ-3 Администрирование процесса установки сетевых устройств инфокоммуникационных систем%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№215',
-    'monday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ООМ-1%' OR name LIKE '%ООМ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№215',
-    'monday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%КМ-3 Электр монтаждау жұмыстарын жүргізу және аяқтау%' OR name LIKE '%КМ-3 Электр монтаждау жұмыстарын жүргізу және аяқтау%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Шадаев%' AND role = 'instructor' LIMIT 1),
-    '№212',
-    'tuesday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-1%' OR name LIKE '%ЖММ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Шадаев%' AND role = 'instructor' LIMIT 1),
-    '№212',
-    'tuesday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-3%' OR name LIKE '%ЖММ-3%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№215',
-    'tuesday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-3 Администрирование процесса установки сетевых устройств инфокоммуникационных систем%' OR name LIKE '%ПМ-3 Администрирование процесса установки сетевых устройств инфокоммуникационных систем%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№215',
-    'tuesday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%КМ-4 Желілік құрылғылар мен бағдарламалық жасақтаманы конфигурациялау процесін басқару%' OR name LIKE '%КМ-4 Желілік құрылғылар мен бағдарламалық жасақтаманы конфигурациялау процесін басқару%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Жарманов%' AND role = 'instructor' LIMIT 1),
-    '№214',
-    'tuesday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%№ 202%' OR name LIKE '%№ 202%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    'Не указано',
-    'tuesday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%КМ-3 Электр монтаждау жұмыстарын жүргізу және аяқтау%' OR name LIKE '%КМ-3 Электр монтаждау жұмыстарын жүргізу және аяқтау%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Сатубалдина%' AND role = 'instructor' LIMIT 1),
-    '№212',
-    'wednesday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-4%' OR name LIKE '%ЖММ-4%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Шадаев%' AND role = 'instructor' LIMIT 1),
-    '№212',
-    'wednesday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ООМ-1%' OR name LIKE '%ООМ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№215',
-    'wednesday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Английский язык%' OR name LIKE '%Английский язык%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№215',
-    'wednesday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-4 Администрирование процесса конфигурирования сетевых устройств и программного обеспечения%' OR name LIKE '%ПМ-4 Администрирование процесса конфигурирования сетевых устройств и программного обеспечения%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№215',
-    'wednesday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%КМ-4 Тестілеу%' OR name LIKE '%КМ-4 Тестілеу%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Сатубалдина%' AND role = 'instructor' LIMIT 1),
-    '№212',
-    'thursday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%КМ-4 Тестілеу%' OR name LIKE '%КМ-4 Тестілеу%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Сатубалдина%' AND role = 'instructor' LIMIT 1),
-    '№212',
-    'thursday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%№ 202%' OR name LIKE '%№ 202%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№215',
-    'thursday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Английский язык%' OR name LIKE '%Английский язык%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№215',
-    'thursday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%КМ-5 Ұйымның серверлік жабдықтарын жинақтау, монтаждау, баптау және қызмет көрсету%' OR name LIKE '%КМ-5 Ұйымның серверлік жабдықтарын жинақтау, монтаждау, баптау және қызмет көрсету%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№215',
-    'thursday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%КМ-4 Тестілеу%' OR name LIKE '%КМ-4 Тестілеу%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Есимханов%' AND role = 'instructor' LIMIT 1),
-    '№212',
-    'friday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%КМ-4 Тестілеу%' OR name LIKE '%КМ-4 Тестілеу%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Жарманов%' AND role = 'instructor' LIMIT 1),
-    '№316',
-    'friday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%№ 202%' OR name LIKE '%№ 202%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Сатубалдина%' AND role = 'instructor' LIMIT 1),
-    '№316',
-    'friday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%№ 202%' OR name LIKE '%№ 202%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Жарманов%' AND role = 'instructor' LIMIT 1),
-    '№214',
-    'friday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SЭЛ-240' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%КМ-4 Желілік құрылғылар мен бағдарламалық жасақтаманы конфигурациялау процесін басқару%' OR name LIKE '%КМ-4 Желілік құрылғылар мен бағдарламалық жасақтаманы конфигурациялау процесін басқару%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Шадаев%' AND role = 'instructor' LIMIT 1),
-    '№214',
-    'friday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' OR name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'monday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ООМ-1%' OR name LIKE '%ООМ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'monday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ -7 Настройка и ослуживание серверного оборудования организации%' OR name LIKE '%ПМ -7 Настройка и ослуживание серверного оборудования организации%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'monday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-1%' OR name LIKE '%ЖММ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№202',
-    'monday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-1%' OR name LIKE '%ЖММ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Не%' AND role = 'instructor' LIMIT 1),
-    'Не указано',
-    'monday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' OR name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'tuesday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' OR name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'tuesday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-1%' OR name LIKE '%ЖММ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'tuesday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Английский язык%' OR name LIKE '%Английский язык%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'wednesday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' OR name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'wednesday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Ағылшын тілі%' OR name LIKE '%Ағылшын тілі%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'wednesday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%КМ 4 Желдететін техникаға жоспарлы техникалық қызмет көрсетту жұмыстарын орындау%' OR name LIKE '%КМ 4 Желдететін техникаға жоспарлы техникалық қызмет көрсетту жұмыстарын орындау%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'wednesday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' OR name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'thursday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' OR name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'thursday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ -7 Настройка и ослуживание серверного оборудования организации%' OR name LIKE '%ПМ -7 Настройка и ослуживание серверного оборудования организации%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'thursday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-1%' OR name LIKE '%ЖММ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Не%' AND role = 'instructor' LIMIT 1),
-    'Не указано',
-    'thursday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Ағылшын тілі%' OR name LIKE '%Ағылшын тілі%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'friday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%Английский язык%' OR name LIKE '%Английский язык%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'friday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ООМ-1%' OR name LIKE '%ООМ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'friday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'ТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-1%' OR name LIKE '%ЖММ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Абильмажинов%' AND role = 'instructor' LIMIT 1),
-    '№312',
-    'friday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' OR name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'monday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' OR name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'monday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' OR name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'tuesday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' OR name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'tuesday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ООМ-1%' OR name LIKE '%ООМ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'tuesday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ООМ-1%' OR name LIKE '%ООМ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'tuesday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-4%' OR name LIKE '%ЖММ-4%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Не%' AND role = 'instructor' LIMIT 1),
-    'Не указано',
-    'tuesday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' OR name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'wednesday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' OR name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'wednesday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ЖММ-1%' OR name LIKE '%ЖММ-1%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Не%' AND role = 'instructor' LIMIT 1),
-    'Не указано',
-    'wednesday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' OR name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'thursday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' OR name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'thursday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' OR name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'friday',
-    1,
-    '09:00:00',
-    '10:20:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' OR name LIKE '%ПМ-8 Обеспечение работоспособности IT устройств%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'friday',
-    2,
-    '10:30:00',
-    '11:50:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' OR name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Байболатов%' AND role = 'instructor' LIMIT 1),
-    '№213',
-    'friday',
-    3,
-    '12:20:00',
-    '13:40:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' OR name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№312',
-    'friday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
-
-INSERT INTO schedule (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
-VALUES (
-    (SELECT id FROM `groups` WHERE name = 'SТС-230' LIMIT 1),
-    (SELECT id FROM subjects WHERE name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' OR name LIKE '%ПМ-9 Обеспечение информационной безопасности локальных вычислительных сетей и Internet%' LIMIT 1),
-    (SELECT id FROM users WHERE full_name LIKE '%Валиев%' AND role = 'instructor' LIMIT 1),
-    '№215',
-    'friday',
-    4,
-    '13:50:00',
-    '15:10:00'
-);
+INSERT IGNORE INTO `groups` (name, course) VALUES ('SЭЛ-2502/ЭЛ-2502', 1);
+INSERT IGNORE INTO `groups` (name, course) VALUES ('ВТиИС-2501', 1);
+INSERT IGNORE INTO `groups` (name, course) VALUES ('ГБ-2502', 1);
+INSERT IGNORE INTO `groups` (name, course) VALUES ('ПО-2501', 1);
+INSERT IGNORE INTO `groups` (name, course) VALUES ('ПО-2502', 1);
+INSERT IGNORE INTO `subjects` (name) VALUES ('Алғашқы әскери және технологиялық  дайындық');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Английский язык');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Ағылшын тілі');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Биология');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Все6мирная история');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Всемирная История');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Всемирная история');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Всемирная история Физическая культура');
+INSERT IGNORE INTO `subjects` (name) VALUES ('География');
+INSERT IGNORE INTO `subjects` (name) VALUES ('География Английский язык');
+INSERT IGNORE INTO `subjects` (name) VALUES ('География Ағылшын тілі');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Глобалыные компетенции');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Графика және жобалау');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Графика и проектирование');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Дене тәрбиесі');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Дүниежүзі тарихы');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Жаһандық құзыреттер');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Информатика');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Казахский язык и литература');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Казахский язык и литература Математика');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Кураторлық сағат');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Кураторский час');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Математика');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Математика Всемирная история');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Математика Дүниежүзі тарихы');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Начально военная и технологическая подготовка');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Орыс тілі және әдебиеті');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Орыс тілі және әдебиеті Дене тәрбиесі');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Русская литература');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Русский язык');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Русский язык Русская литература');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Физика');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Физическая культура');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Химия');
+INSERT IGNORE INTO `subjects` (name) VALUES ('химия');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Қазақ тілі');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Қазақ тілі Қазақ әдебиеті');
+INSERT IGNORE INTO `subjects` (name) VALUES ('Қазақ әдебиеті');
+
+TRUNCATE TABLE `schedule`;
+
+-- Group: SГБ-2501/ГБ-2501, Day: monday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Кураторлық сағат' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Махин%' or full_name = 'Махин А.С.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№310', 'monday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Кураторлық сағат');
+
+-- Group: SГБ-2502, Day: monday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Всемирная История' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Байдильдина%' or full_name = 'Байдильдина К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№303', 'monday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Всемирная История');
+
+-- Group: ГБ-2502, Day: monday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Английский язык' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Төребаева%' or full_name = 'Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№304', 'monday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Английский язык');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: monday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Казахский язык и литература' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'monday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Казахский язык и литература');
+
+-- Group: ПО-2501, Day: monday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'География' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'monday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'География');
+
+-- Group: ПО-2502, Day: monday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Химия' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Хамитова%' or full_name = 'Хамитова М.М.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№301', 'monday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Химия');
+
+-- Group: ВТиИС-2501, Day: monday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Математика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201', 'monday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Математика');
+
+-- Group: SГБ-2501/ГБ-2501, Day: monday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Математика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201', 'monday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Математика');
+
+-- Group: SГБ-2502, Day: monday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Английский язык' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Төребаева%' or full_name = 'Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№304', 'monday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Английский язык');
+
+-- Group: ГБ-2502, Day: monday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Биология' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Раймбаева%' or full_name = 'Раймбаева Ж.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№205', 'monday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Биология');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: monday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'География' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'monday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'География');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: monday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Химия' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Қарсақбаева%' or full_name = 'Қарсақбаева Т.С.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№301', 'monday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Химия');
+
+-- Group: ПО-2501, Day: monday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ тілі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'monday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ тілі');
+
+-- Group: ПО-2502, Day: monday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Математика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Амангельдиев%' or full_name = 'Амангельдиев А.Н.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№326', 'monday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Математика');
+
+-- Group: ВТиИС-2501, Day: monday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'monday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті');
+
+-- Group: SГБ-2501/ГБ-2501, Day: monday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Биология' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Раймбаева%' or full_name = 'Раймбаева Ж.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№205', 'monday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Биология');
+
+-- Group: SГБ-2502, Day: monday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Информатика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Орынбасар%' or full_name = 'Орынбасар Ж.А.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№219', 'monday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Информатика');
+
+-- Group: ГБ-2502, Day: monday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Математика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Амангельдиев%' or full_name = 'Амангельдиев А.Н.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№326', 'monday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Математика');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: monday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ тілі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'monday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ тілі');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: monday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Английский язык' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Төребаева%' or full_name = 'Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№304', 'monday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Английский язык');
+
+-- Group: ПО-2501, Day: monday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'monday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті');
+
+-- Group: ПО-2502, Day: monday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Графика и проектирование' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201', 'monday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Графика и проектирование');
+
+-- Group: ВТиИС-2501, Day: monday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'География' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е..') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'monday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'География');
+
+-- Group: SГБ-2501/ГБ-2501, Day: monday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'География' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'monday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'География');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: monday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'monday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: monday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Информатика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Орынбасар%' or full_name = 'Орынбасар Ж.А.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№219', 'monday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Информатика');
+
+-- Group: ПО-2501, Day: monday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Математика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201', 'monday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Математика');
+
+-- Group: ПО-2502, Day: monday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Английский язык' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Төребаева%' or full_name = 'Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№304', 'monday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Английский язык');
+
+-- Group: ВТиИС-2501, Day: monday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ тілі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'monday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ тілі');
+
+-- Group: SГБ-2501/ГБ-2501, Day: tuesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Математика Дүниежүзі тарихы' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б. Олжабаева Б.О.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201 №303', 'tuesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Математика Дүниежүзі тарихы');
+
+-- Group: SГБ-2502, Day: tuesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Химия' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Хамитова%' or full_name = 'Хамитова М.М.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№301', 'tuesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Химия');
+
+-- Group: ГБ-2502, Day: tuesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Начально военная и технологическая подготовка' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Махин%' or full_name = 'Махин А.С.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№310', 'tuesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Начально военная и технологическая подготовка');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: tuesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Информатика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Орынбасар%' or full_name = 'Орынбасар Ж.А.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№219', 'tuesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Информатика');
+
+-- Group: ПО-2501, Day: tuesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Биология' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Раймбаева%' or full_name = 'Раймбаева Ж.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№205', 'tuesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Биология');
+
+-- Group: ПО-2502, Day: tuesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Русский язык' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'tuesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Русский язык');
+
+-- Group: ВТиИС-2501, Day: tuesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Ағылшын тілі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Төребаева%' or full_name = 'Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№304', 'tuesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Ағылшын тілі');
+
+-- Group: SГБ-2501/ГБ-2501, Day: tuesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Информатика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Орынбасар%' or full_name = 'Орынбасар Ж.А.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№219', 'tuesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Информатика');
+
+-- Group: SГБ-2502, Day: tuesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Начально военная и технологическая подготовка' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Махин%' or full_name = 'Махин А.С.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№310', 'tuesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Начально военная и технологическая подготовка');
+
+-- Group: ГБ-2502, Day: tuesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'География Английский язык' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е .                                Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302               №304', 'tuesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'География Английский язык');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: tuesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Дене тәрбиесі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жарманов%' or full_name = 'Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  'спорт алаңы', 'tuesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Дене тәрбиесі');
+
+-- Group: ПО-2501, Day: tuesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Математика Дүниежүзі тарихы' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б. Байдильдина К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201 №303', 'tuesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Математика Дүниежүзі тарихы');
+
+-- Group: ПО-2502, Day: tuesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Казахский язык и литература' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'tuesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Казахский язык и литература');
+
+-- Group: ВТиИС-2501, Day: tuesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Кураторлық сағат' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Амангельдиев%' or full_name = 'Амангельдиев А.Н.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№326', 'tuesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Кураторлық сағат');
+
+-- Group: SГБ-2501/ГБ-2501, Day: tuesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'География Ағылшын тілі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е .                            Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302               №304', 'tuesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'География Ағылшын тілі');
+
+-- Group: SГБ-2502, Day: tuesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Русский язык' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'tuesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Русский язык');
+
+-- Group: ГБ-2502, Day: tuesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Физическая культура' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жарманов%' or full_name = 'Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  'спорт зал', 'tuesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Физическая культура');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: tuesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Кураторлық сағат' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'tuesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Кураторлық сағат');
+
+-- Group: ПО-2501, Day: tuesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Кураторлық сағат' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Раймбаева%' or full_name = 'Раймбаева Ж.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№205', 'tuesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Кураторлық сағат');
+
+-- Group: ПО-2502, Day: tuesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Всемирная история Физическая культура' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Байдильдина%' or full_name = 'Байдильдина К.Е. Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№303 спорт зал', 'tuesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Всемирная история Физическая культура');
+
+-- Group: ВТиИС-2501, Day: tuesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Математика Дүниежүзі тарихы' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б. Байдильдина К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201 №303', 'tuesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Математика Дүниежүзі тарихы');
+
+-- Group: SГБ-2501/ГБ-2501, Day: tuesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ тілі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'tuesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ тілі');
+
+-- Group: SГБ-2502, Day: tuesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'География Английский язык' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е. Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302     №304', 'tuesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'География Английский язык');
+
+-- Group: ГБ-2502, Day: tuesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Русский язык' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'tuesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Русский язык');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: tuesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Математика Дүниежүзі тарихы' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б. Байдильдина К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№301 №303', 'tuesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Математика Дүниежүзі тарихы');
+
+-- Group: ВТиИС-2501, Day: tuesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'химия' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%%' or full_name = '') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '', 'tuesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'химия');
+
+-- Group: SГБ-2501/ГБ-2501, Day: wednesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Дүниежүзі тарихы' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Олжабаева%' or full_name = 'Олжабаева Б.О.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№303', 'wednesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Дүниежүзі тарихы');
+
+-- Group: SГБ-2502, Day: wednesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Кураторский час' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'wednesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Кураторский час');
+
+-- Group: ГБ-2502, Day: wednesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'География' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'wednesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'География');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: wednesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ әдебиеті' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'wednesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ әдебиеті');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: wednesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Графика и проектирование' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201', 'wednesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Графика и проектирование');
+
+-- Group: ПО-2501, Day: wednesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Алғашқы әскери және технологиялық  дайындық' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Махин%' or full_name = 'Махин А.С.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№310', 'wednesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Алғашқы әскери және технологиялық  дайындық');
+
+-- Group: ПО-2502, Day: wednesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Физика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Амангельдиев%' or full_name = 'Амангельдиев А.Н.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№326', 'wednesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Физика');
+
+-- Group: ВТиИС-2501, Day: wednesday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Биология' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Раймбаева%' or full_name = 'Раймбаева Ж.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№205', 'wednesday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Биология');
+
+-- Group: SГБ-2501/ГБ-2501, Day: wednesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Алғашқы әскери және технологиялық  дайындық' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Махин%' or full_name = 'Махин А.С.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№310', 'wednesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Алғашқы әскери және технологиялық  дайындық');
+
+-- Group: SГБ-2502, Day: wednesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'География' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'wednesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'География');
+
+-- Group: ГБ-2502, Day: wednesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Физика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Амангельдиев%' or full_name = 'Амангельдиев А.Н.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№326', 'wednesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Физика');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: wednesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Химия' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Қарсақбаева%' or full_name = 'Қарсақбаева Т.С.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№301', 'wednesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Химия');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: wednesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Кураторский час' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Байдильдина%' or full_name = 'Байдильдина К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№303', 'wednesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Кураторский час');
+
+-- Group: ПО-2501, Day: wednesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ әдебиеті' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'wednesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ әдебиеті');
+
+-- Group: ПО-2502, Day: wednesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Кураторский час' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Орынбасар%' or full_name = 'Орынбасар Ж.А.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№219', 'wednesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Кураторский час');
+
+-- Group: ВТиИС-2501, Day: wednesday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті Дене тәрбиесі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г. Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204 спорт алаңы', 'wednesday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті Дене тәрбиесі');
+
+-- Group: SГБ-2501/ГБ-2501, Day: wednesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ әдебиеті' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'wednesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ әдебиеті');
+
+-- Group: SГБ-2502, Day: wednesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Физика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Амангельдиев%' or full_name = 'Амангельдиев А.Н.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№326', 'wednesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Физика');
+
+-- Group: ГБ-2502, Day: wednesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Графика и проектирование' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201', 'wednesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Графика и проектирование');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: wednesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Дүниежүзі тарихы' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Байдильдина%' or full_name = 'Байдильдина К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№303', 'wednesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Дүниежүзі тарихы');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: wednesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Биология' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Раймбаева%' or full_name = 'Раймбаева Ж.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№205', 'wednesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Биология');
+
+-- Group: ПО-2501, Day: wednesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті Дене тәрбиесі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г. Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204 спорт алаңы', 'wednesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті Дене тәрбиесі');
+
+-- Group: ПО-2502, Day: wednesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'География' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'wednesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'География');
+
+-- Group: ВТиИС-2501, Day: wednesday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Химия' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Хамитова%' or full_name = 'Хамитова М.М.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№301', 'wednesday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Химия');
+
+-- Group: SГБ-2501/ГБ-2501, Day: wednesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Дене тәрбиесі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жарманов%' or full_name = 'Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  'спорт алаңы', 'wednesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Дене тәрбиесі');
+
+-- Group: SГБ-2502, Day: wednesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Графика и проектирование' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201', 'wednesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Графика и проектирование');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: wednesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті Дене тәрбиесі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г. Жарманов К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204       спорт алаңы', 'wednesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Орыс тілі және әдебиеті Дене тәрбиесі');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: wednesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'География' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'wednesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'География');
+
+-- Group: ПО-2501, Day: wednesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Дүниежүзі тарихы' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Байдильдина%' or full_name = 'Байдильдина К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№303', 'wednesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Дүниежүзі тарихы');
+
+-- Group: ПО-2502, Day: wednesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'химия' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%%' or full_name = '') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '', 'wednesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'химия');
+
+-- Group: ВТиИС-2501, Day: wednesday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ әдебиеті' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'wednesday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ әдебиеті');
+
+-- Group: SГБ-2501/ГБ-2501, Day: thursday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Химия' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Хамитова%' or full_name = 'Хамитова М.М.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№301', 'thursday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Химия');
+
+-- Group: ГБ-2502, Day: thursday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Математика Всемирная история' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Амангельдиев%' or full_name = 'Амангельдиев А.Н.         Олжабаева Б.О.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201        №303', 'thursday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Математика Всемирная история');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: thursday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Алғашқы әскери және технологиялық  дайындық' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Махин%' or full_name = 'Махин А.С.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№310', 'thursday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Алғашқы әскери және технологиялық  дайындық');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: thursday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Русская литература' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'thursday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Русская литература');
+
+-- Group: ПО-2501, Day: thursday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Жаһандық құзыреттер' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'thursday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Жаһандық құзыреттер');
+
+-- Group: ПО-2502, Day: thursday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Казахский язык и литература Математика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К Амангельдиев А.Н.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209     №326', 'thursday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Казахский язык и литература Математика');
+
+-- Group: ВТиИС-2501, Day: thursday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Графика және жобалау' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201', 'thursday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Графика және жобалау');
+
+-- Group: SГБ-2501/ГБ-2501, Day: thursday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Графика және жобалау' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201', 'thursday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Графика және жобалау');
+
+-- Group: SГБ-2502, Day: thursday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Математика Всемирная история' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Амангельдиев%' or full_name = 'Амангельдиев А.Н.         Олжабаева Б.О.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201        №303', 'thursday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Математика Всемирная история');
+
+-- Group: ГБ-2502, Day: thursday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Химия' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Хамитова%' or full_name = 'Хамитова М.М.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№301', 'thursday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Химия');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: thursday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Жаһандық құзыреттер' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'thursday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Жаһандық құзыреттер');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: thursday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Физическая культура' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жарманов%' or full_name = 'Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  'спорт зал', 'thursday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Физическая культура');
+
+-- Group: ПО-2501, Day: thursday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Дене тәрбиесі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жарманов%' or full_name = 'Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  'спорт зал', 'thursday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Дене тәрбиесі');
+
+-- Group: ПО-2502, Day: thursday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Русская литература' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'thursday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Русская литература');
+
+-- Group: ВТиИС-2501, Day: thursday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Алғашқы әскери және технологиялық  дайындық' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Махин%' or full_name = 'Махин А.С.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№310', 'thursday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Алғашқы әскери және технологиялық  дайындық');
+
+-- Group: SГБ-2501/ГБ-2501, Day: thursday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Дене тәрбиесі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жарманов%' or full_name = 'Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  'спорт алаңы', 'thursday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Дене тәрбиесі');
+
+-- Group: SГБ-2502, Day: thursday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Физическая культура' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жарманов%' or full_name = 'Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  'спорт зал', 'thursday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Физическая культура');
+
+-- Group: ГБ-2502, Day: thursday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Русская литература' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'thursday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Русская литература');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: thursday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Ағылшын тілі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Төребаева%' or full_name = 'Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№ 204', 'thursday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Ағылшын тілі');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: thursday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Казахский язык и литература Математика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К Амангельдиев А.Н.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209     №326', 'thursday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Казахский язык и литература Математика');
+
+-- Group: ПО-2501, Day: thursday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Графика және жобалау' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201', 'thursday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Графика және жобалау');
+
+-- Group: ПО-2502, Day: thursday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Биология' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Раймбаева%' or full_name = 'Раймбаева Ж.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№205', 'thursday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Биология');
+
+-- Group: ВТиИС-2501, Day: thursday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Жаһандық құзыреттер' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'thursday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Жаһандық құзыреттер');
+
+-- Group: SГБ-2502, Day: thursday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Русская литература' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'thursday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Русская литература');
+
+-- Group: ГБ-2502, Day: thursday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Кураторский час' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Төребаева%' or full_name = 'Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№304', 'thursday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Кураторский час');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: thursday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Графика және жобалау' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Садувакас%' or full_name = 'Садувакас Ш.Б.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№201', 'thursday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Графика және жобалау');
+
+-- Group: ПО-2501, Day: thursday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'химия' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%%' or full_name = '') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '', 'thursday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'химия');
+
+-- Group: ПО-2502, Day: thursday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Все6мирная история' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Байдильдина%' or full_name = 'Байдильдина К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№303', 'thursday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Все6мирная история');
+
+-- Group: SГБ-2501/ГБ-2501, Day: friday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ тілі Қазақ әдебиеті' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'friday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ тілі Қазақ әдебиеті');
+
+-- Group: SГБ-2502, Day: friday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Всемирная история' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Байдильдина%' or full_name = 'Байдильдина К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№303', 'friday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Всемирная история');
+
+-- Group: ГБ-2502, Day: friday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Русский язык Русская литература' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'friday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Русский язык Русская литература');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: friday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Дене тәрбиесі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жарманов%' or full_name = 'Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  'спорт алаңы', 'friday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Дене тәрбиесі');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: friday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Глобалыные компетенции' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'friday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Глобалыные компетенции');
+
+-- Group: ПО-2501, Day: friday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Химия' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Хамитова%' or full_name = 'Хамитова М.М.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№301', 'friday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Химия');
+
+-- Group: ПО-2502, Day: friday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Начально военная и технологическая подготовка' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Махин%' or full_name = 'Махин А.С.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№310', 'friday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Начально военная и технологическая подготовка');
+
+-- Group: ВТиИС-2501, Day: friday, Pair: 1
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Физика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Амангельдиев%' or full_name = 'Амангельдиев А.Н.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№326', 'friday', 1, '09:00:00', '10:20:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Физика');
+
+-- Group: SГБ-2501/ГБ-2501, Day: friday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Физика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Амангельдиев%' or full_name = 'Амангельдиев А.Н.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№326', 'friday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Физика');
+
+-- Group: SГБ-2502, Day: friday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Русский язык Русская литература' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'friday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Русский язык Русская литература');
+
+-- Group: ГБ-2502, Day: friday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Информатика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Орынбасар%' or full_name = 'Орынбасар Ж.А.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№219', 'friday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Информатика');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: friday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Биология' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Раймбаева%' or full_name = 'Раймбаева Ж.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№205', 'friday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Биология');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: friday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Начально военная и технологическая подготовка' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Махин%' or full_name = 'Махин А.С.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№310', 'friday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Начально военная и технологическая подготовка');
+
+-- Group: ПО-2501, Day: friday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ тілі Қазақ әдебиеті' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'friday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ тілі Қазақ әдебиеті');
+
+-- Group: ПО-2502, Day: friday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Глобалыные компетенции' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жұмаканов%' or full_name = 'Жұмаканов А.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№302', 'friday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Глобалыные компетенции');
+
+-- Group: ВТиИС-2501, Day: friday, Pair: 2
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Дүниежүзі тарихы' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Байдильдина%' or full_name = 'Байдильдина К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№303', 'friday', 2, '10:30:00', '11:50:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Дүниежүзі тарихы');
+
+-- Group: SГБ-2501/ГБ-2501, Day: friday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Ағылшын тілі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Төребаева%' or full_name = 'Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№30ң', 'friday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2501/ГБ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Ағылшын тілі');
+
+-- Group: SГБ-2502, Day: friday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Биология' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Раймбаева%' or full_name = 'Раймбаева Ж.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№205', 'friday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Биология');
+
+-- Group: ГБ-2502, Day: friday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Всемирная история' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Олжабаева%' or full_name = 'Олжабаева Б.О.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№303', 'friday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Всемирная история');
+
+-- Group: SЭЛ-2501/ЭЛ-2501, Day: friday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ тілі Қазақ әдебиеті' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'friday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2501/ЭЛ-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ тілі Қазақ әдебиеті');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: friday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Всемирная история' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Байдильдина%' or full_name = 'Байдильдина К.Е.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№303', 'friday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Всемирная история');
+
+-- Group: ПО-2501, Day: friday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Физика' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Амангельдиев%' or full_name = 'Амангельдиев А.Н.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№326', 'friday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Физика');
+
+-- Group: ПО-2502, Day: friday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Русский язык Русская литература' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'friday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Русский язык Русская литература');
+
+-- Group: ВТиИС-2501, Day: friday, Pair: 3
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Дене тәрбиесі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жарманов%' or full_name = 'Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  'спорт зал', 'friday', 3, '12:20:00', '13:40:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Дене тәрбиесі');
+
+-- Group: SГБ-2502, Day: friday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Физическая культура' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жарманов%' or full_name = 'Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  'спорт зал', 'friday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Физическая культура');
+
+-- Group: ГБ-2502, Day: friday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ГБ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Физическая культура' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Жарманов%' or full_name = 'Жарманов Е.Р.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  'спорт зал', 'friday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ГБ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Физическая культура');
+
+-- Group: SЭЛ-2502/ЭЛ-2502, Day: friday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Русский язык Русская литература' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Мусалаева%' or full_name = 'Мусалаева О.Г.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№204', 'friday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'SЭЛ-2502/ЭЛ-2502' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Русский язык Русская литература');
+
+-- Group: ПО-2501, Day: friday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ПО-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Ағылшын тілі' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Төребаева%' or full_name = 'Төребаева А.Қ.') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№304', 'friday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ПО-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Ағылшын тілі');
+
+-- Group: ВТиИС-2501, Day: friday, Pair: 4
+INSERT INTO `schedule` (group_id, subject_id, instructor_id, audience, day_of_week, pair_number, time_start, time_end)
+SELECT 
+  (SELECT id FROM `groups` WHERE name = 'ВТиИС-2501'  LIMIT 1),
+  (SELECT id FROM `subjects` WHERE name = 'Қазақ тілі Қазақ әдебиеті' LIMIT 1),
+  IFNULL((SELECT id FROM `users` WHERE (full_name LIKE '%Уатхан%' or full_name = 'Уатхан К') AND role IN ('instructor', 'admin') LIMIT 1), (SELECT id FROM `users` WHERE full_name = 'Не указано' LIMIT 1)),
+  '№209', 'friday', 4, '13:50:00', '15:10:00'
+FROM DUAL WHERE EXISTS (SELECT 1 FROM `groups` WHERE name = 'ВТиИС-2501' )
+  AND EXISTS (SELECT 1 FROM `subjects` WHERE name = 'Қазақ тілі Қазақ әдебиеті');
+
 
 -- Done!
+-- Final sync completed
