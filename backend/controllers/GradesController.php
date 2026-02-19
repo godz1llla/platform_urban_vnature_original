@@ -17,9 +17,9 @@ class GradesController
      */
     public function getAllGrades()
     {
-        $user = AuthMiddleware::getCurrentUser();
+        $user = AuthMiddleware::requireRole(['admin', 'instructor', 'student']);
         $role = $user['role'];
-        $userId = $user['id'];
+        $userId = $user['user_id'];
 
         $query = "
             SELECT 
@@ -309,7 +309,7 @@ class GradesController
      */
     public function getStudentGrades($studentId)
     {
-        $user = AuthMiddleware::getCurrentUser();
+        $user = AuthMiddleware::requireRole(['admin', 'instructor', 'student']);
 
         if (!$studentId) {
             $this->sendError('ID студента не указан', 400);

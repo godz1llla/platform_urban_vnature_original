@@ -47,7 +47,7 @@ CREATE TABLE `users` (
   `middle_name` VARCHAR(100) NULL,
   `email` VARCHAR(255) NOT NULL UNIQUE,
   `password_hash` VARCHAR(255) NOT NULL,
-  `role` ENUM('student', 'instructor', 'admin', 'cafeteria_operator') NOT NULL DEFAULT 'student',
+  `role` ENUM('student', 'instructor', 'admin', 'cafeteria_operator', 'curator') NOT NULL DEFAULT 'student',
   `position` VARCHAR(255) NULL COMMENT 'Должность (для сотрудников)',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -334,8 +334,8 @@ INSERT INTO `users` (`full_name`, `email`, `password_hash`, `role`, `position`) 
 ('Жумаканов Айдос Ертаргынович', 'zhumakanov@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Оқытушы'),
 
 -- Кураторы
-('Құрымова Мейрамгүл Кенжетайқызы', 'kurymova@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Педагог-ұйымдастырушы куратор'),
-('Ельчубаева Линура Маратовна', 'yelchubayeva@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'instructor', 'Педагог-ұйымдастырушы куратор'),
+('Құрымова Мейрамгүл Кенжетайқызы', 'kurymova@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'curator', 'Педагог-ұйымдастырушы куратор'),
+('Ельчубаева Линура Маратовна', 'yelchubayeva@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'curator', 'Педагог-ұйымдастырушы куратор'),
 
 -- Прочий персонал
 ('Сейткасимова Айнур Габдыгапаровна', 'seitkassimova@urbancollege.kz', '$2y$10$RD5iZ.GmGAkOGnArjgEw6O1kDlS/jJuMI9HW5ARxvi/0UgV/29tie', 'admin', 'Басшы'),

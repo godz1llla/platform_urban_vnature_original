@@ -297,6 +297,34 @@ function renderDashboard(data) {
         `;
         container.innerHTML = html;
     }
+    // === CURATOR DASHBOARD ===
+    else if (data.role === 'curator') {
+        html = `
+            <div class="dashboard-grid">
+                <!-- Группы -->
+                <div class="stat-card blue" onclick="switchToSection('groups')" style="cursor: pointer;">
+                    <div class="stat-icon"><i class='bx bx-group'></i></div>
+                    <div class="stat-value">Группы</div>
+                    <div class="stat-label">Просмотр студентов</div>
+                </div>
+
+                <!-- Посещаемость -->
+                <div class="stat-card green" onclick="switchToSection('attendance')" style="cursor: pointer;">
+                    <div class="stat-icon"><i class='bx bx-qr-scan'></i></div>
+                    <div class="stat-value">Посещаемость</div>
+                    <div class="stat-label">Проверка присутствия</div>
+                </div>
+
+                <!-- Расписание (если нужно) -->
+                <!-- <div class="stat-card purple" onclick="switchToSection('schedule')" style="cursor: pointer;">
+                     <div class="stat-icon"><i class='bx bx-calendar'></i></div>
+                     <div class="stat-value">Расписание</div>
+                     <div class="stat-label">Расписание занятий</div>
+                </div> -->
+            </div>
+        `;
+        container.innerHTML = html;
+    }
 }
 
 // Вспомогательная функция для генерации QR (если QRious уже подключен)

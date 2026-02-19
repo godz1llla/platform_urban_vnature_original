@@ -17,7 +17,13 @@ function initAttendanceModule() {
     } else if (role === 'admin' || role === 'instructor') {
         document.getElementById('attendanceTeacher').style.display = 'block';
         document.getElementById('attendanceStudent').style.display = 'none';
+        document.getElementById('attendanceCurator').style.display = 'none';
         initTeacherAttendance();
+    } else if (role === 'curator') {
+        document.getElementById('attendanceCurator').style.display = 'block';
+        document.getElementById('attendanceTeacher').style.display = 'none';
+        document.getElementById('attendanceStudent').style.display = 'none';
+        initCuratorAttendance();
     }
 }
 
@@ -293,3 +299,80 @@ window.addEventListener('beforeunload', () => {
     if (qrUpdateInterval) clearInterval(qrUpdateInterval);
     if (timerInterval) clearInterval(timerInterval);
 });
+
+// ============================================================================
+// CURATOR PART
+// ============================================================================
+
+function initCuratorAttendance() {
+    loadCuratorAttendanceReport();
+}
+
+async function loadCuratorAttendanceReport() {
+    const container = document.getElementById('curatorReportContent');
+    container.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
+
+    try {
+        const response = await fetchWithAuth('attendance/absent-report');
+        if (!response.ok) throw new Error('Failed to load report');
+
+        const data = await response.json(); // { "Group A": [student1, student2], ... }
+
+        let html = '';
+        if (Object.keys(data).length === 0) {
+            html = `
+                <div class="alert alert-success" style="padding: 20px; text-align: center;">
+                    <i class='bx bx-check-circle' style="font-size: 3rem;"></i>
+                    <h3>Все студенты присутствуют!</h3>
+                    <p>Отличная посещаемость сегодня.</p>
+                </div>
+            `;
+        } else {
+            html = '<div class="dashboard-grid">'; // Используем grid для карточек
+
+            // Сортировка групп по алфавиту
+            const groupNames = Object.keys(data).sort();
+
+            for (const groupName of groupNames) {
+                const students = data[groupName];
+                html += `
+                    <div class="card" style="border-top: 4px solid var(--danger);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h4 style="margin: 0;">${groupName}</h4>
+                            <span class="badge" style="background: var(--danger); color: white;">
+                                ${students.length}
+                            </span>
+                        </div>
+                        
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <ul class="student-list" style="list-style: none; padding: 0; margin: 0;">
+                                ${students.map(s => `
+                                    <li style="padding: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px;">
+                                        <div style="width: 30px; height: 30px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #777;">
+                                            <i class='bx bx-user'></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 500;">${s.full_name}</div>
+                                            <!-- <div style="font-size: 0.8rem; color: #777;">${s.student_code}</div> -->
+                                        </div>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                 `;
+            }
+            html += '</div>';
+        }
+
+        container.innerHTML = html;
+
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                Ошибка загрузки отчета об отсутствии. Попробуйте обновить страницу.
+            </div>
+        `;
+    }
+}

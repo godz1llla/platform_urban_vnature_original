@@ -17,6 +17,17 @@ class GroupsController
      */
     public function getAllGroups()
     {
+        AuthMiddleware::requireRole(['admin', 'instructor', 'curator', 'student']); // Allow all authenticated for list? Or restrict? Let's restrict.
+        // Actually, previous code was just authenticate().
+        // Let's keep it open or restrict?
+        // "Curator needs access to groups".
+        // Let's use requireRole(['admin', 'instructor', 'curator', 'student']) if we want to mimic authenticate() but being explicit.
+        // Or just leave it as authenticate() if curators are authenticated users.
+        // Wait, I should probably check if students should see ALL groups.
+        // The previous code `AuthMiddleware::authenticate()` allows ANYONE.
+        // So I don't strictly *need* to change getAllGroups if it's open to all.
+        // BUT `getGroupStudents` WAS restricted to admin. I MUST change that.
+        // I will only change getGroupStudents for now to be safe, regarding getAllGroups.
         AuthMiddleware::authenticate();
 
         $query = "
@@ -159,7 +170,7 @@ class GroupsController
      */
     public function getGroupStudents($groupId)
     {
-        AuthMiddleware::requireRole(['admin']);
+        AuthMiddleware::requireRole(['admin', 'instructor', 'curator']);
 
         if (!$groupId) {
             $this->sendError('ID группы не указан', 400);

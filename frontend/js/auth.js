@@ -202,6 +202,22 @@ function applyRoleVisibility(role) {
 
             console.log('✅ Показаны все пункты меню');
             switchToSection('dashboard');
+            console.log('✅ Показаны все пункты меню');
+            switchToSection('dashboard');
+            break;
+
+        case 'curator':
+            console.log('👨‍🏫 Настройка для куратора');
+            // Куратор видит Дашборд, Группы, Посещаемость
+            if (dashboardNav) dashboardNav.style.display = 'flex';
+            if (groupsNav) groupsNav.style.display = 'flex';
+            if (attendanceNav) attendanceNav.style.display = 'flex';
+            if (subjectsNav) subjectsNav.style.display = 'flex'; // Maybe subjects too? User didn't specify but usually curators need to know subjects. Let's add it for completeness or stick to strict request? "Access to groups and info of students". "Access to who came to lesson".
+            // User said: "remove access to cafeteria, journal, homework".
+            // So Groups, Attendance, Dashboard are key. Subjects is neutral. I'll Include Subjects as it relates to schedule/attendance.
+
+            console.log('✅ Показаны разделы куратора');
+            switchToSection('dashboard');
             break;
 
         default:

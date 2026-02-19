@@ -458,6 +458,26 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Для куратора -->
+            <div id="attendanceCurator" style="display: none;">
+                <div class="card">
+                    <div class="card-header"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3><i class='bx bx-user-x'></i> Отсутствующие сегодня</h3>
+                        <button class="btn btn-primary" onclick="loadCuratorAttendanceReport()">
+                            <i class='bx bx-refresh'></i> Обновить
+                        </button>
+                    </div>
+
+                    <div id="curatorReportContent" class="report-grid">
+                        <!-- JS injected tables -->
+                        <div class="loader-container">
+                            <div class="loader"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- Fullscreen QR Modal -->

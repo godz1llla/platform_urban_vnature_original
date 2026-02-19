@@ -110,7 +110,7 @@ class AttendanceController
      */
     public function getRecords()
     {
-        AuthMiddleware::requireRole(['admin', 'instructor']);
+        AuthMiddleware::requireRole(['admin', 'instructor', 'curator']);
 
         $from = $_GET['from'] ?? date('Y-m-d');
         $to = $_GET['to'] ?? date('Y-m-d');
@@ -146,7 +146,7 @@ class AttendanceController
      */
     public function getStats()
     {
-        AuthMiddleware::requireRole(['admin', 'instructor']);
+        AuthMiddleware::requireRole(['admin', 'instructor', 'curator']);
 
         $studentId = $_GET['student_id'] ?? null;
         if (!$studentId) {
@@ -216,6 +216,48 @@ class AttendanceController
             'late_count' => $lateCount,
             'percentage' => $percentage
         ]);
+    }
+
+    /**
+     * GET /api/attendance/absent-report
+     * Отчет об отсутствующих (для куратора)
+     */
+    public function getAbsentReport()
+    {
+        AuthMiddleware::requireRole(['admin', 'curator', 'instructor']);
+
+        $today = date('Y-m-d');
+
+        // 1. Получить всех студентов с их группами
+        $query = "
+            SELECT s.id, s.student_code, u.full_name, g.name as group_name, g.id as group_id
+            FROM students s
+            JOIN users u ON s.user_id = u.id
+            JOIN `groups` g ON s.group_id = g.id
+            ORDER BY g.name, u.full_name
+        ";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $allStudents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 2. Получить ID студентов, которые отметились сегодня
+        $stmt = $this->db->prepare("SELECT student_id FROM attendance_records WHERE DATE(marked_at) = ?");
+        $stmt->execute([$today]);
+        $presentStudentIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        // 3. Вычесть присутствующих
+        $absentStudents = [];
+        foreach ($allStudents as $student) {
+            if (!in_array($student['id'], $presentStudentIds)) {
+                $groupName = $student['group_name'];
+                if (!isset($absentStudents[$groupName])) {
+                    $absentStudents[$groupName] = [];
+                }
+                $absentStudents[$groupName][] = $student;
+            }
+        }
+
+        $this->sendJson($absentStudents);
     }
 
     private function countWeekdays($from, $to)

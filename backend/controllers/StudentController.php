@@ -21,7 +21,7 @@ class StudentController
      */
     public function getAllStudents()
     {
-        AuthMiddleware::requireRole(['admin', 'cafeteria_operator', 'instructor']);
+        AuthMiddleware::requireRole(['admin', 'cafeteria_operator', 'instructor', 'curator']);
 
         // Если передан параметр code, ищем конкретного студента
         $code = $_GET['code'] ?? null;

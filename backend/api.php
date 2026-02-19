@@ -272,6 +272,8 @@ try {
             $controller->getStats();
         } elseif ($pathParts[1] === 'my-stats' && $method === 'GET') {
             $controller->getMyStats();
+        } elseif ($pathParts[1] === 'absent-report' && $method === 'GET') {
+            $controller->getAbsentReport();
         }
     }
 
