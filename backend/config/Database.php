@@ -11,9 +11,9 @@ class Database
 
     // Настройки подключения
     private $host = 'localhost';
-    private $database = 'infogok1_1';
-    private $username = 'infogok1_1';
-    private $password = 'Gabi2005@';
+    private $database = 'urban_college';
+    private $username = 'urban_user';
+    private $password = 'urban_pass';
     private $charset = 'utf8mb4';
 
     /**
