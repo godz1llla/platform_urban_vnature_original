@@ -54,8 +54,8 @@ sudo apt install -y nginx mysql-server php-fpm php-mysql php-mbstring php-xml ph
 # Перейдите в директорию
 cd ~
 
-# Клонируйте репозиторий (замените на ваш путь)
-git clone <your-repo-url> 1orig_URBAN
+# Клонируйте репозиторий
+git clone https://github.com/godz1llla/platform_urban_vnature_original 1orig_URBAN
 cd 1orig_URBAN
 ```
 
@@ -716,7 +716,7 @@ mysql -u root -p urban_college < database/migration_instructor_subjects_curator.
 
 ## 🤝 Поддержка
 
-**Repository:** https://github.com/godz1llla/1orig_URBAN  
+**Repository:** https://github.com/godz1llla/platform_urban_vnature_original  
 **Email:** support@urbancollege.kz  
 **Telegram:** @urban_college_support  
 **Часы работы:** Пн-Пт, 9:00-18:00 (UTC+6)
@@ -1081,7 +1081,7 @@ mysql -u root -p urban_college < database/migration_instructor_subjects_curator.
 
 ## 🤝 Поддержка
 
-**Repository:** https://github.com/godz1llla/1orig_URBAN  
+**Repository:** https://github.com/godz1llla/platform_urban_vnature_original  
 **Email:** support@urbancollege.kz  
 **Telegram:** @urban_college_support  
 **Часы работы:** Пн-Пт, 9:00-18:00 (UTC+6)
