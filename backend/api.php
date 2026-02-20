@@ -274,6 +274,8 @@ try {
             $controller->getMyStats();
         } elseif ($pathParts[1] === 'absent-report' && $method === 'GET') {
             $controller->getAbsentReport();
+        } elseif ($pathParts[1] === 'group-daily-report' && $method === 'GET') {
+            $controller->getGroupDailyReport();
         }
     }
 

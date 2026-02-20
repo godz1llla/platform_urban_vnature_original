@@ -304,75 +304,118 @@ window.addEventListener('beforeunload', () => {
 // CURATOR PART
 // ============================================================================
 
+let currentCuratorGroupId = null;
+
 function initCuratorAttendance() {
-    loadCuratorAttendanceReport();
+    showCuratorGroupList();
 }
 
-async function loadCuratorAttendanceReport() {
-    const container = document.getElementById('curatorReportContent');
+// 1. Show List of Groups
+async function showCuratorGroupList() {
+    document.getElementById('curatorGroupList').style.display = 'block';
+    document.getElementById('curatorGroupDetails').style.display = 'none';
+
+    const container = document.getElementById('curatorGroupsContainer');
     container.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
 
     try {
-        const response = await fetchWithAuth('attendance/absent-report');
-        if (!response.ok) throw new Error('Failed to load report');
+        const response = await fetchWithAuth('groups');
+        if (!response.ok) throw new Error('Failed to load groups');
+        const groups = await response.json();
 
-        const data = await response.json(); // { "Group A": [student1, student2], ... }
-
-        let html = '';
-        if (Object.keys(data).length === 0) {
-            html = `
-                <div class="alert alert-success" style="padding: 20px; text-align: center;">
-                    <i class='bx bx-check-circle' style="font-size: 3rem;"></i>
-                    <h3>Все студенты присутствуют!</h3>
-                    <p>Отличная посещаемость сегодня.</p>
-                </div>
-            `;
-        } else {
-            html = '<div class="dashboard-grid">'; // Используем grid для карточек
-
-            // Сортировка групп по алфавиту
-            const groupNames = Object.keys(data).sort();
-
-            for (const groupName of groupNames) {
-                const students = data[groupName];
-                html += `
-                    <div class="card" style="border-top: 4px solid var(--danger);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <h4 style="margin: 0;">${groupName}</h4>
-                            <span class="badge" style="background: var(--danger); color: white;">
-                                ${students.length}
-                            </span>
-                        </div>
-                        
-                        <div style="max-height: 300px; overflow-y: auto;">
-                            <ul class="student-list" style="list-style: none; padding: 0; margin: 0;">
-                                ${students.map(s => `
-                                    <li style="padding: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px;">
-                                        <div style="width: 30px; height: 30px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #777;">
-                                            <i class='bx bx-user'></i>
-                                        </div>
-                                        <div>
-                                            <div style="font-weight: 500;">${s.full_name}</div>
-                                            <!-- <div style="font-size: 0.8rem; color: #777;">${s.student_code}</div> -->
-                                        </div>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                 `;
-            }
-            html += '</div>';
-        }
-
-        container.innerHTML = html;
+        container.innerHTML = groups.map(group => `
+            <div class="stat-card blue" style="cursor: pointer;" onclick="openCuratorGroupDetails(${group.id}, '${group.name}')">
+                <div class="stat-icon"><i class='bx bx-group'></i></div>
+                <div class="stat-value" style="font-size: 1.5rem;">${group.name}</div>
+                <div class="stat-label">Нажмите для отчета</div>
+            </div>
+        `).join('');
 
     } catch (e) {
         console.error(e);
-        container.innerHTML = `
-            <div class="alert alert-danger">
-                Ошибка загрузки отчета об отсутствии. Попробуйте обновить страницу.
-            </div>
-        `;
+        container.innerHTML = `<div class="alert alert-danger">Ошибка загрузки групп</div>`;
+    }
+}
+
+// 2. Open Group Details
+function openCuratorGroupDetails(groupId, groupName) {
+    currentCuratorGroupId = groupId;
+    document.getElementById('reportGroupName').textContent = groupName;
+
+    // Set default date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('reportDateInput').value = today;
+
+    document.getElementById('curatorGroupList').style.display = 'none';
+    document.getElementById('curatorGroupDetails').style.display = 'block';
+
+    loadGroupDailyReport();
+}
+
+// 3. Load Report
+async function loadGroupDailyReport() {
+    if (!currentCuratorGroupId) return;
+
+    const date = document.getElementById('reportDateInput').value;
+    const tbody = document.getElementById('groupDailyReportBody');
+    const thead = document.getElementById('groupDailyReportHead');
+
+    tbody.innerHTML = '<tr><td colspan="100" class="text-center"><div class="loader"></div></td></tr>';
+    document.getElementById('reportDateSubtitle').textContent = `Отчет за ${date}`;
+
+    try {
+        const params = new URLSearchParams({ path: `attendance/group-daily-report`, group_id: currentCuratorGroupId, date: date });
+        const token = getToken();
+        const response = await fetch(`/backend/api.php?${params}`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) throw new Error('Failed to load report');
+
+        const data = await response.json();
+        const { lessons, students } = data;
+
+        // Build Header
+        if (lessons.length === 0) {
+            thead.innerHTML = '<tr><th>Студент</th><th>Пар нет</th></tr>';
+            tbody.innerHTML = '<tr><td colspan="2" class="text-center">На эту дату нет расписания</td></tr>';
+            return;
+        }
+
+        let headerHtml = '<tr><th>Студент</th>';
+        lessons.forEach(l => {
+            const time = l.time_start.substring(0, 5);
+            headerHtml += `<th><div style="font-size: 0.8rem; color: #777;">${time}</div>${l.subject_name}<br><small>${l.type || ''}</small></th>`;
+        });
+        headerHtml += '</tr>';
+        thead.innerHTML = headerHtml;
+
+        // Build Body
+        tbody.innerHTML = students.map(s => {
+            let rowHtml = `<tr>
+                <td>
+                    <div style="font-weight: 500;">${s.full_name}</div>
+                    <div style="font-size: 0.75rem; color: #999;">${s.student_code}</div>
+                </td>`;
+
+            lessons.forEach(l => {
+                const status = s.attendance[l.id];
+                let cellContent = '<span style="color: #ddd;">-</span>';
+
+                if (status === 'present') {
+                    cellContent = '<span class="badge badge-success"><i class="bx bx-check"></i></span>';
+                } else {
+                    cellContent = '<span class="badge badge-danger" style="opacity: 0.5;"><i class="bx bx-x"></i></span>';
+                }
+
+                rowHtml += `<td class="text-center">${cellContent}</td>`;
+            });
+
+            rowHtml += '</tr>';
+            return rowHtml;
+        }).join('');
+
+    } catch (e) {
+        console.error(e);
+        tbody.innerHTML = '<tr><td colspan="100" class="text-center text-danger">Ошибка загрузки данных</td></tr>';
     }
 }

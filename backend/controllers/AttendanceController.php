@@ -260,6 +260,101 @@ class AttendanceController
         $this->sendJson($absentStudents);
     }
 
+    /**
+     * GET /api/attendance/group-daily-report
+     * Детальный отчет по группе на конкретную дату
+     */
+    public function getGroupDailyReport()
+    {
+        AuthMiddleware::requireRole(['admin', 'curator', 'instructor']);
+
+        $groupId = $_GET['group_id'] ?? null;
+        $date = $_GET['date'] ?? date('Y-m-d');
+
+        if (!$groupId) {
+            $this->sendError('Не указан group_id', 400);
+        }
+
+        // 1. Получить расписание на этот день
+        $dayOfWeek = strtolower(date('l', strtotime($date)));
+        $query = "
+            SELECT sch.*, s.name as subject_name, u.full_name as instructor_name
+            FROM schedule sch
+            JOIN subjects s ON sch.subject_id = s.id
+            JOIN users u ON sch.instructor_id = u.id
+            WHERE sch.group_id = ? AND sch.day_of_week = ?
+            ORDER BY sch.time_start
+        ";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([$groupId, $dayOfWeek]);
+        $lessons = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 2. Получить список студентов группы
+        $stmt = $this->db->prepare("
+            SELECT s.id, u.full_name, s.student_code
+            FROM students s
+            JOIN users u ON s.user_id = u.id
+            WHERE s.group_id = ?
+            ORDER BY u.full_name
+        ");
+        $stmt->execute([$groupId]);
+        $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 3. Получить все отметки посещаемости этой группы за эту дату
+        $stmt = $this->db->prepare("
+            SELECT ar.student_id, ar.marked_at, ar.status
+            FROM attendance_records ar
+            JOIN students s ON ar.student_id = s.id
+            WHERE s.group_id = ? AND DATE(ar.marked_at) = ?
+        ");
+        $stmt->execute([$groupId, $date]);
+        $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 4. Сопоставление (Matching)
+        // Структура ответа:
+        // students: [
+        //    { ...student, attendance: { [lesson_id]: 'present' | 'absent' } }
+        // ]
+
+        foreach ($students as &$student) {
+            $student['attendance'] = [];
+
+            // Фильтруем записи конкретного студента
+            $studentRecords = array_filter($records, function ($r) use ($student) {
+                return $r['student_id'] == $student['id'];
+            });
+
+            foreach ($lessons as $lesson) {
+                $status = 'absent'; // По умолчанию отсутствует
+
+                $lessonStart = strtotime($date . ' ' . $lesson['time_start']);
+                $lessonEnd = strtotime($date . ' ' . $lesson['time_end']);
+
+                // Допуск +/- 15 минут (или можно брать весь интервал урока)
+                // Считаем присутствующим, если отметился ВНУТРИ интервала урока (с буфером)
+                // Буфер: start - 15 min, end + 15 min
+                $bufferStart = $lessonStart - (15 * 60);
+                $bufferEnd = $lessonEnd + (15 * 60);
+
+                foreach ($studentRecords as $record) {
+                    $markedTime = strtotime($record['marked_at']);
+                    if ($markedTime >= $bufferStart && $markedTime <= $bufferEnd) {
+                        $status = 'present';
+                        break;
+                    }
+                }
+
+                $student['attendance'][$lesson['id']] = $status;
+            }
+        }
+
+        $this->sendJson([
+            'date' => $date,
+            'lessons' => $lessons,
+            'students' => $students
+        ]);
+    }
+
     private function countWeekdays($from, $to)
     {
         $start = new DateTime($from);
