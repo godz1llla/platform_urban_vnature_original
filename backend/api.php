@@ -249,7 +249,11 @@ try {
                 $controller->getAllLessons();
             }
         } elseif ($method === 'POST') {
-            $controller->createLesson();
+            if (isset($pathParts[1]) && $pathParts[1] === 'clone') {
+                $controller->cloneWeek();
+            } else {
+                $controller->createLesson();
+            }
         } elseif ($method === 'PUT' && isset($pathParts[1])) {
             $controller->updateLesson($pathParts[1]);
         } elseif ($method === 'DELETE' && isset($pathParts[1])) {

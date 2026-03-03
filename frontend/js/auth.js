@@ -85,6 +85,7 @@ function applyRoleVisibility(role) {
     const groupsNav = document.querySelector('[data-section="groups"]');
     const subjectsNav = document.querySelector('[data-section="subjects"]');
     const scheduleNav = document.querySelector('[data-section="schedule"]');
+    const scheduleManageNav = document.querySelector('[data-section="schedule-manage"]');
 
     console.log('📋 Найденные элементы:', {
         dashboardNav: !!dashboardNav,
@@ -96,7 +97,8 @@ function applyRoleVisibility(role) {
         usersNav: !!usersNav,
         groupsNav: !!groupsNav,
         subjectsNav: !!subjectsNav,
-        scheduleNav: !!scheduleNav
+        scheduleNav: !!scheduleNav,
+        scheduleManageNav: !!scheduleManageNav
     });
 
     // Скрыть все пункты меню сначала
@@ -112,6 +114,7 @@ function applyRoleVisibility(role) {
     if (groupsNav) groupsNav.style.display = 'none';
     if (subjectsNav) subjectsNav.style.display = 'none';
     if (scheduleNav) scheduleNav.style.display = 'none';
+    if (scheduleManageNav) scheduleManageNav.style.display = 'none';
 
     console.log('✅ Все пункты меню скрыты');
 
@@ -198,6 +201,10 @@ function applyRoleVisibility(role) {
             if (scheduleNav) {
                 scheduleNav.style.display = 'flex';
                 console.log('✅ Показано "Расписание"');
+            }
+            if (scheduleManageNav) {
+                scheduleManageNav.style.display = 'flex';
+                console.log('✅ Показано "Упр. расписанием"');
             }
 
             console.log('✅ Показаны все пункты меню');

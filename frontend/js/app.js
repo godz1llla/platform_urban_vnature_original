@@ -118,11 +118,13 @@ function loadActiveSectionData() {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user && user.role === 'instructor') {
             if (typeof initInstructorSchedule === 'function') initInstructorSchedule();
-        } else if (sectionId === 'homework') {
-            if (typeof initHomeworkModule === 'function') initHomeworkModule();
         } else {
             if (typeof initScheduleModule === 'function') initScheduleModule();
         }
+    } else if (sectionId === 'homework') {
+        if (typeof initHomeworkModule === 'function') initHomeworkModule();
+    } else if (sectionId === 'schedule-manage') {
+        if (typeof initScheduleManagement === 'function') initScheduleManagement();
     }
 }
 

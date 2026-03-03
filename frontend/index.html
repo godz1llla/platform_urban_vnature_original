@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/attendance.css">
     <link rel="stylesheet" href="css/student-card.css">
     <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/schedule_manage.css">
 
     <!-- Icons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -75,6 +76,10 @@
             <a href="#subjects" class="nav-item" data-section="subjects">
                 <i class='bx bx-book'></i>
                 <span>Предметы</span>
+            </a>
+            <a href="#schedule-manage" class="nav-item admin-only" data-section="schedule-manage">
+                <i class='bx bx-calendar-edit'></i>
+                <span>Упр. расписанием</span>
             </a>
         </nav>
 
@@ -623,36 +628,77 @@
         <section id="groups" class="content-section">
             <header class="section-header">
                 <h2>Управление группами</h2>
-                <p>Создание групп и распределение студентов</p>
-            </header>
+                <button class="btn btn-primary" onclick="openGroupModal()">
+                    <i class='bx bx-plus'></i> Создать группу
+                </button>
+                </div>
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Курс</th>
+                                    <th>Студентов</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="groupsTableBody">
+                                <!-- Динамически загружается через JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </section>
 
-            <!-- Action Header -->
-            <div class="card" style="margin-bottom: 20px;">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3><i class='bx bx-group'></i> Список групп</h3>
-                    <button class="btn btn-primary" id="createGroupBtn" onclick="openCreateGroupModal()">
-                        <i class='bx bx-plus'></i> Создать группу
-                    </button>
+        <!-- Schedule Management Section (New) -->
+        <section id="schedule-manage" class="section hidden">
+            <div class="section-header">
+                <h2>Управление расписанием</h2>
+                <p>Настройте шаблон недели и распределите его на весь период обучения</p>
+            </div>
+
+            <div class="card schedule-controls-card">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="manageGroupId">Группа</label>
+                        <select id="manageGroupId" class="input" onchange="loadManagementSchedule()">
+                            <!-- Динамически -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="manageWeekNum">Неделя обучения</label>
+                        <select id="manageWeekNum" class="input" onchange="loadManagementSchedule()">
+                            <option value="1">1 неделя</option>
+                            <option value="2">2 неделя</option>
+                            <option value="3">3 неделя</option>
+                            <option value="4">4 неделя</option>
+                            <option value="5">5 неделя</option>
+                            <option value="6">6 неделя</option>
+                            <option value="7">7 неделя</option>
+                            <option value="8">8 неделя</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="align-self: flex-end;">
+                        <button class="btn btn-danger" onclick="cloneScheduleToCourse()">
+                            <i class='bx bx-duplicate'></i> + Размножить на весь курс
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Groups Table -->
-            <div class="card">
+            <div class="card schedule-grid-card">
                 <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Название</th>
-                                <th>Курс</th>
-                                <th>Студентов</th>
-                                <th>Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody id="groupsTableBody">
-                            <!-- Динамически загружается через JS -->
-                        </tbody>
-                    </table>
+                    <div id="scheduleManageGrid" class="schedule-grid-container">
+                        <!-- Нарисовано через JS -->
+                    </div>
                 </div>
+            </div>
+
+            <div class="section-actions" style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                <button class="btn btn-success btn-lg" onclick="saveManagementSchedule()">
+                    Сохранить все
+                </button>
             </div>
         </section>
 
@@ -1145,20 +1191,21 @@
             </div>
             <!-- Scripts -->
             <script src="js/utils.js"></script>
+            <script src="js/app.js"></script>
             <script src="js/auth.js"></script>
             <script src="js/cafeteria.js"></script>
             <script src="js/attendance.js"></script>
             <script src="js/qr-scanner.js"></script>
-            <!-- Добавляем ?v=2 чтобы сбросить кеш на телефоне -->
-            <script src="js/student-card.js?v=2"></script>
-            <script src="js/users.js?v=2"></script>
-            <script src="js/groups.js?v=2"></script>
+            <script src="js/student-card.js"></script>
+            <script src="js/users.js"></script>
+            <script src="js/groups.js"></script>
             <script src="js/subjects.js"></script>
             <script src="js/grades.js"></script>
+            <script src="js/schedule.js"></script>
+            <script src="js/schedule_manage.js"></script>
             <script src="js/homework.js"></script>
             <script src="js/schedule-student.js"></script>
             <script src="js/schedule-instructor.js"></script>
-            <script src="js/app.js"></script>
 </body>
 
 </html>
