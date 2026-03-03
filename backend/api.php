@@ -276,6 +276,9 @@ try {
             $controller->getAbsentReport();
         } elseif ($pathParts[1] === 'group-daily-report' && $method === 'GET') {
             $controller->getGroupDailyReport();
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Attendance sub-route not found: ' . ($pathParts[1] ?? 'empty')]);
         }
     }
 

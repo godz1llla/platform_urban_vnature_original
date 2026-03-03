@@ -133,7 +133,7 @@ async function loadTodayAttendedStudents() {
 
     try {
         const today = new Date().toISOString().split('T')[0];
-        const response = await fetchWithAuth(`attendance/records?from=${today}&to=${today}`);
+        const response = await fetchWithAuth(`attendance/records&from=${today}&to=${today}`);
 
         if (!response.ok) {
             tbody.innerHTML = '<tr><td colspan="3">Ошибка загрузки</td></tr>';
