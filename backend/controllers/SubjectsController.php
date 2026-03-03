@@ -21,14 +21,14 @@ class SubjectsController
         // ИСПРАВЛЕНО: Таблица subject_instructors -> instructor_subjects
         $query = "
             SELECT 
-                s.id,
+                MIN(s.id) as id,
                 s.name,
-                s.description,
-                s.created_at,
+                MAX(s.description) as description,
+                MAX(s.created_at) as created_at,
                 COUNT(si.id) as instructor_count
             FROM subjects s
             LEFT JOIN instructor_subjects si ON s.id = si.subject_id
-            GROUP BY s.id
+            GROUP BY s.name
             ORDER BY s.name ASC
         ";
 

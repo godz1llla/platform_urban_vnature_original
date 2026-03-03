@@ -308,8 +308,20 @@ async function loadSubjectsForGrade() {
         }
 
         select.disabled = false;
-        select.innerHTML = '<option value="">Выберите предмет...</option>' +
-            filteredSubjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        select.innerHTML = '<option value="">Выберите предмет...</option>';
+
+        // Используем Set для дополнительной гарантии уникальности имен в UI
+        const seenNames = new Set();
+        const options = filteredSubjects
+            .filter(s => {
+                if (seenNames.has(s.name)) return false;
+                seenNames.add(s.name);
+                return true;
+            })
+            .map(s => `<option value="${s.id}">${s.name}</option>`)
+            .join('');
+
+        select.innerHTML += options;
     } catch (error) { console.error('Error:', error); }
 }
 
