@@ -26,16 +26,17 @@ class GradesController
                 g.id,
                 g.grade_value,
                 g.grade_type,
-                g.comment,
+                g.notes as comment,
                 g.date,
                 g.created_at,
                 u.full_name as student_name,
                 s.name as subject_name,
                 i.full_name as instructor_name
             FROM grades g
-            JOIN users u ON g.student_user_id = u.id
+            JOIN students st ON g.student_id = st.id
+            JOIN users u ON st.user_id = u.id
             JOIN subjects s ON g.subject_id = s.id
-            JOIN users i ON g.instructor_user_id = i.id
+            JOIN users i ON g.instructor_id = i.id
             WHERE 1=1
         ";
 
@@ -44,13 +45,13 @@ class GradesController
         // Фильтрация по роли
         if ($role === 'student') {
             // Студент видит только свои оценки
-            $query .= " AND g.student_user_id = ?";
+            $query .= " AND st.user_id = ?";
             $params[] = $userId;
         } elseif ($role === 'instructor') {
             // Преподаватель видит оценки только по своим предметам
             $query .= " AND g.subject_id IN (
-                SELECT subject_id FROM subject_instructors 
-                WHERE instructor_user_id = ?
+                SELECT subject_id FROM instructor_subjects 
+                WHERE instructor_id = ?
             )";
             $params[] = $userId;
         }
@@ -58,7 +59,7 @@ class GradesController
 
         // Фильтры из query params
         if (isset($_GET['student_id'])) {
-            $query .= " AND g.student_user_id = ?";
+            $query .= " AND st.id = ?";
             $params[] = $_GET['student_id'];
         }
 
@@ -68,9 +69,7 @@ class GradesController
         }
 
         if (isset($_GET['group_id'])) {
-            $query .= " AND g.student_user_id IN (
-                SELECT user_id FROM students WHERE group_id = ?
-            )";
+            $query .= " AND st.group_id = ?";
             $params[] = $_GET['group_id'];
         }
 
@@ -90,26 +89,37 @@ class GradesController
     public function getMyGrades()
     {
         $user = AuthMiddleware::requireRole(['student']);
-        $userId = $user['id'];
+        $userId = $user['user_id'];
+
+        // Сначала найдем ID студента
+        $stmt = $this->db->prepare("SELECT id FROM students WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        $student = $stmt->fetch();
+
+        if (!$student) {
+            $this->sendJson([]);
+        }
+
+        $studentId = $student['id'];
 
         $query = "
             SELECT 
                 g.id,
                 g.grade_value,
                 g.grade_type,
-                g.comment,
+                g.notes as comment,
                 g.date,
                 s.name as subject_name,
                 i.full_name as instructor_name
             FROM grades g
             JOIN subjects s ON g.subject_id = s.id
-            JOIN users i ON g.instructor_user_id = i.id
-            WHERE g.student_user_id = ?
+            JOIN users i ON g.instructor_id = i.id
+            WHERE g.student_id = ?
             ORDER BY s.name, g.date DESC
         ";
 
         $stmt = $this->db->prepare($query);
-        $stmt->execute([$userId]);
+        $stmt->execute([$studentId]);
         $grades = $stmt->fetchAll();
 
         // Группировка по предметам с расчетом среднего
@@ -143,13 +153,14 @@ class GradesController
     public function createGrade()
     {
         $user = AuthMiddleware::requireRole(['instructor', 'admin']);
+        $userId = $user['user_id'];
         $data = $this->getRequestData();
 
         $studentUserId = $data['student_user_id'] ?? null;
         $subjectId = $data['subject_id'] ?? null;
         $gradeValue = $data['grade_value'] ?? null;
         $gradeType = $data['grade_type'] ?? 'exam';
-        $comment = $data['comment'] ?? null;
+        $notes = $data['comment'] ?? null;
         $date = $data['date'] ?? date('Y-m-d');
 
         if (!$studentUserId || !$subjectId || $gradeValue === null) {
@@ -161,20 +172,22 @@ class GradesController
             $this->sendError('Оценка должна быть от 0 до 100', 400);
         }
 
-        // Проверить что студент существует
-        $stmt = $this->db->prepare("SELECT id FROM users WHERE id = ? AND role = 'student'");
+        // Проверить что студент существует и получить его student_id
+        $stmt = $this->db->prepare("SELECT id FROM students WHERE user_id = ?");
         $stmt->execute([$studentUserId]);
-        if (!$stmt->fetch()) {
+        $student = $stmt->fetch();
+        if (!$student) {
             $this->sendError('Студент не найден', 404);
         }
+        $studentId = $student['id'];
 
         // Если преподаватель - проверить что он назначен на предмет
         if ($user['role'] === 'instructor') {
             $stmt = $this->db->prepare("
-                SELECT id FROM subject_instructors 
-                WHERE subject_id = ? AND instructor_user_id = ?
+                SELECT id FROM instructor_subjects 
+                WHERE subject_id = ? AND instructor_id = ?
             ");
-            $stmt->execute([$subjectId, $user['id']]);
+            $stmt->execute([$subjectId, $userId]);
             if (!$stmt->fetch()) {
                 $this->sendError('Вы не назначены на этот предмет', 403);
             }
@@ -182,16 +195,16 @@ class GradesController
 
         // Создать оценку
         $stmt = $this->db->prepare("
-            INSERT INTO grades (student_user_id, subject_id, instructor_user_id, grade_value, grade_type, comment, date)
+            INSERT INTO grades (student_id, subject_id, instructor_id, grade_value, grade_type, notes, date)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
-            $studentUserId,
+            $studentId,
             $subjectId,
-            $user['id'],
+            $userId,
             $gradeValue,
             $gradeType,
-            $comment,
+            $notes,
             $date
         ]);
 
@@ -211,6 +224,7 @@ class GradesController
     public function updateGrade($gradeId)
     {
         $user = AuthMiddleware::requireRole(['instructor', 'admin']);
+        $userId = $user['user_id'];
         $data = $this->getRequestData();
 
         if (!$gradeId) {
@@ -218,7 +232,7 @@ class GradesController
         }
 
         // Проверить существование оценки
-        $stmt = $this->db->prepare("SELECT instructor_user_id FROM grades WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT instructor_id FROM grades WHERE id = ?");
         $stmt->execute([$gradeId]);
         $grade = $stmt->fetch();
 
@@ -227,7 +241,7 @@ class GradesController
         }
 
         // Проверить права (только создатель или админ)
-        if ($user['role'] !== 'admin' && $grade['instructor_user_id'] != $user['id']) {
+        if ($user['role'] !== 'admin' && $grade['instructor_id'] != $userId) {
             $this->sendError('Нет прав на изменение этой оценки', 403);
         }
 
@@ -249,7 +263,7 @@ class GradesController
         }
 
         if (isset($data['comment'])) {
-            $updates[] = "comment = ?";
+            $updates[] = "notes = ?";
             $params[] = $data['comment'];
         }
 
@@ -277,13 +291,14 @@ class GradesController
     public function deleteGrade($gradeId)
     {
         $user = AuthMiddleware::requireRole(['instructor', 'admin']);
+        $userId = $user['user_id'];
 
         if (!$gradeId) {
             $this->sendError('ID оценки не указан', 400);
         }
 
         // Проверить существование
-        $stmt = $this->db->prepare("SELECT instructor_user_id FROM grades WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT instructor_id FROM grades WHERE id = ?");
         $stmt->execute([$gradeId]);
         $grade = $stmt->fetch();
 
@@ -292,7 +307,7 @@ class GradesController
         }
 
         // Проверить права
-        if ($user['role'] !== 'admin' && $grade['instructor_user_id'] != $user['id']) {
+        if ($user['role'] !== 'admin' && $grade['instructor_id'] != $userId) {
             $this->sendError('Нет прав на удаление этой оценки', 403);
         }
 
@@ -310,46 +325,53 @@ class GradesController
     public function getStudentGrades($studentId)
     {
         $user = AuthMiddleware::requireRole(['admin', 'instructor', 'student']);
+        $userId = $user['user_id'];
 
         if (!$studentId) {
             $this->sendError('ID студента не указан', 400);
         }
 
         // Проверить права
-        if ($user['role'] === 'student' && $user['id'] != $studentId) {
-            $this->sendError('Нет доступа к оценкам другого студента', 403);
+        if ($user['role'] === 'student') {
+            // Найдем student_id текущего пользователя
+            $stmt = $this->db->prepare("SELECT id FROM students WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            $currentStudent = $stmt->fetch();
+            if (!$currentStudent || $currentStudent['id'] != $studentId) {
+                $this->sendError('Нет доступа к оценкам другого студента', 403);
+            }
         }
 
         if ($user['role'] === 'instructor') {
             // Преподаватель видит только по своим предметам
             $query = "
                 SELECT 
-                    g.id, g.grade_value, g.grade_type, g.comment, g.date,
+                    g.id, g.grade_value, g.grade_type, g.notes as comment, g.date,
                     s.name as subject_name,
                     i.full_name as instructor_name
                 FROM grades g
                 JOIN subjects s ON g.subject_id = s.id
-                JOIN users i ON g.instructor_user_id = i.id
-                WHERE g.student_user_id = ?
+                JOIN users i ON g.instructor_id = i.id
+                WHERE g.student_id = ?
                   AND g.subject_id IN (
-                      SELECT subject_id FROM subject_instructors 
-                      WHERE instructor_user_id = ?
+                      SELECT subject_id FROM instructor_subjects 
+                      WHERE instructor_id = ?
                   )
                 ORDER BY s.name, g.date DESC
             ";
             $stmt = $this->db->prepare($query);
-            $stmt->execute([$studentId, $user['id']]);
+            $stmt->execute([$studentId, $userId]);
         } else {
             // Админ или сам студент видят все
             $query = "
                 SELECT 
-                    g.id, g.grade_value, g.grade_type, g.comment, g.date,
+                    g.id, g.grade_value, g.grade_type, g.notes as comment, g.date,
                     s.name as subject_name,
                     i.full_name as instructor_name
                 FROM grades g
                 JOIN subjects s ON g.subject_id = s.id
-                JOIN users i ON g.instructor_user_id = i.id
-                WHERE g.student_user_id = ?
+                JOIN users i ON g.instructor_id = i.id
+                WHERE g.student_id = ?
                 ORDER BY s.name, g.date DESC
             ";
             $stmt = $this->db->prepare($query);

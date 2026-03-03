@@ -7158,3 +7158,27 @@ nohup: ignoring input
 [Fri Feb 20 05:13:06 2026] 127.0.0.1:38974 Accepted
 [Fri Feb 20 05:13:06 2026] 127.0.0.1:38974 [200]: GET /backend/api.php?path=attendance/records?from=2026-02-20&to=2026-02-20
 [Fri Feb 20 05:13:06 2026] 127.0.0.1:38974 Closing
+[Fri Feb 20 05:13:10 2026] 127.0.0.1:38980 Accepted
+[Fri Feb 20 05:13:10 2026] 127.0.0.1:38980 [200]: GET /backend/api.php?path=attendance/generate-token
+[Fri Feb 20 05:13:10 2026] 127.0.0.1:38980 Closing
+[Fri Feb 20 05:13:11 2026] 127.0.0.1:38992 Accepted
+[Fri Feb 20 05:13:11 2026] 127.0.0.1:38992 [200]: GET /backend/api.php?path=attendance/records?from=2026-02-20&to=2026-02-20
+[Fri Feb 20 05:13:11 2026] 127.0.0.1:38992 Closing
+[Fri Feb 20 05:13:16 2026] 127.0.0.1:58488 Accepted
+[Fri Feb 20 05:13:16 2026] 127.0.0.1:58488 [200]: GET /backend/api.php?path=attendance/records?from=2026-02-20&to=2026-02-20
+[Fri Feb 20 05:13:16 2026] 127.0.0.1:58488 Closing
+[Fri Feb 20 05:13:18 2026] 127.0.0.1:58494 Accepted
+[Fri Feb 20 05:13:18 2026] 127.0.0.1:58494 [200]: GET /backend/api.php?path=attendance/generate-token
+[Fri Feb 20 05:13:18 2026] 127.0.0.1:58494 Closing
+[Fri Feb 20 05:13:21 2026] 127.0.0.1:58498 Accepted
+[Fri Feb 20 05:13:21 2026] 127.0.0.1:58498 [200]: GET /backend/api.php?path=attendance/records?from=2026-02-20&to=2026-02-20
+[Fri Feb 20 05:13:21 2026] 127.0.0.1:58498 Closing
+[Fri Feb 20 05:13:26 2026] 127.0.0.1:37292 Accepted
+[Fri Feb 20 05:13:26 2026] 127.0.0.1:37298 Accepted
+[Fri Feb 20 05:13:26 2026] 127.0.0.1:37292 [200]: GET /backend/api.php?path=attendance/generate-token
+[Fri Feb 20 05:13:26 2026] 127.0.0.1:37292 Closing
+[Fri Feb 20 05:13:26 2026] 127.0.0.1:37298 [200]: GET /backend/api.php?path=attendance/records?from=2026-02-20&to=2026-02-20
+[Fri Feb 20 05:13:26 2026] 127.0.0.1:37298 Closing
+[Fri Feb 20 05:13:31 2026] 127.0.0.1:37302 Accepted
+[Fri Feb 20 05:13:31 2026] 127.0.0.1:37302 [200]: GET /backend/api.php?path=attendance/records?from=2026-02-20&to=2026-02-20
+[Fri Feb 20 05:13:31 2026] 127.0.0.1:37302 Closing
