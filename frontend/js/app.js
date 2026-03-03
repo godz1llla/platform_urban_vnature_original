@@ -67,6 +67,8 @@ function initNavigation() {
                 if (typeof initScheduleModule === 'function') initScheduleModule();
             } else if (sectionId === 'grades') {
                 if (typeof initGradesModule === 'function') initGradesModule();
+            } else if (sectionId === 'homework') {
+                if (typeof initHomeworkModule === 'function') initHomeworkModule();
             }
         });
     });
@@ -116,6 +118,8 @@ function loadActiveSectionData() {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user && user.role === 'instructor') {
             if (typeof initInstructorSchedule === 'function') initInstructorSchedule();
+        } else if (sectionId === 'homework') {
+            if (typeof initHomeworkModule === 'function') initHomeworkModule();
         } else {
             if (typeof initScheduleModule === 'function') initScheduleModule();
         }

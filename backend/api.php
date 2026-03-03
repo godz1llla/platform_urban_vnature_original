@@ -287,6 +287,19 @@ try {
         if (isset($pathParts[1]) && $pathParts[1] === 'stats' && $method === 'GET') {
             $controller->getStats();
         }
+    }
+    // === HOMEWORK ROUTES ===
+    elseif ($pathParts[0] === 'homework') {
+        require_once __DIR__ . '/controllers/HomeworkController.php';
+        $controller = new HomeworkController();
+
+        if ($method === 'GET') {
+            $controller->getAllHomework($user);
+        } elseif ($method === 'POST') {
+            $controller->createHomework($user);
+        } elseif ($method === 'DELETE' && isset($pathParts[1])) {
+            $controller->deleteHomework($pathParts[1], $user);
+        }
     } else {
         http_response_code(404);
         echo json_encode(['error' => 'Route not found: ' . $path]);

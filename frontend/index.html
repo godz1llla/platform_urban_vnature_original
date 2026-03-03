@@ -758,380 +758,407 @@
             </div>
         </section>
 
-    </main>
+        <!-- ==================== HOMEWORK SECTION ==================== -->
+        <section id="homework" class="content-section">
+            <header class="section-header">
+                <h2>Домашние задания</h2>
+                <p>Просмотр и публикация домашних заданий</p>
+            </header>
 
-    <!-- Toast Notifications -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <!-- Modal: Add/Edit Category -->
-    <div class="modal hidden" id="categoryModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="categoryModalTitle">Добавить категорию</h3>
-                <button class="modal-close" id="closeCategoryModal">
-                    <i class='bx bx-x'></i>
-                </button>
+            <div class="card" id="homeworkActionHeader" style="margin-bottom: 20px; display: none;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3><i class='bx bx-plus-circle'></i> Новое задание</h3>
+                    <button class="btn btn-primary" id="addHomeworkBtn">
+                        <i class='bx bx-plus'></i> Создать задание
+                    </button>
+                </div>
             </div>
-            <form id="categoryForm">
-                <div class="form-group">
-                    <label for="categoryName">Название категории</label>
-                    <input type="text" id="categoryName" class="input" required>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="dailyLimit">Суточный лимит</label>
-                        <input type="number" id="dailyLimit" class="input" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="weeklyLimit">Недельный лимит</label>
-                        <input type="number" id="weeklyLimit" class="input" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="monthlyLimit">Месячный лимит</label>
-                        <input type="number" id="monthlyLimit" class="input" min="1" required>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
-                    <button type="button" class="btn btn-secondary" id="cancelCategoryBtn">Отмена</button>
-                </div>
-            </form>
-        </div>
 
-        <!-- Modal: Assign Student -->
-        <div class="modal hidden" id="assignStudentModal">
+            <div id="homeworkList" class="dashboard-grid">
+                <!-- Контент загружается через JS -->
+                <div class="loader-container">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Toast Notifications -->
+        <div class="toast-container" id="toastContainer"></div>
+
+        <!-- Modal: Add/Edit Category -->
+        <div class="modal hidden" id="categoryModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>Назначить студента на категорию</h3>
-                    <button class="modal-close" id="closeAssignmentModal">
+                    <h3 id="categoryModalTitle">Добавить категорию</h3>
+                    <button class="modal-close" id="closeCategoryModal">
                         <i class='bx bx-x'></i>
                     </button>
                 </div>
-                <form id="assignmentForm">
+                <form id="categoryForm">
                     <div class="form-group">
-                        <label for="assignStudentId">Студент</label>
-                        <select id="assignStudentId" class="input" required>
-                            <option value="">Выберите студента...</option>
-                            <!-- Динамически загружается через JS -->
-                        </select>
+                        <label for="categoryName">Название категории</label>
+                        <input type="text" id="categoryName" class="input" required>
                     </div>
-                    <div class="form-group">
-                        <label for="assignCategoryId">Категория</label>
-                        <select id="assignCategoryId" class="input" required>
-                            <option value="">Выберите категорию...</option>
-                            <!-- Динамически загружается через JS -->
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dailyLimit">Суточный лимит</label>
+                            <input type="number" id="dailyLimit" class="input" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="weeklyLimit">Недельный лимит</label>
+                            <input type="number" id="weeklyLimit" class="input" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="monthlyLimit">Месячный лимит</label>
+                            <input type="number" id="monthlyLimit" class="input" min="1" required>
+                        </div>
                     </div>
                     <div class="modal-actions">
-                        <button type="submit" class="btn btn-primary">Назначить</button>
-                        <button type="button" class="btn btn-secondary" id="cancelAssignmentBtn">Отмена</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-
-        <!-- Modal: Create/Edit User -->
-        <div class="modal hidden" id="createUserModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Добавить пользователя</h3>
-                    <button class="modal-close" onclick="closeCreateUserModal()">
-                        <i class='bx bx-x'></i>
-                    </button>
-                </div>
-                <form id="createUserForm" onsubmit="createUser(event)">
-                    <div class="form-group">
-                        <label for="userFullName">ФИО *</label>
-                        <input type="text" id="userFullName" class="input" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="userEmail">Email *</label>
-                        <input type="email" id="userEmail" class="input" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="userPassword">Пароль *</label>
-                        <input type="password" id="userPassword" class="input" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="userRole">Роль *</label>
-                        <select id="userRole" class="input" required>
-                            <option value="student">Студент</option>
-                            <option value="instructor">Преподаватель</option>
-                            <option value="cafeteria_operator">Оператор столовой</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="userGroupField">
-                        <label for="userGroupId">Группа (опционально)</label>
-                        <select id="userGroupId" class="input">
-                            <option value="">Не назначена</option>
-                            <!-- Динамически загружаются группы -->
-                        </select>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="closeCreateUserModal()">Отмена</button>
-                        <button type="submit" class="btn btn-primary">Создать</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Modal: Create/Edit Group -->
-        <div class="modal hidden" id="createGroupModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 id="groupModalTitle">Создать группу</h3>
-                    <button class="modal-close" onclick="closeGroupModal()">
-                        <i class='bx bx-x'></i>
-                    </button>
-                </div>
-                <form id="createGroupForm" onsubmit="createGroup(event)">
-                    <div class="form-group">
-                        <label for="groupName">Название группы *</label>
-                        <input type="text" id="groupName" class="input" required placeholder="ІС-21">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="groupCourse">Курс *</label>
-                        <select id="groupCourse" class="input" required>
-                            <option value="1">1 курс</option>
-                            <option value="2">2 курс</option>
-                            <option value="3">3 курс</option>
-                            <option value="4">4 курс</option>
-                        </select>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="closeGroupModal()">Отмена</button>
                         <button type="submit" class="btn btn-primary">Сохранить</button>
+                        <button type="button" class="btn btn-secondary" id="cancelCategoryBtn">Отмена</button>
                     </div>
                 </form>
             </div>
-        </div>
 
-        <!-- Modal: Group Students -->
-        <div class="modal hidden" id="groupStudentsModal">
-            <div class="modal-content" style="max-width: 800px;">
-                <div class="modal-header">
-                    <h3 id="groupStudentsTitle">Студенты группы</h3>
-                    <button class="modal-close" onclick="closeGroupStudentsModal()">
-                        <i class='bx bx-x'></i>
-                    </button>
-                </div>
-
-                <div class="modal-body">
-                    <!-- Добавить студента -->
-                    <div class="card" style="margin-bottom: 20px;">
-                        <h4><i class='bx bx-user-plus'></i> Добавить студента</h4>
-                        <div style="display: flex; gap: 10px; align-items: flex-end;">
-                            <div class="form-group" style="flex: 1; margin: 0;">
-                                <label for="addStudentSelect">Выберите студента</label>
-                                <select id="addStudentSelect" class="input">
-                                    <option value="">Выберите...</option>
-                                </select>
-                            </div>
-                            <button class="btn btn-primary" onclick="addStudentToGroup()">
-                                <i class='bx bx-plus'></i> Добавить
-                            </button>
-                        </div>
+            <!-- Modal: Assign Student -->
+            <div class="modal hidden" id="assignStudentModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Назначить студента на категорию</h3>
+                        <button class="modal-close" id="closeAssignmentModal">
+                            <i class='bx bx-x'></i>
+                        </button>
                     </div>
-
-                    <!-- Список студентов -->
-                    <div class="card">
-                        <h4><i class='bx bx-group'></i> Студенты в группе</h4>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>ФИО</th>
-                                        <th>Код студента</th>
-                                        <th>Действия</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="groupStudentsTableBody">
-                                    <!-- Динамически загружается -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeGroupStudentsModal()">Закрыть</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal: Create/Edit Subject -->
-        <div class="modal hidden" id="createSubjectModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 id="subjectModalTitle">Создать предмет</h3>
-                    <button class="modal-close" onclick="closeSubjectModal()">
-                        <i class='bx bx-x'></i>
-                    </button>
-                </div>
-                <form id="createSubjectForm" onsubmit="createSubject(event)">
-                    <div class="form-group">
-                        <label for="subjectName">Название предмета *</label>
-                        <input type="text" id="subjectName" class="input" required placeholder="Математический анализ">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="subjectDescription">Описание</label>
-                        <textarea id="subjectDescription" class="input" rows="3"
-                            placeholder="Линейная алгебра, матрицы, интегралы..."></textarea>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="closeSubjectModal()">Отмена</button>
-                        <button type="submit" class="btn btn-primary">Сохранить</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Modal: Subject Instructors -->
-        <div class="modal hidden" id="subjectInstructorsModal">
-            <div class="modal-content" style="max-width: 800px;">
-                <div class="modal-header">
-                    <h3 id="subjectInstructorsTitle">Преподаватели предмета</h3>
-                    <button class="modal-close" onclick="closeSubjectInstructorsModal()">
-                        <i class='bx bx-x'></i>
-                    </button>
-                </div>
-
-                <div class="modal-body">
-                    <!-- Назначить преподавателя -->
-                    <div class="card" style="margin-bottom: 20px;">
-                        <h4><i class='bx bx-user-plus'></i> Назначить преподавателя</h4>
-                        <div style="display: flex; gap: 10px; align-items: flex-end;">
-                            <div class="form-group" style="flex: 1; margin: 0;">
-                                <label for="addInstructorSelect">Выберите преподавателя</label>
-                                <select id="addInstructorSelect" class="input">
-                                    <option value="">Выберите...</option>
-                                </select>
-                            </div>
-                            <button class="btn btn-primary" onclick="assignInstructor()">
-                                <i class='bx bx-plus'></i> Назначить
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Список преподавателей -->
-                    <div class="card">
-                        <h4><i class='bx bx-user-check'></i> Назначенные преподаватели</h4>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>ФИО</th>
-                                        <th>Email</th>
-                                        <th>Действия</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="subjectInstructorsTableBody">
-                                    <!-- Динамически загружается -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                        onclick="closeSubjectInstructorsModal()">Закрыть</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal: Create Lesson -->
-        <div class="modal hidden" id="createLessonModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Добавить урок в расписание</h3>
-                    <button class="modal-close" onclick="closeLessonModal()">
-                        <i class='bx bx-x'></i>
-                    </button>
-                </div>
-                <form id="createLessonForm" onsubmit="createLesson(event)">
-                    <div class="form-group">
-                        <label for="lessonGroupId">Группа *</label>
-                        <select id="lessonGroupId" class="input" required>
-                            <option value="">Выберите...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="lessonSubjectId">Предмет *</label>
-                        <select id="lessonSubjectId" class="input" required>
-                            <option value="">Выберите...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="lessonInstructorId">Преподаватель *</label>
-                        <select id="lessonInstructorId" class="input" required>
-                            <option value="">Выберите...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="lessonDayOfWeek">День недели *</label>
-                        <select id="lessonDayOfWeek" class="input" required>
-                            <option value="monday">Понедельник</option>
-                            <option value="tuesday">Вторник</option>
-                            <option value="wednesday">Среда</option>
-                            <option value="thursday">Четверг</option>
-                            <option value="friday">Пятница</option>
-                            <option value="saturday">Суббота</option>
-                        </select>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <form id="assignmentForm">
                         <div class="form-group">
-                            <label for="lessonStartTime">Начало *</label>
-                            <input type="time" id="lessonStartTime" class="input" required>
+                            <label for="assignStudentId">Студент</label>
+                            <select id="assignStudentId" class="input" required>
+                                <option value="">Выберите студента...</option>
+                                <!-- Динамически загружается через JS -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="assignCategoryId">Категория</label>
+                            <select id="assignCategoryId" class="input" required>
+                                <option value="">Выберите категорию...</option>
+                                <!-- Динамически загружается через JS -->
+                            </select>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="submit" class="btn btn-primary">Назначить</button>
+                            <button type="button" class="btn btn-secondary" id="cancelAssignmentBtn">Отмена</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            <!-- Modal: Create/Edit User -->
+            <div class="modal hidden" id="createUserModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Добавить пользователя</h3>
+                        <button class="modal-close" onclick="closeCreateUserModal()">
+                            <i class='bx bx-x'></i>
+                        </button>
+                    </div>
+                    <form id="createUserForm" onsubmit="createUser(event)">
+                        <div class="form-group">
+                            <label for="userFullName">ФИО *</label>
+                            <input type="text" id="userFullName" class="input" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="lessonEndTime">Конец *</label>
-                            <input type="time" id="lessonEndTime" class="input" required>
+                            <label for="userEmail">Email *</label>
+                            <input type="email" id="userEmail" class="input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="userPassword">Пароль *</label>
+                            <input type="password" id="userPassword" class="input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="userRole">Роль *</label>
+                            <select id="userRole" class="input" required>
+                                <option value="student">Студент</option>
+                                <option value="instructor">Преподаватель</option>
+                                <option value="cafeteria_operator">Оператор столовой</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="userGroupField">
+                            <label for="userGroupId">Группа (опционально)</label>
+                            <select id="userGroupId" class="input">
+                                <option value="">Не назначена</option>
+                                <!-- Динамически загружаются группы -->
+                            </select>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                onclick="closeCreateUserModal()">Отмена</button>
+                            <button type="submit" class="btn btn-primary">Создать</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal: Create/Edit Group -->
+            <div class="modal hidden" id="createGroupModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="groupModalTitle">Создать группу</h3>
+                        <button class="modal-close" onclick="closeGroupModal()">
+                            <i class='bx bx-x'></i>
+                        </button>
+                    </div>
+                    <form id="createGroupForm" onsubmit="createGroup(event)">
+                        <div class="form-group">
+                            <label for="groupName">Название группы *</label>
+                            <input type="text" id="groupName" class="input" required placeholder="ІС-21">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="groupCourse">Курс *</label>
+                            <select id="groupCourse" class="input" required>
+                                <option value="1">1 курс</option>
+                                <option value="2">2 курс</option>
+                                <option value="3">3 курс</option>
+                                <option value="4">4 курс</option>
+                            </select>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeGroupModal()">Отмена</button>
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal: Group Students -->
+            <div class="modal hidden" id="groupStudentsModal">
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3 id="groupStudentsTitle">Студенты группы</h3>
+                        <button class="modal-close" onclick="closeGroupStudentsModal()">
+                            <i class='bx bx-x'></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- Добавить студента -->
+                        <div class="card" style="margin-bottom: 20px;">
+                            <h4><i class='bx bx-user-plus'></i> Добавить студента</h4>
+                            <div style="display: flex; gap: 10px; align-items: flex-end;">
+                                <div class="form-group" style="flex: 1; margin: 0;">
+                                    <label for="addStudentSelect">Выберите студента</label>
+                                    <select id="addStudentSelect" class="input">
+                                        <option value="">Выберите...</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" onclick="addStudentToGroup()">
+                                    <i class='bx bx-plus'></i> Добавить
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Список студентов -->
+                        <div class="card">
+                            <h4><i class='bx bx-group'></i> Студенты в группе</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ФИО</th>
+                                            <th>Код студента</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="groupStudentsTableBody">
+                                        <!-- Динамически загружается -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="lessonRoom">Аудитория</label>
-                        <input type="text" id="lessonRoom" class="input" placeholder="205">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="closeGroupStudentsModal()">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal: Create/Edit Subject -->
+            <div class="modal hidden" id="createSubjectModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="subjectModalTitle">Создать предмет</h3>
+                        <button class="modal-close" onclick="closeSubjectModal()">
+                            <i class='bx bx-x'></i>
+                        </button>
+                    </div>
+                    <form id="createSubjectForm" onsubmit="createSubject(event)">
+                        <div class="form-group">
+                            <label for="subjectName">Название предмета *</label>
+                            <input type="text" id="subjectName" class="input" required
+                                placeholder="Математический анализ">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subjectDescription">Описание</label>
+                            <textarea id="subjectDescription" class="input" rows="3"
+                                placeholder="Линейная алгебра, матрицы, интегралы..."></textarea>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                onclick="closeSubjectModal()">Отмена</button>
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal: Subject Instructors -->
+            <div class="modal hidden" id="subjectInstructorsModal">
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3 id="subjectInstructorsTitle">Преподаватели предмета</h3>
+                        <button class="modal-close" onclick="closeSubjectInstructorsModal()">
+                            <i class='bx bx-x'></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- Назначить преподавателя -->
+                        <div class="card" style="margin-bottom: 20px;">
+                            <h4><i class='bx bx-user-plus'></i> Назначить преподавателя</h4>
+                            <div style="display: flex; gap: 10px; align-items: flex-end;">
+                                <div class="form-group" style="flex: 1; margin: 0;">
+                                    <label for="addInstructorSelect">Выберите преподавателя</label>
+                                    <select id="addInstructorSelect" class="input">
+                                        <option value="">Выберите...</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" onclick="assignInstructor()">
+                                    <i class='bx bx-plus'></i> Назначить
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Список преподавателей -->
+                        <div class="card">
+                            <h4><i class='bx bx-user-check'></i> Назначенные преподаватели</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ФИО</th>
+                                            <th>Email</th>
+                                            <th>Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="subjectInstructorsTableBody">
+                                        <!-- Динамически загружается -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="closeLessonModal()">Отмена</button>
-                        <button type="submit" class="btn btn-primary">Создать</button>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="closeSubjectInstructorsModal()">Закрыть</button>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
-        <!-- Scripts -->
-        <script src="js/utils.js"></script>
-        <script src="js/auth.js"></script>
-        <script src="js/cafeteria.js"></script>
-        <script src="js/attendance.js"></script>
-        <script src="js/qr-scanner.js"></script>
-        <!-- Добавляем ?v=2 чтобы сбросить кеш на телефоне -->
-        <script src="js/student-card.js?v=2"></script>
-        <script src="js/users.js?v=2"></script>
-        <script src="js/groups.js?v=2"></script>
-        <script src="js/subjects.js"></script>
-        <script src="js/grades.js"></script>
-        <script src="js/schedule-student.js"></script>
-        <script src="js/schedule-instructor.js"></script>
-        <script src="js/app.js"></script>
+
+            <!-- Modal: Create Lesson -->
+            <div class="modal hidden" id="createLessonModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Добавить урок в расписание</h3>
+                        <button class="modal-close" onclick="closeLessonModal()">
+                            <i class='bx bx-x'></i>
+                        </button>
+                    </div>
+                    <form id="createLessonForm" onsubmit="createLesson(event)">
+                        <div class="form-group">
+                            <label for="lessonGroupId">Группа *</label>
+                            <select id="lessonGroupId" class="input" required>
+                                <option value="">Выберите...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonSubjectId">Предмет *</label>
+                            <select id="lessonSubjectId" class="input" required>
+                                <option value="">Выберите...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonInstructorId">Преподаватель *</label>
+                            <select id="lessonInstructorId" class="input" required>
+                                <option value="">Выберите...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonDayOfWeek">День недели *</label>
+                            <select id="lessonDayOfWeek" class="input" required>
+                                <option value="monday">Понедельник</option>
+                                <option value="tuesday">Вторник</option>
+                                <option value="wednesday">Среда</option>
+                                <option value="thursday">Четверг</option>
+                                <option value="friday">Пятница</option>
+                                <option value="saturday">Суббота</option>
+                            </select>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label for="lessonStartTime">Начало *</label>
+                                <input type="time" id="lessonStartTime" class="input" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lessonEndTime">Конец *</label>
+                                <input type="time" id="lessonEndTime" class="input" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonRoom">Аудитория</label>
+                            <input type="text" id="lessonRoom" class="input" placeholder="205">
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeLessonModal()">Отмена</button>
+                            <button type="submit" class="btn btn-primary">Создать</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Scripts -->
+            <script src="js/utils.js"></script>
+            <script src="js/auth.js"></script>
+            <script src="js/cafeteria.js"></script>
+            <script src="js/attendance.js"></script>
+            <script src="js/qr-scanner.js"></script>
+            <!-- Добавляем ?v=2 чтобы сбросить кеш на телефоне -->
+            <script src="js/student-card.js?v=2"></script>
+            <script src="js/users.js?v=2"></script>
+            <script src="js/groups.js?v=2"></script>
+            <script src="js/subjects.js"></script>
+            <script src="js/grades.js"></script>
+            <script src="js/homework.js"></script>
+            <script src="js/schedule-student.js"></script>
+            <script src="js/schedule-instructor.js"></script>
+            <script src="js/app.js"></script>
 </body>
 
 </html>
